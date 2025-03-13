@@ -68,6 +68,19 @@ class Settings(BaseSettings):
     SCRAPER_TIMEOUT: int = 30
     PLAYWRIGHT_HEADLESS: bool = True
     
+    # MCP Server Configuration
+    FIRECRAWL_API_KEY: str = ""
+    FIRECRAWL_API_URL: str = "https://api.firecrawl.dev"
+    MCP_SERVER_TYPE: str = "firecrawl"  # Options: firecrawl, playwright, puppeteer
+    MCP_PLAYWRIGHT_URL: str = "http://localhost:3001"
+    MCP_PUPPETEER_URL: str = "http://localhost:3002"
+    MCP_MAX_CONCURRENT_SESSIONS: int = 5
+    MCP_REQUEST_TIMEOUT: int = 60
+    MCP_ENABLE_LLM_GUIDANCE: bool = True
+    MCP_LLM_PROVIDER: str = "openai"
+    MCP_LLM_MODEL: str = "gpt-4"
+    MCP_LLM_API_KEY: str = ""
+    
     # Socket.IO
     SOCKETIO_PATH: str = "/socket.io"
     SOCKETIO_CORS_ORIGINS: List[str] = ["http://localhost:3000"]
