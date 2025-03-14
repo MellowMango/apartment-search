@@ -138,6 +138,16 @@ class DataStorage:
             import uuid
             from datetime import datetime
             from dotenv import load_dotenv
+            import sys
+            
+            # Force load backend .env file to ensure we use the correct credentials
+            backend_env_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.env"))
+            logger.info(f"Force loading environment variables from: {backend_env_path}")
+            if os.path.exists(backend_env_path):
+                load_dotenv(backend_env_path, override=True)
+                logger.info("Backend .env loaded successfully")
+            else:
+                logger.warning(f"Backend .env file not found at: {backend_env_path}")
             
             # Import database clients
             try:
@@ -145,14 +155,13 @@ class DataStorage:
                 from backend.app.db.neo4j_client import Neo4jClient
             except ImportError:
                 # Fallback to relative imports for different project structures
-                import sys
-                import os
                 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../")))
                 from app.db.supabase_client import get_supabase_client
                 from app.db.neo4j_client import Neo4jClient
             
-            # Load environment variables
-            load_dotenv()
+            # Log the Supabase URL being used (but not sensitive keys)
+            logger.info(f"Using Supabase URL: {os.getenv('SUPABASE_URL')}")
+            logger.info(f"Using Neo4j URI: {os.getenv('NEO4J_URI')}")
             
             # Check if we're dealing with a list or single item
             if isinstance(data, dict) and data_type == "properties":
@@ -198,7 +207,7 @@ class DataStorage:
                         "property_type": "multifamily",  # Default for ACR Multifamily
                         "property_status": property_item.get("status", "active"),
                         "property_website": property_item.get("link", ""),
-                        "listing_website": self.source_name,
+                        "source_website": self.source_name,  # Use source_website instead of listing_website
                         "description": property_item.get("description", ""),
                         "created_at": datetime.now().isoformat(),
                         "updated_at": datetime.now().isoformat(),
@@ -213,6 +222,16 @@ class DataStorage:
                     
                     # Insert property into Supabase
                     logger.info(f"Inserting property {property_data['name']} into Supabase")
+                    
+                    # Remove fields that don't exist in the Supabase schema
+                    # This is a temporary fix until we update the schema
+                    if "listing_website" in property_data:
+                        del property_data["listing_website"]
+                    if "property_website" in property_data:
+                        del property_data["property_website"]
+                    if "source_website" in property_data:
+                        del property_data["source_website"]
+                    
                     supabase_result = supabase_client.table("properties").insert(property_data).execute()
                     
                     if not supabase_result.data:

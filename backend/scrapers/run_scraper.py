@@ -10,6 +10,10 @@ import argparse
 import logging
 import importlib
 from typing import Dict, Any, List, Optional
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Add the project directory to the path so we can import our modules
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../..")))
@@ -25,12 +29,37 @@ AVAILABLE_SCRAPERS = {
     # Add more scrapers here as they are implemented
 }
 
-async def run_scraper(scraper_name: str) -> bool:
+def check_database_connections() -> List[str]:
+    """
+    Check which database connections are available based on environment variables.
+    
+    Returns:
+        List of available database connections.
+    """
+    connections = []
+    
+    # Check Supabase credentials
+    supabase_url = os.getenv("SUPABASE_URL")
+    supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    if supabase_url and supabase_key:
+        connections.append("Supabase")
+    
+    # Check Neo4j credentials
+    neo4j_uri = os.getenv("NEO4J_URI")
+    neo4j_user = os.getenv("NEO4J_USERNAME")
+    neo4j_pass = os.getenv("NEO4J_PASSWORD")
+    if neo4j_uri and neo4j_user and neo4j_pass:
+        connections.append("Neo4j")
+    
+    return connections
+
+async def run_scraper(scraper_name: str, enable_db_storage: bool = True) -> bool:
     """
     Run the specified scraper.
     
     Args:
         scraper_name: The name of the scraper to run.
+        enable_db_storage: Whether to enable database storage.
         
     Returns:
         True if the scraper ran successfully, False otherwise.
@@ -40,6 +69,23 @@ async def run_scraper(scraper_name: str) -> bool:
         return False
     
     try:
+        # Check database connections
+        if enable_db_storage:
+            db_connections = check_database_connections()
+            if db_connections:
+                logger.info(f"Database connections available: {', '.join(db_connections)}")
+            else:
+                logger.warning("No database credentials found. Data will be saved to files only. "
+                             "To enable database storage, set the required environment variables.")
+        else:
+            logger.info("Database storage disabled by command-line option")
+            # Temporarily set environment variables to empty to disable database connections
+            os.environ["SUPABASE_URL"] = ""
+            os.environ["SUPABASE_SERVICE_ROLE_KEY"] = ""
+            os.environ["NEO4J_URI"] = ""
+            os.environ["NEO4J_USERNAME"] = ""
+            os.environ["NEO4J_PASSWORD"] = ""
+        
         # Import the scraper module
         module_path = AVAILABLE_SCRAPERS[scraper_name]
         logger.info(f"Importing scraper module: {module_path}")
@@ -61,18 +107,20 @@ async def run_scraper(scraper_name: str) -> bool:
 def main():
     """Main function for the command-line interface."""
     parser = argparse.ArgumentParser(description="Run web scrapers for property listings.")
-    parser.add_argument("scraper", choices=list(AVAILABLE_SCRAPERS.keys()) + ["all"],
-                      help="The name of the scraper to run, or 'all' to run all scrapers")
+    parser.add_argument("--scraper", choices=list(AVAILABLE_SCRAPERS.keys()) + ["all"], default="all",
+                      help="The name of the scraper to run, or 'all' to run all scrapers (default: all)")
+    parser.add_argument("--no-db", action="store_true", help="Disable database storage")
     
     args = parser.parse_args()
+    enable_db_storage = not args.no_db
     
     if args.scraper == "all":
-        logger.info("Running all scrapers")
+        logger.info(f"Running all scrapers {'without' if args.no_db else 'with'} database storage")
         
         async def run_all():
             results = []
             for scraper_name in AVAILABLE_SCRAPERS:
-                result = await run_scraper(scraper_name)
+                result = await run_scraper(scraper_name, enable_db_storage)
                 results.append((scraper_name, result))
             return results
         
@@ -87,7 +135,7 @@ def main():
         # Return exit code based on success
         return 0 if all(success for _, success in results) else 1
     else:
-        result = asyncio.run(run_scraper(args.scraper))
+        result = asyncio.run(run_scraper(args.scraper, enable_db_storage))
         return 0 if result else 1
 
 if __name__ == "__main__":

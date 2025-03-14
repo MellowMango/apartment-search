@@ -151,12 +151,47 @@ class ACRMultifamilyScraper:
         # Save the results to a file
         self.storage.save_extracted_data(results, "properties", timestamp)
         
+        # Save the results to the database
+        try:
+            logger.info("Saving results to database")
+            db_success = await self.storage.save_to_database(results, "properties")
+            logger.info(f"Database save {'successful' if db_success else 'failed'}")
+        except Exception as e:
+            logger.error(f"Error saving to database: {str(e)}")
+        
         return results
 
 async def main():
     """Run the ACR Multifamily scraper."""
     logging.basicConfig(level=logging.INFO, 
                      format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    
+    # Check for required environment variables
+    import os
+    from dotenv import load_dotenv
+    
+    # Load environment variables
+    load_dotenv()
+    
+    # Check database credentials
+    supabase_url = os.getenv("SUPABASE_URL")
+    supabase_key = os.getenv("SUPABASE_SERVICE_ROLE_KEY")
+    neo4j_uri = os.getenv("NEO4J_URI")
+    neo4j_user = os.getenv("NEO4J_USERNAME")
+    neo4j_pass = os.getenv("NEO4J_PASSWORD")
+    
+    # Print available database connections
+    db_connections = []
+    if supabase_url and supabase_key:
+        db_connections.append("Supabase")
+    if neo4j_uri and neo4j_user and neo4j_pass:
+        db_connections.append("Neo4j")
+    
+    if db_connections:
+        logger.info(f"Database connections available: {', '.join(db_connections)}")
+    else:
+        logger.warning("No database credentials found. Data will be saved to files only. "
+                     "To enable database storage, set the required environment variables.")
     
     scraper = ACRMultifamilyScraper()
     results = await scraper.extract_properties()
