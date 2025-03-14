@@ -1,0 +1,182 @@
+2025-03-13 23:55:51,702 - __main__ - INFO - Ensured directory exists: data/html/berkadia
+2025-03-13 23:55:51,702 - __main__ - INFO - Ensured directory exists: data/screenshots/berkadia
+2025-03-13 23:55:51,702 - __main__ - INFO - Ensured directory exists: data/extracted/berkadia
+2025-03-13 23:55:51,702 - __main__ - INFO - Using MCP server type: firecrawl
+2025-03-13 23:55:51,702 - __main__ - INFO - Firecrawl MCP URL: http://localhost:3000
+2025-03-13 23:55:51,702 - __main__ - INFO - Playwright MCP URL: http://localhost:3001
+2025-03-13 23:55:51,702 - __main__ - INFO - Puppeteer MCP URL: http://localhost:3002
+2025-03-13 23:55:51,702 - __main__ - INFO - Using MCP base URL: http://localhost:3000
+2025-03-13 23:55:51,702 - __main__ - INFO - Using Supabase URL: https://cqwpfkvtfqgwvpnwddur.supabase.co
+2025-03-13 23:55:51,702 - __main__ - INFO - Supabase key is set
+2025-03-13 23:55:51,702 - __main__ - INFO - Script started at 2025-03-13 23:55:51.702822
+2025-03-13 23:55:51,702 - asyncio - DEBUG - Using selector: KqueueSelector
+2025-03-13 23:55:51,703 - __main__ - INFO - Starting Berkadia scraper runner
+2025-03-13 23:55:52,269 - backend.scrapers.core.storage - INFO - Initialized storage for Berkadia
+2025-03-13 23:55:52,269 - backend.scrapers.core.db_storage - INFO - Supabase URL: https://cqwpfkvtfqgwvpnwddur.supabase.co
+2025-03-13 23:55:52,269 - backend.scrapers.core.db_storage - INFO - Supabase key available
+2025-03-13 23:55:52,269 - backend.scrapers.core.db_storage - WARNING - Missing Neo4j credentials. Graph database storage will not work.
+2025-03-13 23:55:52,269 - __main__ - INFO - Created database storage
+2025-03-13 23:55:52,269 - __main__ - INFO - Using MCP base URL: http://localhost:3000
+2025-03-13 23:55:52,269 - backend.scrapers.core.mcp_client - INFO - Initialized MCP client with base URL: http://localhost:3000
+2025-03-13 23:55:52,277 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:55:52,278 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:55:52,287 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3000 local_address=None timeout=60 socket_options=None
+2025-03-13 23:55:52,290 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x1066db050>
+2025-03-13 23:55:52,290 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-03-13 23:55:52,290 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-03-13 23:55:52,291 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-03-13 23:55:52,291 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-03-13 23:55:52,291 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-03-13 23:55:52,303 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 404, b'Not Found', [(b'Vary', b'Origin'), (b'Date', b'Fri, 14 Mar 2025 04:55:52 GMT'), (b'Connection', b'keep-alive'), (b'Keep-Alive', b'timeout=5'), (b'Content-Length', b'0')])
+2025-03-13 23:55:52,303 - httpx - INFO - HTTP Request: POST http://localhost:3000/page "HTTP/1.1 404 Not Found"
+2025-03-13 23:55:52,303 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-03-13 23:55:52,304 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-03-13 23:55:52,304 - httpcore.http11 - DEBUG - response_closed.started
+2025-03-13 23:55:52,304 - httpcore.http11 - DEBUG - response_closed.complete
+2025-03-13 23:55:52,304 - httpcore.connection - DEBUG - close.started
+2025-03-13 23:55:52,304 - httpcore.connection - DEBUG - close.complete
+2025-03-13 23:55:52,304 - backend.scrapers.core.mcp_client - ERROR - HTTP error during navigate: Client error '404 Not Found' for url 'http://localhost:3000/page'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2025-03-13 23:55:52,304 - __main__ - INFO - MCP connection test result: False
+2025-03-13 23:55:52,304 - __main__ - WARNING - MCP connection test failed. MCP server may not be running.
+2025-03-13 23:55:52,304 - __main__ - WARNING - Proceeding anyway, but scraping will likely fail.
+2025-03-13 23:55:52,304 - __main__ - INFO - Creating Berkadia scraper instance
+2025-03-13 23:55:52,304 - backend.scrapers.core.mcp_client - INFO - Initialized MCP client with base URL: http://localhost:3000
+2025-03-13 23:55:52,304 - backend.scrapers.core.base_scraper - INFO - Created new MCP client with base URL: http://localhost:3000
+2025-03-13 23:55:52,304 - backend.scrapers.brokers.berkadia.scraper - INFO - Created new data storage for Berkadia
+2025-03-13 23:55:52,304 - __main__ - INFO - Starting property extraction
+2025-03-13 23:55:52,304 - backend.scrapers.brokers.berkadia.scraper - INFO - Starting Berkadia property extraction
+2025-03-13 23:55:52,304 - backend.scrapers.brokers.berkadia.scraper - INFO - Navigating to: https://www.berkadia.com/properties/
+2025-03-13 23:55:52,304 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:55:52,304 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:55:52,309 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3000 local_address=None timeout=60 socket_options=None
+2025-03-13 23:55:52,312 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x104b71f50>
+2025-03-13 23:55:52,312 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-03-13 23:55:52,312 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-03-13 23:55:52,312 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-03-13 23:55:52,312 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-03-13 23:55:52,312 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-03-13 23:55:52,313 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 404, b'Not Found', [(b'Vary', b'Origin'), (b'Date', b'Fri, 14 Mar 2025 04:55:52 GMT'), (b'Connection', b'keep-alive'), (b'Keep-Alive', b'timeout=5'), (b'Content-Length', b'0')])
+2025-03-13 23:55:52,313 - httpx - INFO - HTTP Request: POST http://localhost:3000/page "HTTP/1.1 404 Not Found"
+2025-03-13 23:55:52,313 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-03-13 23:55:52,313 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-03-13 23:55:52,313 - httpcore.http11 - DEBUG - response_closed.started
+2025-03-13 23:55:52,313 - httpcore.http11 - DEBUG - response_closed.complete
+2025-03-13 23:55:52,313 - httpcore.connection - DEBUG - close.started
+2025-03-13 23:55:52,314 - httpcore.connection - DEBUG - close.complete
+2025-03-13 23:55:52,314 - backend.scrapers.core.mcp_client - ERROR - HTTP error during navigate: Client error '404 Not Found' for url 'http://localhost:3000/page'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2025-03-13 23:55:52,314 - backend.scrapers.brokers.berkadia.scraper - INFO - Waiting for page content to load...
+2025-03-13 23:55:57,323 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:55:57,325 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:55:57,334 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3000 local_address=None timeout=60 socket_options=None
+2025-03-13 23:55:57,336 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x106753a10>
+2025-03-13 23:55:57,337 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'GET']>
+2025-03-13 23:55:57,337 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-03-13 23:55:57,337 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'GET']>
+2025-03-13 23:55:57,337 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-03-13 23:55:57,337 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'GET']>
+2025-03-13 23:55:57,450 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 404, b'Not Found', [(b'Vary', b'Origin'), (b'Date', b'Fri, 14 Mar 2025 04:55:57 GMT'), (b'Connection', b'keep-alive'), (b'Keep-Alive', b'timeout=5'), (b'Content-Length', b'0')])
+2025-03-13 23:55:57,450 - httpx - INFO - HTTP Request: GET http://localhost:3000/dom "HTTP/1.1 404 Not Found"
+2025-03-13 23:55:57,450 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'GET']>
+2025-03-13 23:55:57,450 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-03-13 23:55:57,450 - httpcore.http11 - DEBUG - response_closed.started
+2025-03-13 23:55:57,450 - httpcore.http11 - DEBUG - response_closed.complete
+2025-03-13 23:55:57,450 - httpcore.connection - DEBUG - close.started
+2025-03-13 23:55:57,450 - httpcore.connection - DEBUG - close.complete
+2025-03-13 23:55:57,450 - backend.scrapers.core.mcp_client - ERROR - HTTP error during get_html: Client error '404 Not Found' for url 'http://localhost:3000/dom'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2025-03-13 23:55:57,450 - backend.scrapers.brokers.berkadia.scraper - WARNING - Received empty or very small HTML content
+2025-03-13 23:55:57,450 - backend.scrapers.brokers.berkadia.scraper - INFO - Navigating to: https://www.berkadia.com/properties/multi-family/
+2025-03-13 23:55:57,451 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:55:57,451 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:55:57,458 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3000 local_address=None timeout=60 socket_options=None
+2025-03-13 23:55:57,461 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x1067615d0>
+2025-03-13 23:55:57,461 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-03-13 23:55:57,461 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-03-13 23:55:57,461 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-03-13 23:55:57,462 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-03-13 23:55:57,462 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-03-13 23:55:57,502 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 404, b'Not Found', [(b'Vary', b'Origin'), (b'Date', b'Fri, 14 Mar 2025 04:55:57 GMT'), (b'Connection', b'keep-alive'), (b'Keep-Alive', b'timeout=5'), (b'Content-Length', b'0')])
+2025-03-13 23:55:57,502 - httpx - INFO - HTTP Request: POST http://localhost:3000/page "HTTP/1.1 404 Not Found"
+2025-03-13 23:55:57,502 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-03-13 23:55:57,502 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-03-13 23:55:57,502 - httpcore.http11 - DEBUG - response_closed.started
+2025-03-13 23:55:57,502 - httpcore.http11 - DEBUG - response_closed.complete
+2025-03-13 23:55:57,503 - httpcore.connection - DEBUG - close.started
+2025-03-13 23:55:57,503 - httpcore.connection - DEBUG - close.complete
+2025-03-13 23:55:57,503 - backend.scrapers.core.mcp_client - ERROR - HTTP error during navigate: Client error '404 Not Found' for url 'http://localhost:3000/page'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2025-03-13 23:55:57,503 - backend.scrapers.brokers.berkadia.scraper - INFO - Waiting for page content to load...
+2025-03-13 23:56:02,513 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:56:02,517 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:56:02,549 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3000 local_address=None timeout=60 socket_options=None
+2025-03-13 23:56:02,551 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x106762fd0>
+2025-03-13 23:56:02,551 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'GET']>
+2025-03-13 23:56:02,552 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-03-13 23:56:02,552 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'GET']>
+2025-03-13 23:56:02,552 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-03-13 23:56:02,552 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'GET']>
+2025-03-13 23:56:02,580 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 404, b'Not Found', [(b'Vary', b'Origin'), (b'Date', b'Fri, 14 Mar 2025 04:56:02 GMT'), (b'Connection', b'keep-alive'), (b'Keep-Alive', b'timeout=5'), (b'Content-Length', b'0')])
+2025-03-13 23:56:02,585 - httpx - INFO - HTTP Request: GET http://localhost:3000/dom "HTTP/1.1 404 Not Found"
+2025-03-13 23:56:02,587 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'GET']>
+2025-03-13 23:56:02,587 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-03-13 23:56:02,587 - httpcore.http11 - DEBUG - response_closed.started
+2025-03-13 23:56:02,587 - httpcore.http11 - DEBUG - response_closed.complete
+2025-03-13 23:56:02,587 - httpcore.connection - DEBUG - close.started
+2025-03-13 23:56:02,588 - httpcore.connection - DEBUG - close.complete
+2025-03-13 23:56:02,588 - backend.scrapers.core.mcp_client - ERROR - HTTP error during get_html: Client error '404 Not Found' for url 'http://localhost:3000/dom'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2025-03-13 23:56:02,589 - backend.scrapers.brokers.berkadia.scraper - WARNING - Received empty or very small HTML content
+2025-03-13 23:56:02,589 - backend.scrapers.brokers.berkadia.scraper - INFO - Navigating to: https://www.berkadia.com/investment-sales/listings/
+2025-03-13 23:56:02,589 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:56:02,589 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:56:02,597 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3000 local_address=None timeout=60 socket_options=None
+2025-03-13 23:56:02,599 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x106768c10>
+2025-03-13 23:56:02,599 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-03-13 23:56:02,599 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-03-13 23:56:02,599 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-03-13 23:56:02,599 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-03-13 23:56:02,599 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-03-13 23:56:02,600 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 404, b'Not Found', [(b'Vary', b'Origin'), (b'Date', b'Fri, 14 Mar 2025 04:56:02 GMT'), (b'Connection', b'keep-alive'), (b'Keep-Alive', b'timeout=5'), (b'Content-Length', b'0')])
+2025-03-13 23:56:02,600 - httpx - INFO - HTTP Request: POST http://localhost:3000/page "HTTP/1.1 404 Not Found"
+2025-03-13 23:56:02,600 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-03-13 23:56:02,600 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-03-13 23:56:02,600 - httpcore.http11 - DEBUG - response_closed.started
+2025-03-13 23:56:02,600 - httpcore.http11 - DEBUG - response_closed.complete
+2025-03-13 23:56:02,601 - httpcore.connection - DEBUG - close.started
+2025-03-13 23:56:02,601 - httpcore.connection - DEBUG - close.complete
+2025-03-13 23:56:02,601 - backend.scrapers.core.mcp_client - ERROR - HTTP error during navigate: Client error '404 Not Found' for url 'http://localhost:3000/page'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2025-03-13 23:56:02,601 - backend.scrapers.brokers.berkadia.scraper - INFO - Waiting for page content to load...
+2025-03-13 23:56:07,613 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:56:07,618 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:56:07,626 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3000 local_address=None timeout=60 socket_options=None
+2025-03-13 23:56:07,628 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x10676a650>
+2025-03-13 23:56:07,628 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'GET']>
+2025-03-13 23:56:07,629 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-03-13 23:56:07,629 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'GET']>
+2025-03-13 23:56:07,629 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-03-13 23:56:07,629 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'GET']>
+2025-03-13 23:56:07,647 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 404, b'Not Found', [(b'Vary', b'Origin'), (b'Date', b'Fri, 14 Mar 2025 04:56:07 GMT'), (b'Connection', b'keep-alive'), (b'Keep-Alive', b'timeout=5'), (b'Content-Length', b'0')])
+2025-03-13 23:56:07,647 - httpx - INFO - HTTP Request: GET http://localhost:3000/dom "HTTP/1.1 404 Not Found"
+2025-03-13 23:56:07,647 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'GET']>
+2025-03-13 23:56:07,647 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-03-13 23:56:07,647 - httpcore.http11 - DEBUG - response_closed.started
+2025-03-13 23:56:07,647 - httpcore.http11 - DEBUG - response_closed.complete
+2025-03-13 23:56:07,647 - httpcore.connection - DEBUG - close.started
+2025-03-13 23:56:07,647 - httpcore.connection - DEBUG - close.complete
+2025-03-13 23:56:07,647 - backend.scrapers.core.mcp_client - ERROR - HTTP error during get_html: Client error '404 Not Found' for url 'http://localhost:3000/dom'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2025-03-13 23:56:07,647 - backend.scrapers.brokers.berkadia.scraper - WARNING - Received empty or very small HTML content
+2025-03-13 23:56:07,660 - backend.scrapers.brokers.berkadia.scraper - INFO - Saving 0 extracted properties
+2025-03-13 23:56:07,660 - backend.scrapers.brokers.berkadia.scraper - INFO - Berkadia property extraction completed
+2025-03-13 23:56:07,660 - __main__ - INFO - Extracted 0 properties
+2025-03-13 23:56:07,660 - __main__ - WARNING - No properties were extracted!
+2025-03-13 23:56:07,669 - __main__ - INFO - Latest HTML file available for inspection: data/html/berkadia/20250313-235418.html
+2025-03-13 23:56:07,674 - __main__ - INFO - HTML content preview: <!DOCTYPE html><html lang="en" data-critters-container=""><head><style>.ssQIHO-checkbox-menu-item>span>span{background-color:#000;display:inline-block}@media (forced-colors:active),(prefers-contrast:more){.ssQIHO-checkbox-menu-item>span>span{background-color:ButtonText}}
+</style><style>.gm-style .gm-style-mtc label,.gm-style .gm-style-mtc div{font-weight:400}.gm-style .gm-style-mtc ul,.gm-style .gm-style-mtc li{-webkit-box-sizing:border-box;box-sizing:border-box}.gm-style-mtc-bbw{display:-webkit...
+2025-03-13 23:56:07,675 - __main__ - INFO - Berkadia scraper run completed
+2025-03-13 23:56:07,684 - __main__ - INFO - Script completed at 2025-03-13 23:56:07.684448
+2025-03-13 23:56:07,684 - __main__ - INFO - Total execution time: 0:00:15.981626
+2025-03-13 23:56:07,684 - __main__ - INFO - Total properties extracted: 0

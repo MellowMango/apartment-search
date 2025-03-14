@@ -1,81 +1,69 @@
-# ACR Multifamily Scraper
-
-This is a specialized scraper for extracting property listings from the ACR Multifamily website (https://www.acrmultifamily.com/properties).
+# AcrmultifamilyScraper
 
 ## Overview
 
-The ACR Multifamily scraper is designed to extract property listings with details such as:
-- Property name
-- Location
-- Number of units
-- Year built
-- Status (Available, Closed, etc.)
-- Property description
-- Link to property details
+This scraper extracts multifamily property listings from acrmultifamily's website. acrmultifamily is a commercial real estate services company that lists various property types, including multifamily properties.
 
-## Website Structure
+## Target Website
 
-ACR Multifamily is built on Squarespace and has a specific structure for property listings:
-- Properties are displayed in a list
-- Each property has a title (`.list-item-content__title`)
-- Each property has a description (`.list-item-content__description`)
-- Some properties have links to detail pages
+The scraper targets the following acrmultifamily website:
+- Main properties page: https://www.acrmultifamily.com/properties
 
-## Usage
+## Implementation Details
 
-```python
-from backend.scrapers.brokers.acrmultifamily.scraper import ACRMultifamilyScraper
+The acrmultifamily scraper implements the following extraction strategy:
 
-async def run_scraper():
-    scraper = ACRMultifamilyScraper()
-    results = await scraper.extract_properties()
-    
-    if results.get("success"):
-        properties = results.get("properties", [])
-        print(f"Extracted {len(properties)} properties")
-        for prop in properties:
-            print(f"- {prop['title']} ({prop['location']}): {prop['units']} units")
-    else:
-        print(f"Error: {results.get('error')}")
+1. Navigate to the acrmultifamily properties page
+2. Extract property listings from the page
+3. Extract property details including:
+   - Property title
+   - Location
+   - Description
+   - Link to the property page
+   - Units (if available)
+   - Year built (if available)
 
-# Then call the function with asyncio.run(run_scraper())
+## Extracted Data
+
+The scraper extracts the following fields for each property:
+
+| Field | Description |
+|-------|-------------|
+| title | Name of the property |
+| description | Description or property type |
+| link | URL to the property details page |
+| location | Location of the property |
+| units | Number of units (if available) |
+| year_built | Year the property was built (if available) |
+| status | Property status (defaults to "Available") |
+
+## Running the Scraper
+
+To run the acrmultifamily scraper:
+
+```bash
+python -m backend.scrapers.brokers.acrmultifamily.scraper
 ```
 
-## Output Structure
+## Testing
 
-The scraper returns a dictionary with the following structure:
+### Scraper Test
 
-```json
-{
-  "url": "https://www.acrmultifamily.com/properties",
-  "title": "Properties | ACR Multifamily",
-  "analyzed_at": "2025-03-13 15:47:37.444316",
-  "success": true,
-  "properties": [
-    {
-      "title": "Boerne Villas",
-      "description": "MARKET PRICING\nLocation: Boerne, TX\nYear Built: 1970\nUnits: 16\nStatus: Available",
-      "link": "https://www.acrmultifamily.com/boerne-villas",
-      "location": "Boerne, TX",
-      "units": "16",
-      "year_built": "1970",
-      "status": "Available"
-    },
-    // More properties...
-  ]
-}
+To test the basic functionality:
+
+```bash
+python -m backend.scrapers.brokers.acrmultifamily.test_acrmultifamily_scraper
 ```
 
-## Data Storage
+### Database Storage Test
 
-The scraper stores the following data:
-- Screenshots: `data/screenshots/acrmultifamily/YYYYMMDD-HHMMSS.txt`
-- HTML files: `data/html/acrmultifamily/YYYYMMDD-HHMMSS.html`
-- HTML previews: `data/html/acrmultifamily/preview-YYYYMMDD-HHMMSS.txt`
-- Extracted data: `data/extracted/acrmultifamily/properties-YYYYMMDD-HHMMSS.json`
+To test the database storage functionality:
 
-## Dependencies
+```bash
+python -m backend.scrapers.brokers.acrmultifamily.test_db_storage
+```
 
-- BeautifulSoup4 for HTML parsing
-- httpx for async HTTP requests
-- MCP Client for browser automation 
+## Notes
+
+- The scraper implementation may need to be adjusted based on the specific structure of the acrmultifamily website.
+- Property details such as units and year built may not be consistently available on the listings page and might require fetching individual property detail pages.

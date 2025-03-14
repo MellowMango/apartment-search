@@ -1,0 +1,84 @@
+2025-03-13 23:56:28,110 - __main__ - INFO - Ensured directory exists: data/html/berkadia
+2025-03-13 23:56:28,110 - __main__ - INFO - Ensured directory exists: data/screenshots/berkadia
+2025-03-13 23:56:28,110 - __main__ - INFO - Ensured directory exists: data/extracted/berkadia
+2025-03-13 23:56:28,110 - __main__ - INFO - Using MCP server type: puppeteer
+2025-03-13 23:56:28,110 - __main__ - INFO - Firecrawl MCP URL: http://localhost:3000
+2025-03-13 23:56:28,110 - __main__ - INFO - Playwright MCP URL: http://localhost:3001
+2025-03-13 23:56:28,110 - __main__ - INFO - Puppeteer MCP URL: http://localhost:3002
+2025-03-13 23:56:28,110 - __main__ - INFO - Using MCP base URL: http://localhost:3002
+2025-03-13 23:56:28,110 - __main__ - INFO - Using Supabase URL: https://cqwpfkvtfqgwvpnwddur.supabase.co
+2025-03-13 23:56:28,110 - __main__ - INFO - Supabase key is set
+2025-03-13 23:56:28,110 - __main__ - INFO - Script started at 2025-03-13 23:56:28.110276
+2025-03-13 23:56:28,110 - asyncio - DEBUG - Using selector: KqueueSelector
+2025-03-13 23:56:28,110 - __main__ - INFO - Starting Berkadia scraper runner
+2025-03-13 23:56:28,365 - backend.scrapers.core.storage - INFO - Initialized storage for Berkadia
+2025-03-13 23:56:28,365 - backend.scrapers.core.db_storage - INFO - Supabase URL: https://cqwpfkvtfqgwvpnwddur.supabase.co
+2025-03-13 23:56:28,365 - backend.scrapers.core.db_storage - INFO - Supabase key available
+2025-03-13 23:56:28,365 - backend.scrapers.core.db_storage - WARNING - Missing Neo4j credentials. Graph database storage will not work.
+2025-03-13 23:56:28,365 - __main__ - INFO - Created database storage
+2025-03-13 23:56:28,365 - __main__ - INFO - Using MCP base URL: http://localhost:3002
+2025-03-13 23:56:28,365 - backend.scrapers.core.mcp_client - INFO - Initialized MCP client with base URL: http://localhost:3002
+2025-03-13 23:56:28,367 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:56:28,370 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:56:28,375 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3002 local_address=None timeout=60 socket_options=None
+2025-03-13 23:56:28,377 - httpcore.connection - DEBUG - connect_tcp.failed exception=ConnectError(OSError('All connection attempts failed'))
+2025-03-13 23:56:28,377 - backend.scrapers.core.mcp_client - ERROR - HTTP error during navigate: All connection attempts failed
+2025-03-13 23:56:28,377 - __main__ - INFO - MCP connection test result: False
+2025-03-13 23:56:28,377 - __main__ - WARNING - MCP connection test failed. MCP server may not be running.
+2025-03-13 23:56:28,377 - __main__ - WARNING - Proceeding anyway, but scraping will likely fail.
+2025-03-13 23:56:28,377 - __main__ - INFO - Creating Berkadia scraper instance
+2025-03-13 23:56:28,377 - backend.scrapers.core.mcp_client - INFO - Initialized MCP client with base URL: http://localhost:3002
+2025-03-13 23:56:28,377 - backend.scrapers.core.base_scraper - INFO - Created new MCP client with base URL: http://localhost:3002
+2025-03-13 23:56:28,377 - backend.scrapers.brokers.berkadia.scraper - INFO - Created new data storage for Berkadia
+2025-03-13 23:56:28,377 - __main__ - INFO - Starting property extraction
+2025-03-13 23:56:28,377 - backend.scrapers.brokers.berkadia.scraper - INFO - Starting Berkadia property extraction
+2025-03-13 23:56:28,377 - backend.scrapers.brokers.berkadia.scraper - INFO - Navigating to: https://www.berkadia.com/properties/
+2025-03-13 23:56:28,377 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:56:28,378 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:56:28,381 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3002 local_address=None timeout=60 socket_options=None
+2025-03-13 23:56:28,382 - httpcore.connection - DEBUG - connect_tcp.failed exception=ConnectError(OSError('All connection attempts failed'))
+2025-03-13 23:56:28,382 - backend.scrapers.core.mcp_client - ERROR - HTTP error during navigate: All connection attempts failed
+2025-03-13 23:56:28,383 - backend.scrapers.brokers.berkadia.scraper - INFO - Waiting for page content to load...
+2025-03-13 23:56:33,387 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:56:33,388 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:56:33,394 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3002 local_address=None timeout=60 socket_options=None
+2025-03-13 23:56:33,397 - httpcore.connection - DEBUG - connect_tcp.failed exception=ConnectError(OSError('All connection attempts failed'))
+2025-03-13 23:56:33,397 - backend.scrapers.core.mcp_client - ERROR - HTTP error during get_html: All connection attempts failed
+2025-03-13 23:56:33,398 - backend.scrapers.brokers.berkadia.scraper - WARNING - Received empty or very small HTML content
+2025-03-13 23:56:33,398 - backend.scrapers.brokers.berkadia.scraper - INFO - Navigating to: https://www.berkadia.com/properties/multi-family/
+2025-03-13 23:56:33,398 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:56:33,399 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:56:33,404 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3002 local_address=None timeout=60 socket_options=None
+2025-03-13 23:56:33,405 - httpcore.connection - DEBUG - connect_tcp.failed exception=ConnectError(OSError('All connection attempts failed'))
+2025-03-13 23:56:33,405 - backend.scrapers.core.mcp_client - ERROR - HTTP error during navigate: All connection attempts failed
+2025-03-13 23:56:33,406 - backend.scrapers.brokers.berkadia.scraper - INFO - Waiting for page content to load...
+2025-03-13 23:56:38,409 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:56:38,411 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:56:38,418 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3002 local_address=None timeout=60 socket_options=None
+2025-03-13 23:56:38,420 - httpcore.connection - DEBUG - connect_tcp.failed exception=ConnectError(OSError('All connection attempts failed'))
+2025-03-13 23:56:38,420 - backend.scrapers.core.mcp_client - ERROR - HTTP error during get_html: All connection attempts failed
+2025-03-13 23:56:38,421 - backend.scrapers.brokers.berkadia.scraper - WARNING - Received empty or very small HTML content
+2025-03-13 23:56:38,421 - backend.scrapers.brokers.berkadia.scraper - INFO - Navigating to: https://www.berkadia.com/investment-sales/listings/
+2025-03-13 23:56:38,421 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:56:38,421 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:56:38,427 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3002 local_address=None timeout=60 socket_options=None
+2025-03-13 23:56:38,428 - httpcore.connection - DEBUG - connect_tcp.failed exception=ConnectError(OSError('All connection attempts failed'))
+2025-03-13 23:56:38,428 - backend.scrapers.core.mcp_client - ERROR - HTTP error during navigate: All connection attempts failed
+2025-03-13 23:56:38,429 - backend.scrapers.brokers.berkadia.scraper - INFO - Waiting for page content to load...
+2025-03-13 23:56:43,433 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:56:43,434 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:56:43,441 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3002 local_address=None timeout=60 socket_options=None
+2025-03-13 23:56:43,449 - httpcore.connection - DEBUG - connect_tcp.failed exception=ConnectError(OSError('All connection attempts failed'))
+2025-03-13 23:56:43,450 - backend.scrapers.core.mcp_client - ERROR - HTTP error during get_html: All connection attempts failed
+2025-03-13 23:56:43,450 - backend.scrapers.brokers.berkadia.scraper - WARNING - Received empty or very small HTML content
+2025-03-13 23:56:43,450 - backend.scrapers.brokers.berkadia.scraper - INFO - Saving 0 extracted properties
+2025-03-13 23:56:43,450 - backend.scrapers.brokers.berkadia.scraper - INFO - Berkadia property extraction completed
+2025-03-13 23:56:43,451 - __main__ - INFO - Extracted 0 properties
+2025-03-13 23:56:43,451 - __main__ - WARNING - No properties were extracted!
+2025-03-13 23:56:43,454 - __main__ - INFO - Latest HTML file available for inspection: data/html/berkadia/20250313-235627.html
+2025-03-13 23:56:43,454 - __main__ - INFO - HTML content preview: <!DOCTYPE html><html lang="en" data-critters-container=""><head><style>.ssQIHO-checkbox-menu-item>span>span{background-color:#000;display:inline-block}@media (forced-colors:active),(prefers-contrast:more){.ssQIHO-checkbox-menu-item>span>span{background-color:ButtonText}}
+</style><style>.gm-style .gm-style-mtc label,.gm-style .gm-style-mtc div{font-weight:400}.gm-style .gm-style-mtc ul,.gm-style .gm-style-mtc li{-webkit-box-sizing:border-box;box-sizing:border-box}.gm-style-mtc-bbw{display:-webkit...
+2025-03-13 23:56:43,454 - __main__ - INFO - Berkadia scraper run completed
+2025-03-13 23:56:43,457 - __main__ - INFO - Script completed at 2025-03-13 23:56:43.457223
+2025-03-13 23:56:43,457 - __main__ - INFO - Total execution time: 0:00:15.346947
+2025-03-13 23:56:43,457 - __main__ - INFO - Total properties extracted: 0

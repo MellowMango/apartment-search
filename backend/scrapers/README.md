@@ -1,6 +1,6 @@
 # Acquire Apartments Scrapers
 
-This directory contains the scraper architecture for Acquire Apartments, designed to extract property listings from various broker websites.
+This directory contains the scraper architecture for Acquire Apartments, designed to extract property listings from various broker websites and store them in both local files and databases.
 
 ## Directory Structure
 
@@ -9,15 +9,18 @@ scrapers/
 ├── core/                 # Shared utilities used by all scrapers
 │   ├── mcp_client.py     # Client for interacting with MCP servers
 │   ├── data_extractors.py # Utilities for extracting and structuring data
-│   └── storage.py        # Data storage and organization utilities
+│   └── storage.py        # Data storage and database integration utilities
 ├── brokers/              # Broker-specific scrapers
 │   ├── acrmultifamily/   # ACR Multifamily scraper
 │   │   ├── __init__.py
-│   │   ├── acrmultifamily_scraper.py
-│   │   ├── README.md     # Documentation specific to this scraper
-│   │   └── test_acrmultifamily_scraper.py
+│   │   ├── scraper.py    # Main scraper implementation
+│   │   ├── test_acrmultifamily_scraper.py # Tests for scraper
+│   │   ├── test_db_storage.py # Tests for database storage
+│   │   └── README.md     # Documentation specific to this scraper
 │   └── [other brokers]/  # Additional broker scrapers follow the same pattern
+├── aggregators/          # Aggregation utilities for combining data from multiple sources
 ├── helpers/              # Helper utilities
+├── tests/                # Shared test utilities and integration tests
 ├── run_scraper.py        # Command-line interface for running scrapers
 └── README.md             # This file
 ```
@@ -52,11 +55,33 @@ Scrapers store their output in the `data/` directory:
 - HTML content: `data/html/<broker>/`
 - Extracted data: `data/extracted/<broker>/`
 
-## Adding a New Broker
+Additionally, all extracted property data is stored in both Supabase and Neo4j databases.
 
-1. Create a new directory under `brokers/` with your broker name
-2. Implement the necessary files (see the `acrmultifamily` directory as an example)
-3. Register your scraper in `run_scraper.py`
+## Adding a New Broker Scraper
+
+1. Create a new directory under `brokers/` with your broker name (e.g., `brokers/newbroker/`)
+2. Create the following files:
+   - `__init__.py` - Package initialization
+   - `scraper.py` - Main scraper implementation
+   - `test_<broker>_scraper.py` - Tests for the scraper
+   - `test_db_storage.py` - Tests for database storage
+   - `README.md` - Documentation specific to this scraper
+3. Implement the scraper class following the `ACRMultifamilyScraper` example:
+   ```python
+   from scrapers.core.mcp_client import MCPClient
+   from scrapers.core.storage import DataStorage
+   
+   class NewBrokerScraper:
+       def __init__(self, client=None, storage=None):
+           self.client = client or MCPClient()
+           self.storage = storage or DataStorage("newbroker")
+       
+       async def extract_properties(self):
+           # Implement property extraction logic
+           # Save to files and database
+           return result
+   ```
+4. Register your scraper in `run_scraper.py`
 
 See the [Scraper Architecture](../../docs/scraper-architecture.md) and [Scraper Usage Guide](../../docs/scraper-usage-guide.md) for detailed instructions.
 
@@ -64,35 +89,27 @@ See the [Scraper Architecture](../../docs/scraper-architecture.md) and [Scraper 
 
 ### MCP Client
 
-The `MCPClient` class in `core/mcp_client.py` provides a wrapper around the Model Context Protocol (MCP) server API, which drives browser automation for scraping.
+The `MCPClient` class in `core/mcp_client.py` provides a wrapper around the Model Context Protocol (MCP) server API, which drives browser automation for scraping. It supports both local and remote MCP servers.
+
+Key methods:
+- `navigate(url)`: Navigate to a URL
+- `get_html()`: Get the current page's HTML
+- `take_screenshot()`: Take a screenshot of the current page
+- `execute_script(script)`: Execute JavaScript on the page
 
 ### Data Extractors
 
-The `PropertyExtractor` class in `core/data_extractors.py` contains methods for extracting and structuring property data from HTML content.
+The `PropertyExtractor` class in `core/data_extractors.py` contains methods for extracting and structuring property data from HTML content. It provides utilities for parsing common property data formats.
 
 ### Storage
 
-The `DataStorage` class in `core/storage.py` handles saving screenshots, HTML content, and extracted data in an organized manner.
-
-## Testing
-
-Each broker scraper should have a corresponding test file. Run the tests with:
-
-```bash
-python -m pytest backend/scrapers/brokers/acrmultifamily/test_acrmultifamily_scraper.py -v
-```
-
-## Documentation
-
-For more detailed documentation, see:
-
-- [Scraper Architecture](../../docs/scraper-architecture.md): Detailed overview of the scraper system
-- [Scraper Usage Guide](../../docs/scraper-usage-guide.md): Instructions for using and extending the scraper system
-- Individual broker READMEs (e.g., `brokers/acrmultifamily/README.md`): Broker-specific details and notes 
+The `DataStorage` class in `core/storage.py` handles:
+1. Saving screenshots, HTML content, and extracted data in an organized file structure
+2. Saving extracted property data to Supabase and Neo4j databases
 
 ## Database Storage
 
-The scrapers now support saving data directly to both Supabase and Neo4j databases through the `save_to_database` method in the `DataStorage` class.
+The scrapers now successfully save data to both Supabase and Neo4j databases through the `save_to_database` method in the `DataStorage` class.
 
 ### How it Works
 
@@ -102,7 +119,7 @@ The scrapers now support saving data directly to both Supabase and Neo4j databas
    - Generates a UUID for the property
    - Maps scraped data to the database schema
    - Inserts the property into Supabase
-   - Inserts the property into Neo4j
+   - Attempts to insert the property into Neo4j
    - Logs the results
 
 ### Usage
@@ -146,5 +163,40 @@ The scraped property data is mapped to the database schema as follows:
 | units         | units          | Number of units in the property |
 | year_built    | year_built     | Year the property was built |
 | status        | property_status| Property status (active, pending, etc.) |
-| link          | property_website | Link to the property listing |
 | description   | description    | Property description | 
+
+## Testing
+
+Each broker scraper should have both standard unit tests and database storage tests:
+
+```bash
+# Run standard scraper tests
+python -m pytest backend/scrapers/brokers/acrmultifamily/test_acrmultifamily_scraper.py -v
+
+# Run database storage tests
+python backend/scrapers/brokers/acrmultifamily/test_db_storage.py
+```
+
+## Troubleshooting
+
+### MCP Server Issues
+
+If you encounter issues with the MCP server:
+1. Ensure the MCP server is running (`docker compose up mcp`)
+2. Check that the MCP server URL is correct in your environment variables
+3. Verify the browser automation is working by checking the screenshots
+
+### Database Connection Issues
+
+If you encounter issues saving to the database:
+1. Verify your environment variables are set correctly
+2. Check database connection with `python force_env_test.py`
+3. Examine the schema compatibility between extracted data and database tables
+
+## Documentation
+
+For more detailed documentation, see:
+
+- [Scraper Architecture](../../docs/scraper-architecture.md): Detailed overview of the scraper system
+- [Scraper Usage Guide](../../docs/scraper-usage-guide.md): Instructions for using and extending the scraper system
+- Individual broker READMEs (e.g., `brokers/acrmultifamily/README.md`): Broker-specific details and notes 

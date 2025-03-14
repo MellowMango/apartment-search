@@ -1,0 +1,44 @@
+{
+  "url": "https://www.us.jll.com/en/industries/multifamily",
+  "title": "Multifamily Real Estate Investment - Industries | JLL",
+  "analyzed_at": "2025-03-14 00:44:07.852659",
+  "success": true,
+  "properties": [
+    {
+      "title": "Unlisted Property",
+      "description": "",
+      "link": "https://invest.jll.com/us/en/listings/industrial-logistics/old-augusta-cc-bldg-1-2024",
+      "location": "",
+      "units": "",
+      "year_built": "",
+      "status": "Available"
+    },
+    {
+      "title": "Unlisted Property",
+      "description": "",
+      "link": "https://invest.jll.com/us/en/listings/living-multi-housing/jackson-heights-portfolio",
+      "location": "",
+      "units": "",
+      "year_built": "",
+      "status": "Available"
+    },
+    {
+      "title": "Unlisted Property",
+      "description": "",
+      "link": "https://invest.jll.com/us/en/listings/living-multi-housing/wine-country-villas-mhp",
+      "location": "",
+      "units": "",
+      "year_built": "",
+      "status": "Available"
+    },
+    {
+      "title": "Unlisted Property",
+      "description": "",
+      "link": "https://invest.jll.com/us/en/listings/industrial-logistics/lakeside-commerce-center-",
+      "location": "",
+      "units": "",
+      "year_built": "",
+      "status": "Available"
+    }
+  ]
+}

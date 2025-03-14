@@ -1,0 +1,138 @@
+2025-03-13 23:55:08,614 - __main__ - INFO - Ensured directory exists: data/html/walkerdunlop
+2025-03-13 23:55:08,614 - __main__ - INFO - Ensured directory exists: data/screenshots/walkerdunlop
+2025-03-13 23:55:08,614 - __main__ - INFO - Ensured directory exists: data/extracted/walkerdunlop
+2025-03-13 23:55:08,615 - __main__ - INFO - Using MCP server type: firecrawl
+2025-03-13 23:55:08,615 - __main__ - INFO - Firecrawl MCP URL: http://localhost:3000
+2025-03-13 23:55:08,615 - __main__ - INFO - Playwright MCP URL: http://localhost:3001
+2025-03-13 23:55:08,615 - __main__ - INFO - Puppeteer MCP URL: http://localhost:3002
+2025-03-13 23:55:08,615 - __main__ - INFO - Using MCP base URL: http://localhost:3000
+2025-03-13 23:55:08,615 - __main__ - INFO - Using Supabase URL: https://cqwpfkvtfqgwvpnwddur.supabase.co
+2025-03-13 23:55:08,615 - __main__ - INFO - Supabase key is set
+2025-03-13 23:55:08,615 - __main__ - INFO - Script started at 2025-03-13 23:55:08.615123
+2025-03-13 23:55:08,615 - asyncio - DEBUG - Using selector: KqueueSelector
+2025-03-13 23:55:08,615 - __main__ - INFO - Starting Walker & Dunlop scraper runner
+2025-03-13 23:55:08,960 - backend.scrapers.core.storage - INFO - Initialized storage for Walker & Dunlop
+2025-03-13 23:55:08,960 - backend.scrapers.core.db_storage - INFO - Supabase URL: https://cqwpfkvtfqgwvpnwddur.supabase.co
+2025-03-13 23:55:08,960 - backend.scrapers.core.db_storage - INFO - Supabase key available
+2025-03-13 23:55:08,960 - backend.scrapers.core.db_storage - WARNING - Missing Neo4j credentials. Graph database storage will not work.
+2025-03-13 23:55:08,960 - __main__ - INFO - Created database storage
+2025-03-13 23:55:08,960 - __main__ - INFO - Using MCP base URL: http://localhost:3000
+2025-03-13 23:55:08,960 - backend.scrapers.core.mcp_client - INFO - Initialized MCP client with base URL: http://localhost:3000
+2025-03-13 23:55:08,965 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:55:08,968 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:55:08,976 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3000 local_address=None timeout=60 socket_options=None
+2025-03-13 23:55:08,989 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x1049c2cd0>
+2025-03-13 23:55:08,989 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-03-13 23:55:08,990 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-03-13 23:55:08,990 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-03-13 23:55:08,990 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-03-13 23:55:08,990 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-03-13 23:55:09,011 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 404, b'Not Found', [(b'Vary', b'Origin'), (b'Date', b'Fri, 14 Mar 2025 04:55:09 GMT'), (b'Connection', b'keep-alive'), (b'Keep-Alive', b'timeout=5'), (b'Content-Length', b'0')])
+2025-03-13 23:55:09,011 - httpx - INFO - HTTP Request: POST http://localhost:3000/page "HTTP/1.1 404 Not Found"
+2025-03-13 23:55:09,011 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-03-13 23:55:09,011 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-03-13 23:55:09,011 - httpcore.http11 - DEBUG - response_closed.started
+2025-03-13 23:55:09,011 - httpcore.http11 - DEBUG - response_closed.complete
+2025-03-13 23:55:09,011 - httpcore.connection - DEBUG - close.started
+2025-03-13 23:55:09,011 - httpcore.connection - DEBUG - close.complete
+2025-03-13 23:55:09,011 - backend.scrapers.core.mcp_client - ERROR - HTTP error during navigate: Client error '404 Not Found' for url 'http://localhost:3000/page'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2025-03-13 23:55:09,011 - __main__ - INFO - MCP connection test result: False
+2025-03-13 23:55:09,011 - __main__ - WARNING - MCP connection test failed. MCP server may not be running.
+2025-03-13 23:55:09,011 - __main__ - WARNING - Proceeding anyway, but scraping will likely fail.
+2025-03-13 23:55:09,011 - __main__ - INFO - Creating Walker & Dunlop scraper instance
+2025-03-13 23:55:09,011 - backend.scrapers.core.mcp_client - INFO - Initialized MCP client with base URL: http://localhost:3000
+2025-03-13 23:55:09,011 - backend.scrapers.core.base_scraper - INFO - Created new MCP client with base URL: http://localhost:3000
+2025-03-13 23:55:09,011 - backend.scrapers.brokers.walkerdunlop.scraper - INFO - Created new data storage for Walker & Dunlop
+2025-03-13 23:55:09,011 - __main__ - INFO - Starting property extraction
+2025-03-13 23:55:09,011 - backend.scrapers.brokers.walkerdunlop.scraper - INFO - Starting Walker & Dunlop property extraction
+2025-03-13 23:55:09,011 - backend.scrapers.brokers.walkerdunlop.scraper - INFO - Navigating to: https://www.walkerdunlop.com/properties/search/property-type/multifamily/
+2025-03-13 23:55:09,012 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:55:09,012 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:55:09,015 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3000 local_address=None timeout=60 socket_options=None
+2025-03-13 23:55:09,016 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x104a426d0>
+2025-03-13 23:55:09,017 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-03-13 23:55:09,017 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-03-13 23:55:09,017 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-03-13 23:55:09,017 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-03-13 23:55:09,017 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-03-13 23:55:09,017 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 404, b'Not Found', [(b'Vary', b'Origin'), (b'Date', b'Fri, 14 Mar 2025 04:55:09 GMT'), (b'Connection', b'keep-alive'), (b'Keep-Alive', b'timeout=5'), (b'Content-Length', b'0')])
+2025-03-13 23:55:09,017 - httpx - INFO - HTTP Request: POST http://localhost:3000/page "HTTP/1.1 404 Not Found"
+2025-03-13 23:55:09,019 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-03-13 23:55:09,019 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-03-13 23:55:09,019 - httpcore.http11 - DEBUG - response_closed.started
+2025-03-13 23:55:09,019 - httpcore.http11 - DEBUG - response_closed.complete
+2025-03-13 23:55:09,019 - httpcore.connection - DEBUG - close.started
+2025-03-13 23:55:09,019 - httpcore.connection - DEBUG - close.complete
+2025-03-13 23:55:09,019 - backend.scrapers.core.mcp_client - ERROR - HTTP error during navigate: Client error '404 Not Found' for url 'http://localhost:3000/page'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2025-03-13 23:55:09,019 - backend.scrapers.brokers.walkerdunlop.scraper - INFO - Waiting for page content to load...
+2025-03-13 23:55:14,026 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:55:14,028 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:55:14,035 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3000 local_address=None timeout=60 socket_options=None
+2025-03-13 23:55:14,038 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x104a43550>
+2025-03-13 23:55:14,038 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'GET']>
+2025-03-13 23:55:14,038 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-03-13 23:55:14,038 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'GET']>
+2025-03-13 23:55:14,038 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-03-13 23:55:14,038 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'GET']>
+2025-03-13 23:55:14,059 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 404, b'Not Found', [(b'Vary', b'Origin'), (b'Date', b'Fri, 14 Mar 2025 04:55:14 GMT'), (b'Connection', b'keep-alive'), (b'Keep-Alive', b'timeout=5'), (b'Content-Length', b'0')])
+2025-03-13 23:55:14,059 - httpx - INFO - HTTP Request: GET http://localhost:3000/dom "HTTP/1.1 404 Not Found"
+2025-03-13 23:55:14,059 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'GET']>
+2025-03-13 23:55:14,059 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-03-13 23:55:14,060 - httpcore.http11 - DEBUG - response_closed.started
+2025-03-13 23:55:14,060 - httpcore.http11 - DEBUG - response_closed.complete
+2025-03-13 23:55:14,060 - httpcore.connection - DEBUG - close.started
+2025-03-13 23:55:14,060 - httpcore.connection - DEBUG - close.complete
+2025-03-13 23:55:14,060 - backend.scrapers.core.mcp_client - ERROR - HTTP error during get_html: Client error '404 Not Found' for url 'http://localhost:3000/dom'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2025-03-13 23:55:14,060 - backend.scrapers.brokers.walkerdunlop.scraper - WARNING - Received empty or very small HTML content
+2025-03-13 23:55:14,060 - backend.scrapers.brokers.walkerdunlop.scraper - INFO - Navigating to: https://www.walkerdunlop.com/properties/search/property-type/multifamily/page/1/
+2025-03-13 23:55:14,061 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:55:14,061 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:55:14,067 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3000 local_address=None timeout=60 socket_options=None
+2025-03-13 23:55:14,069 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x104a48a90>
+2025-03-13 23:55:14,069 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'POST']>
+2025-03-13 23:55:14,069 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-03-13 23:55:14,069 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'POST']>
+2025-03-13 23:55:14,069 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-03-13 23:55:14,069 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'POST']>
+2025-03-13 23:55:14,073 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 404, b'Not Found', [(b'Vary', b'Origin'), (b'Date', b'Fri, 14 Mar 2025 04:55:14 GMT'), (b'Connection', b'keep-alive'), (b'Keep-Alive', b'timeout=5'), (b'Content-Length', b'0')])
+2025-03-13 23:55:14,073 - httpx - INFO - HTTP Request: POST http://localhost:3000/page "HTTP/1.1 404 Not Found"
+2025-03-13 23:55:14,073 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'POST']>
+2025-03-13 23:55:14,073 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-03-13 23:55:14,073 - httpcore.http11 - DEBUG - response_closed.started
+2025-03-13 23:55:14,074 - httpcore.http11 - DEBUG - response_closed.complete
+2025-03-13 23:55:14,074 - httpcore.connection - DEBUG - close.started
+2025-03-13 23:55:14,074 - httpcore.connection - DEBUG - close.complete
+2025-03-13 23:55:14,074 - backend.scrapers.core.mcp_client - ERROR - HTTP error during navigate: Client error '404 Not Found' for url 'http://localhost:3000/page'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2025-03-13 23:55:14,074 - backend.scrapers.brokers.walkerdunlop.scraper - INFO - Waiting for page content to load...
+2025-03-13 23:55:19,078 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:55:19,079 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:55:19,085 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3000 local_address=None timeout=60 socket_options=None
+2025-03-13 23:55:19,087 - httpcore.connection - DEBUG - connect_tcp.complete return_value=<httpcore._backends.anyio.AnyIOStream object at 0x104a4a510>
+2025-03-13 23:55:19,087 - httpcore.http11 - DEBUG - send_request_headers.started request=<Request [b'GET']>
+2025-03-13 23:55:19,087 - httpcore.http11 - DEBUG - send_request_headers.complete
+2025-03-13 23:55:19,087 - httpcore.http11 - DEBUG - send_request_body.started request=<Request [b'GET']>
+2025-03-13 23:55:19,087 - httpcore.http11 - DEBUG - send_request_body.complete
+2025-03-13 23:55:19,087 - httpcore.http11 - DEBUG - receive_response_headers.started request=<Request [b'GET']>
+2025-03-13 23:55:19,096 - httpcore.http11 - DEBUG - receive_response_headers.complete return_value=(b'HTTP/1.1', 404, b'Not Found', [(b'Vary', b'Origin'), (b'Date', b'Fri, 14 Mar 2025 04:55:19 GMT'), (b'Connection', b'keep-alive'), (b'Keep-Alive', b'timeout=5'), (b'Content-Length', b'0')])
+2025-03-13 23:55:19,097 - httpx - INFO - HTTP Request: GET http://localhost:3000/dom "HTTP/1.1 404 Not Found"
+2025-03-13 23:55:19,097 - httpcore.http11 - DEBUG - receive_response_body.started request=<Request [b'GET']>
+2025-03-13 23:55:19,097 - httpcore.http11 - DEBUG - receive_response_body.complete
+2025-03-13 23:55:19,097 - httpcore.http11 - DEBUG - response_closed.started
+2025-03-13 23:55:19,097 - httpcore.http11 - DEBUG - response_closed.complete
+2025-03-13 23:55:19,098 - httpcore.connection - DEBUG - close.started
+2025-03-13 23:55:19,098 - httpcore.connection - DEBUG - close.complete
+2025-03-13 23:55:19,098 - backend.scrapers.core.mcp_client - ERROR - HTTP error during get_html: Client error '404 Not Found' for url 'http://localhost:3000/dom'
+For more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404
+2025-03-13 23:55:19,098 - backend.scrapers.brokers.walkerdunlop.scraper - WARNING - Received empty or very small HTML content
+2025-03-13 23:55:19,098 - backend.scrapers.brokers.walkerdunlop.scraper - INFO - Saving 0 extracted properties
+2025-03-13 23:55:19,098 - backend.scrapers.brokers.walkerdunlop.scraper - INFO - Walker & Dunlop property extraction completed
+2025-03-13 23:55:19,098 - __main__ - INFO - Extracted 0 properties
+2025-03-13 23:55:19,098 - __main__ - WARNING - No properties were extracted!
+2025-03-13 23:55:19,100 - __main__ - INFO - Walker & Dunlop scraper run completed
+2025-03-13 23:55:19,109 - __main__ - INFO - Script completed at 2025-03-13 23:55:19.106192
+2025-03-13 23:55:19,109 - __main__ - INFO - Total execution time: 0:00:10.491069
+2025-03-13 23:55:19,109 - __main__ - INFO - Total properties extracted: 0

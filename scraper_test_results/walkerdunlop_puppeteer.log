@@ -1,0 +1,68 @@
+2025-03-13 23:55:40,777 - __main__ - INFO - Ensured directory exists: data/html/walkerdunlop
+2025-03-13 23:55:40,777 - __main__ - INFO - Ensured directory exists: data/screenshots/walkerdunlop
+2025-03-13 23:55:40,777 - __main__ - INFO - Ensured directory exists: data/extracted/walkerdunlop
+2025-03-13 23:55:40,777 - __main__ - INFO - Using MCP server type: puppeteer
+2025-03-13 23:55:40,777 - __main__ - INFO - Firecrawl MCP URL: http://localhost:3000
+2025-03-13 23:55:40,777 - __main__ - INFO - Playwright MCP URL: http://localhost:3001
+2025-03-13 23:55:40,777 - __main__ - INFO - Puppeteer MCP URL: http://localhost:3002
+2025-03-13 23:55:40,777 - __main__ - INFO - Using MCP base URL: http://localhost:3002
+2025-03-13 23:55:40,777 - __main__ - INFO - Using Supabase URL: https://cqwpfkvtfqgwvpnwddur.supabase.co
+2025-03-13 23:55:40,777 - __main__ - INFO - Supabase key is set
+2025-03-13 23:55:40,777 - __main__ - INFO - Script started at 2025-03-13 23:55:40.777465
+2025-03-13 23:55:40,777 - asyncio - DEBUG - Using selector: KqueueSelector
+2025-03-13 23:55:40,777 - __main__ - INFO - Starting Walker & Dunlop scraper runner
+2025-03-13 23:55:40,966 - backend.scrapers.core.storage - INFO - Initialized storage for Walker & Dunlop
+2025-03-13 23:55:40,966 - backend.scrapers.core.db_storage - INFO - Supabase URL: https://cqwpfkvtfqgwvpnwddur.supabase.co
+2025-03-13 23:55:40,966 - backend.scrapers.core.db_storage - INFO - Supabase key available
+2025-03-13 23:55:40,966 - backend.scrapers.core.db_storage - WARNING - Missing Neo4j credentials. Graph database storage will not work.
+2025-03-13 23:55:40,966 - __main__ - INFO - Created database storage
+2025-03-13 23:55:40,966 - __main__ - INFO - Using MCP base URL: http://localhost:3002
+2025-03-13 23:55:40,966 - backend.scrapers.core.mcp_client - INFO - Initialized MCP client with base URL: http://localhost:3002
+2025-03-13 23:55:40,969 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:55:40,970 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:55:40,979 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3002 local_address=None timeout=60 socket_options=None
+2025-03-13 23:55:40,989 - httpcore.connection - DEBUG - connect_tcp.failed exception=ConnectError(OSError('All connection attempts failed'))
+2025-03-13 23:55:40,989 - backend.scrapers.core.mcp_client - ERROR - HTTP error during navigate: All connection attempts failed
+2025-03-13 23:55:40,989 - __main__ - INFO - MCP connection test result: False
+2025-03-13 23:55:40,989 - __main__ - WARNING - MCP connection test failed. MCP server may not be running.
+2025-03-13 23:55:40,989 - __main__ - WARNING - Proceeding anyway, but scraping will likely fail.
+2025-03-13 23:55:40,989 - __main__ - INFO - Creating Walker & Dunlop scraper instance
+2025-03-13 23:55:40,989 - backend.scrapers.core.mcp_client - INFO - Initialized MCP client with base URL: http://localhost:3002
+2025-03-13 23:55:40,989 - backend.scrapers.core.base_scraper - INFO - Created new MCP client with base URL: http://localhost:3002
+2025-03-13 23:55:40,989 - backend.scrapers.brokers.walkerdunlop.scraper - INFO - Created new data storage for Walker & Dunlop
+2025-03-13 23:55:40,989 - __main__ - INFO - Starting property extraction
+2025-03-13 23:55:40,989 - backend.scrapers.brokers.walkerdunlop.scraper - INFO - Starting Walker & Dunlop property extraction
+2025-03-13 23:55:40,989 - backend.scrapers.brokers.walkerdunlop.scraper - INFO - Navigating to: https://www.walkerdunlop.com/properties/search/property-type/multifamily/
+2025-03-13 23:55:40,990 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:55:40,990 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:55:40,993 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3002 local_address=None timeout=60 socket_options=None
+2025-03-13 23:55:40,994 - httpcore.connection - DEBUG - connect_tcp.failed exception=ConnectError(OSError('All connection attempts failed'))
+2025-03-13 23:55:40,994 - backend.scrapers.core.mcp_client - ERROR - HTTP error during navigate: All connection attempts failed
+2025-03-13 23:55:40,995 - backend.scrapers.brokers.walkerdunlop.scraper - INFO - Waiting for page content to load...
+2025-03-13 23:55:46,000 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:55:46,001 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:55:46,012 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3002 local_address=None timeout=60 socket_options=None
+2025-03-13 23:55:46,014 - httpcore.connection - DEBUG - connect_tcp.failed exception=ConnectError(OSError('All connection attempts failed'))
+2025-03-13 23:55:46,015 - backend.scrapers.core.mcp_client - ERROR - HTTP error during get_html: All connection attempts failed
+2025-03-13 23:55:46,015 - backend.scrapers.brokers.walkerdunlop.scraper - WARNING - Received empty or very small HTML content
+2025-03-13 23:55:46,015 - backend.scrapers.brokers.walkerdunlop.scraper - INFO - Navigating to: https://www.walkerdunlop.com/properties/search/property-type/multifamily/page/1/
+2025-03-13 23:55:46,016 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:55:46,016 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:55:46,021 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3002 local_address=None timeout=60 socket_options=None
+2025-03-13 23:55:46,022 - httpcore.connection - DEBUG - connect_tcp.failed exception=ConnectError(OSError('All connection attempts failed'))
+2025-03-13 23:55:46,022 - backend.scrapers.core.mcp_client - ERROR - HTTP error during navigate: All connection attempts failed
+2025-03-13 23:55:46,023 - backend.scrapers.brokers.walkerdunlop.scraper - INFO - Waiting for page content to load...
+2025-03-13 23:55:51,030 - httpx - DEBUG - load_ssl_context verify=True cert=None trust_env=True http2=False
+2025-03-13 23:55:51,037 - httpx - DEBUG - load_verify_locations cafile='/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/certifi/cacert.pem'
+2025-03-13 23:55:51,056 - httpcore.connection - DEBUG - connect_tcp.started host='localhost' port=3002 local_address=None timeout=60 socket_options=None
+2025-03-13 23:55:51,061 - httpcore.connection - DEBUG - connect_tcp.failed exception=ConnectError(OSError('All connection attempts failed'))
+2025-03-13 23:55:51,062 - backend.scrapers.core.mcp_client - ERROR - HTTP error during get_html: All connection attempts failed
+2025-03-13 23:55:51,071 - backend.scrapers.brokers.walkerdunlop.scraper - WARNING - Received empty or very small HTML content
+2025-03-13 23:55:51,071 - backend.scrapers.brokers.walkerdunlop.scraper - INFO - Saving 0 extracted properties
+2025-03-13 23:55:51,072 - backend.scrapers.brokers.walkerdunlop.scraper - INFO - Walker & Dunlop property extraction completed
+2025-03-13 23:55:51,072 - __main__ - INFO - Extracted 0 properties
+2025-03-13 23:55:51,072 - __main__ - WARNING - No properties were extracted!
+2025-03-13 23:55:51,086 - __main__ - INFO - Walker & Dunlop scraper run completed
+2025-03-13 23:55:51,102 - __main__ - INFO - Script completed at 2025-03-13 23:55:51.102209
+2025-03-13 23:55:51,103 - __main__ - INFO - Total execution time: 0:00:10.324744
+2025-03-13 23:55:51,104 - __main__ - INFO - Total properties extracted: 0

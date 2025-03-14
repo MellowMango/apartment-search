@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+"""
+Test script for database storage of Silva Multifamily properties.
+This script tests the save_to_database method of the DataStorage class.
+"""
+
+import asyncio
+import sys
+import os
+import json
+from datetime import datetime
+import logging
+
+# Add the project directory to the path so we can import our modules
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../..")))
+
+# Set up logging
+logging.basicConfig(level=logging.INFO,
+                  format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+# Import our modules
+from backend.scrapers.core.storage import DataStorage
+from backend.scrapers.brokers.silvamultifamily.test_silvamultifamily_scraper import test_silvamultifamily_scraper
+
+async def test_database_storage():
+    """
+    Test storing Silva Multifamily property data in both Supabase and Neo4j databases.
+    """
+    logger.info("Testing database storage for Silva Multifamily properties")
+    
+    # First, extract property data using the existing test script
+    logger.info("Extracting properties using the Silva Multifamily scraper")
+    extracted_data = await test_silvamultifamily_scraper()
+    
+    if not extracted_data or not extracted_data.get("success"):
+        logger.error("Failed to extract properties")
+        return False
+    
+    # Create a DataStorage instance
+    storage = DataStorage("silvamultifamily")
+    
+    # Save the extracted data to the database
+    logger.info("Saving extracted data to the database")
+    try:
+        db_success = await storage.save_to_database(extracted_data, "properties")
+        if db_success:
+            logger.info("✅ Successfully saved properties to the database")
+        else:
+            logger.error("❌ Failed to save properties to the database")
+        
+        return db_success
+    except Exception as e:
+        logger.error(f"Error saving to database: {str(e)}")
+        return False
+
+async def main():
+    """Run the database storage test."""
+    result = await test_database_storage()
+    if result:
+        logger.info("Database storage test completed successfully")
+    else:
+        logger.error("Database storage test failed")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
