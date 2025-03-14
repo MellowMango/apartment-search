@@ -14,6 +14,7 @@ import aiohttp
 import asyncio
 from typing import Dict, Any, List, Optional, Union
 from backend.app.core.config import settings
+import httpx
 
 logger = logging.getLogger(__name__)
 
@@ -27,22 +28,13 @@ class MCPClient:
         self.server_type = settings.MCP_SERVER_TYPE
         
         if self.server_type == "firecrawl":
-            self.api_url = settings.FIRECRAWL_API_URL
-            self.api_key = settings.FIRECRAWL_API_KEY
-            self.headers = {
-                "Content-Type": "application/json",
-                "Authorization": f"Bearer {self.api_key}"
-            }
+            self.base_url = settings.MCP_FIRECRAWL_URL
         elif self.server_type == "playwright":
-            self.api_url = settings.MCP_PLAYWRIGHT_URL
-            self.headers = {"Content-Type": "application/json"}
-        elif self.server_type == "puppeteer":
-            self.api_url = settings.MCP_PUPPETEER_URL
-            self.headers = {"Content-Type": "application/json"}
+            self.base_url = settings.MCP_PLAYWRIGHT_URL
         else:
             raise ValueError(f"Unsupported MCP server type: {self.server_type}")
         
-        self.timeout = aiohttp.ClientTimeout(total=settings.MCP_REQUEST_TIMEOUT)
+        self.timeout = settings.MCP_REQUEST_TIMEOUT
         self.max_concurrent_sessions = settings.MCP_MAX_CONCURRENT_SESSIONS
         self.semaphore = asyncio.Semaphore(self.max_concurrent_sessions)
         
@@ -58,10 +50,10 @@ class MCPClient:
         async with self.semaphore:
             async with aiohttp.ClientSession(timeout=self.timeout) as session:
                 if self.server_type == "firecrawl":
-                    url = f"{self.api_url}/sessions"
+                    url = f"{self.base_url}/sessions"
                     payload = {}
                 else:
-                    url = f"{self.api_url}/session"
+                    url = f"{self.base_url}/session"
                     payload = {"headless": settings.PLAYWRIGHT_HEADLESS}
                 
                 async with session.post(url, headers=self.headers, json=payload) as response:
@@ -86,243 +78,168 @@ class MCPClient:
         """
         async with aiohttp.ClientSession(timeout=self.timeout) as session:
             if self.server_type == "firecrawl":
-                url = f"{self.api_url}/sessions/{session_id}"
+                url = f"{self.base_url}/sessions/{session_id}"
             else:
-                url = f"{self.api_url}/session/{session_id}"
+                url = f"{self.base_url}/session/{session_id}"
             
             async with session.delete(url, headers=self.headers) as response:
                 if response.status != 200:
                     error_text = await response.text()
                     logger.error(f"Failed to close session {session_id}: {error_text}")
     
-    async def navigate(self, session_id: str, url: str) -> Dict[str, Any]:
-        """
-        Navigate to a URL in a browser session.
+    async def navigate(self, url: str) -> Dict[str, Any]:
+        """Navigate to a URL using the MCP server."""
+        endpoint = f"{self.base_url}/page"
         
-        Args:
-            session_id: Session ID
-            url: URL to navigate to
+        payload = {
+            "url": url,
+            "timeout": self.timeout,
+            "waitUntil": "networkidle"
+        }
+        
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    endpoint, 
+                    json=payload, 
+                    timeout=self.timeout
+                )
+                response.raise_for_status()
+                return response.json()
+        except httpx.HTTPError as e:
+            print(f"HTTP error during navigate: {e}")
+            return {"success": False, "error": str(e)}
+        except Exception as e:
+            print(f"Unexpected error during navigate: {e}")
+            return {"success": False, "error": str(e)}
+
+    async def get_html(self, url: str) -> str:
+        """Get the HTML of a page."""
+        result = await self.navigate(url)
+        if result.get("success"):
+            endpoint = f"{self.base_url}/dom"
             
-        Returns:
-            Dict: Response data
+            try:
+                async with httpx.AsyncClient() as client:
+                    response = await client.get(endpoint, timeout=self.timeout)
+                    response.raise_for_status()
+                    return response.json().get("html", "")
+            except httpx.HTTPError as e:
+                print(f"HTTP error during get_html: {e}")
+                return ""
+            except Exception as e:
+                print(f"Unexpected error during get_html: {e}")
+                return ""
+        return ""
+
+    async def execute_script(self, script: str) -> Any:
+        """Execute a JavaScript script on the current page."""
+        endpoint = f"{self.base_url}/execute"
+        
+        payload = {
+            "script": script
+        }
+        
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    endpoint, 
+                    json=payload, 
+                    timeout=self.timeout
+                )
+                response.raise_for_status()
+                result = response.json()
+                return result.get("result")
+        except Exception as e:
+            print(f"Error executing script: {e}")
+            return None
+
+    async def take_screenshot(self) -> Optional[str]:
+        """Take a screenshot of the current page."""
+        endpoint = f"{self.base_url}/screenshot"
+        
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.get(endpoint, timeout=self.timeout)
+                response.raise_for_status()
+                result = response.json()
+                return result.get("base64")
+        except Exception as e:
+            print(f"Error taking screenshot: {e}")
+            return None
+
+    async def extract_property_listings(self, url: str) -> List[Dict[str, Any]]:
         """
-        async with aiohttp.ClientSession(timeout=self.timeout) as session:
-            if self.server_type == "firecrawl":
-                api_url = f"{self.api_url}/sessions/{session_id}/navigate"
-                payload = {"url": url}
-            else:
-                api_url = f"{self.api_url}/session/{session_id}/goto"
-                payload = {"url": url}
-            
-            async with session.post(api_url, headers=self.headers, json=payload) as response:
-                if response.status != 200:
-                    error_text = await response.text()
-                    logger.error(f"Failed to navigate to {url}: {error_text}")
-                    raise Exception(f"Failed to navigate to {url}: {error_text}")
+        Extract property listings from a broker website.
+        This is a high-level method that combines multiple operations.
+        """
+        # First navigate to the page
+        navigate_result = await self.navigate(url)
+        if not navigate_result.get("success"):
+            print(f"Failed to navigate to {url}")
+            return []
+        
+        # Get the HTML
+        html = await self.get_html(url)
+        if not html:
+            print(f"Failed to get HTML from {url}")
+            return []
+        
+        # Execute script to find listing containers
+        containers_script = """
+        function findListingContainers() {
+            // Look for common patterns in real estate listings
+            const selectors = [
+                // Common class names for listing containers
+                '.property-card', '.listing-item', '.property-listing',
+                '.property', '.listing', '.property-result',
                 
-                return await response.json()
-    
-    async def get_page_content(self, session_id: str) -> Dict[str, Any]:
-        """
-        Get the current page content.
-        
-        Args:
-            session_id: Session ID
-            
-        Returns:
-            Dict: Page content data
-        """
-        async with aiohttp.ClientSession(timeout=self.timeout) as session:
-            if self.server_type == "firecrawl":
-                url = f"{self.api_url}/sessions/{session_id}/content"
-            else:
-                url = f"{self.api_url}/session/{session_id}/content"
-            
-            async with session.get(url, headers=self.headers) as response:
-                if response.status != 200:
-                    error_text = await response.text()
-                    logger.error(f"Failed to get page content: {error_text}")
-                    raise Exception(f"Failed to get page content: {error_text}")
+                // Common patterns for listings
+                '[class*="property"]', '[class*="listing"]', '[class*="result"]',
                 
-                return await response.json()
-    
-    async def execute_script(self, session_id: str, script: str) -> Dict[str, Any]:
-        """
-        Execute JavaScript in the browser.
-        
-        Args:
-            session_id: Session ID
-            script: JavaScript to execute
+                // Fallbacks - look for cards, items, or results
+                '.card', '.item', '.result'
+            ];
             
-        Returns:
-            Dict: Result of script execution
-        """
-        async with aiohttp.ClientSession(timeout=self.timeout) as session:
-            if self.server_type == "firecrawl":
-                url = f"{self.api_url}/sessions/{session_id}/execute"
-                payload = {"script": script}
-            else:
-                url = f"{self.api_url}/session/{session_id}/execute"
-                payload = {"script": script}
-            
-            async with session.post(url, headers=self.headers, json=payload) as response:
-                if response.status != 200:
-                    error_text = await response.text()
-                    logger.error(f"Failed to execute script: {error_text}")
-                    raise Exception(f"Failed to execute script: {error_text}")
-                
-                return await response.json()
-    
-    async def click(self, session_id: str, selector: str) -> Dict[str, Any]:
-        """
-        Click an element on the page.
-        
-        Args:
-            session_id: Session ID
-            selector: CSS selector for the element to click
-            
-        Returns:
-            Dict: Response data
-        """
-        async with aiohttp.ClientSession(timeout=self.timeout) as session:
-            if self.server_type == "firecrawl":
-                url = f"{self.api_url}/sessions/{session_id}/click"
-                payload = {"selector": selector}
-            else:
-                url = f"{self.api_url}/session/{session_id}/click"
-                payload = {"selector": selector}
-            
-            async with session.post(url, headers=self.headers, json=payload) as response:
-                if response.status != 200:
-                    error_text = await response.text()
-                    logger.error(f"Failed to click element {selector}: {error_text}")
-                    raise Exception(f"Failed to click element {selector}: {error_text}")
-                
-                return await response.json()
-    
-    async def extract_data(self, session_id: str, schema: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Extract structured data from the page using a schema.
-        
-        This method is specific to Firecrawl MCP Server.
-        
-        Args:
-            session_id: Session ID
-            schema: JSON schema defining the data to extract
-            
-        Returns:
-            Dict: Extracted data
-        """
-        if self.server_type != "firecrawl":
-            raise NotImplementedError("Data extraction with schema is only supported by Firecrawl MCP Server")
-        
-        async with aiohttp.ClientSession(timeout=self.timeout) as session:
-            url = f"{self.api_url}/sessions/{session_id}/extract"
-            payload = {"schema": schema}
-            
-            async with session.post(url, headers=self.headers, json=payload) as response:
-                if response.status != 200:
-                    error_text = await response.text()
-                    logger.error(f"Failed to extract data: {error_text}")
-                    raise Exception(f"Failed to extract data: {error_text}")
-                
-                return await response.json()
-    
-    async def llm_guided_extraction(
-        self, 
-        session_id: str, 
-        instructions: str, 
-        schema: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
-        """
-        Extract data from the page using LLM guidance.
-        
-        This method is specific to Firecrawl MCP Server.
-        
-        Args:
-            session_id: Session ID
-            instructions: Natural language instructions for the LLM
-            schema: Optional JSON schema for structured output
-            
-        Returns:
-            Dict: Extracted data
-        """
-        if self.server_type != "firecrawl":
-            raise NotImplementedError("LLM-guided extraction is only supported by Firecrawl MCP Server")
-        
-        if not settings.MCP_ENABLE_LLM_GUIDANCE:
-            raise Exception("LLM guidance is disabled in settings")
-        
-        async with aiohttp.ClientSession(timeout=self.timeout) as session:
-            url = f"{self.api_url}/sessions/{session_id}/llm-extract"
-            payload = {
-                "instructions": instructions,
-                "model": settings.MCP_LLM_MODEL,
-                "provider": settings.MCP_LLM_PROVIDER
+            for (const selector of selectors) {
+                const elements = document.querySelectorAll(selector);
+                if (elements.length > 1) {
+                    return Array.from(elements).map(el => {
+                        return {
+                            outerHTML: el.outerHTML,
+                            selector: selector
+                        };
+                    });
+                }
             }
             
-            if schema:
-                payload["schema"] = schema
-            
-            async with session.post(url, headers=self.headers, json=payload) as response:
-                if response.status != 200:
-                    error_text = await response.text()
-                    logger.error(f"Failed to perform LLM-guided extraction: {error_text}")
-                    raise Exception(f"Failed to perform LLM-guided extraction: {error_text}")
-                
-                return await response.json()
-    
-    async def take_screenshot(self, session_id: str) -> bytes:
-        """
-        Take a screenshot of the current page.
+            return [];
+        }
         
-        Args:
-            session_id: Session ID
-            
-        Returns:
-            bytes: Screenshot image data
+        return findListingContainers();
         """
-        async with aiohttp.ClientSession(timeout=self.timeout) as session:
-            if self.server_type == "firecrawl":
-                url = f"{self.api_url}/sessions/{session_id}/screenshot"
-            else:
-                url = f"{self.api_url}/session/{session_id}/screenshot"
-            
-            async with session.get(url, headers=self.headers) as response:
-                if response.status != 200:
-                    error_text = await response.text()
-                    logger.error(f"Failed to take screenshot: {error_text}")
-                    raise Exception(f"Failed to take screenshot: {error_text}")
-                
-                return await response.read()
-    
-    async def wait_for_selector(self, session_id: str, selector: str, timeout: int = 30000) -> Dict[str, Any]:
-        """
-        Wait for an element to appear on the page.
         
-        Args:
-            session_id: Session ID
-            selector: CSS selector to wait for
-            timeout: Timeout in milliseconds
-            
-        Returns:
-            Dict: Response data
-        """
-        async with aiohttp.ClientSession(timeout=self.timeout) as session:
-            if self.server_type == "firecrawl":
-                url = f"{self.api_url}/sessions/{session_id}/wait-for-selector"
-                payload = {"selector": selector, "timeout": timeout}
-            else:
-                url = f"{self.api_url}/session/{session_id}/wait"
-                payload = {"selector": selector, "timeout": timeout}
-            
-            async with session.post(url, headers=self.headers, json=payload) as response:
-                if response.status != 200:
-                    error_text = await response.text()
-                    logger.error(f"Failed to wait for selector {selector}: {error_text}")
-                    raise Exception(f"Failed to wait for selector {selector}: {error_text}")
-                
-                return await response.json()
+        containers = await self.execute_script(containers_script)
+        
+        if not containers or len(containers) == 0:
+            print("No property listing containers found")
+            return []
+        
+        print(f"Found {len(containers)} potential property listings")
+        
+        # Extract properties from each container
+        results = []
+        for i, container in enumerate(containers):
+            # Very basic extraction for testing
+            results.append({
+                "id": f"property_{i}",
+                "source_url": url,
+                "html_content": container.get("outerHTML", ""),
+                "selector_path": container.get("selector", ""),
+                "extracted_at": None  # This would be filled with datetime.now() in a real implementation
+            })
+        
+        return results
 
 # Create a singleton instance
 mcp_client = MCPClient() 

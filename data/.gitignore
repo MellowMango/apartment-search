@@ -1,0 +1,8 @@
+# Ignore everything in the data directory
+*
+
+# But include this .gitignore file
+!.gitignore
+
+# Add specific exceptions here if needed
+# !important_baseline_data.json 

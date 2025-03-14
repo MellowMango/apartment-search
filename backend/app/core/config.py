@@ -1,16 +1,21 @@
+"""
+Core configuration for the application.
+"""
+
 import os
 from typing import List, Union
 from pydantic_settings import BaseSettings
 from pydantic import AnyHttpUrl, validator
 
 class Settings(BaseSettings):
+    """Application settings."""
     # Application Settings
     API_V1_STR: str = "/api/v1"
-    PROJECT_NAME: str = "Austin Multifamily Property Listing Map"
+    PROJECT_NAME: str = "Austin Property Listing API"
     DEBUG: bool = False
     
     # CORS
-    CORS_ORIGINS: List[str] = ["http://localhost:3000"]
+    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8080"]
     
     @validator("CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
@@ -64,22 +69,23 @@ class Settings(BaseSettings):
     STRIPE_CURRENCY: str = "usd"
     
     # Web Scraping
-    SCRAPER_USER_AGENT: str
-    SCRAPER_TIMEOUT: int = 30
-    PLAYWRIGHT_HEADLESS: bool = True
+    SCRAPER_USER_AGENT: str = os.getenv(
+        "SCRAPER_USER_AGENT", 
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36"
+    )
+    SCRAPER_TIMEOUT: int = int(os.getenv("SCRAPER_TIMEOUT", "60"))
+    PLAYWRIGHT_HEADLESS: bool = os.getenv("PLAYWRIGHT_HEADLESS", "true").lower() == "true"
     
     # MCP Server Configuration
-    FIRECRAWL_API_KEY: str = ""
-    FIRECRAWL_API_URL: str = "https://api.firecrawl.dev"
-    MCP_SERVER_TYPE: str = "firecrawl"  # Options: firecrawl, playwright, puppeteer
-    MCP_PLAYWRIGHT_URL: str = "http://localhost:3001"
-    MCP_PUPPETEER_URL: str = "http://localhost:3002"
-    MCP_MAX_CONCURRENT_SESSIONS: int = 5
-    MCP_REQUEST_TIMEOUT: int = 60
-    MCP_ENABLE_LLM_GUIDANCE: bool = True
-    MCP_LLM_PROVIDER: str = "openai"
-    MCP_LLM_MODEL: str = "gpt-4"
-    MCP_LLM_API_KEY: str = ""
+    MCP_SERVER_TYPE: str = os.getenv("MCP_SERVER_TYPE", "firecrawl")
+    MCP_FIRECRAWL_URL: str = os.getenv("MCP_FIRECRAWL_URL", "http://localhost:3000")
+    MCP_PLAYWRIGHT_URL: str = os.getenv("MCP_PLAYWRIGHT_URL", "http://localhost:3001")
+    MCP_PUPPETEER_URL: str = os.getenv("MCP_PUPPETEER_URL", "http://localhost:3002")
+    MCP_MAX_CONCURRENT_SESSIONS: int = int(os.getenv("MCP_MAX_CONCURRENT_SESSIONS", "5"))
+    MCP_REQUEST_TIMEOUT: int = int(os.getenv("MCP_REQUEST_TIMEOUT", "60"))
+    MCP_ENABLE_LLM_GUIDANCE: bool = os.getenv("MCP_ENABLE_LLM_GUIDANCE", "false").lower() == "true"
+    MCP_LLM_PROVIDER: str = os.getenv("MCP_LLM_PROVIDER", "openai")
+    MCP_LLM_MODEL: str = os.getenv("MCP_LLM_MODEL", "gpt-3.5-turbo")
     
     # Socket.IO
     SOCKETIO_PATH: str = "/socket.io"
@@ -120,6 +126,9 @@ class Settings(BaseSettings):
     
     # Logging
     LOG_LEVEL: str = "INFO"
+    
+    # Database Configuration
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./app.db")
     
     class Config:
         env_file = ".env"

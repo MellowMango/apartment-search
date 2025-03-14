@@ -95,6 +95,16 @@ Acquire Apartments is a web-based application designed to aggregate and display 
 │   │   ├── schemas/        # Pydantic schemas
 │   │   ├── services/       # Business logic
 │   │   └── workers/        # Celery tasks
+│   ├── scrapers/           # Scraper architecture
+│   │   ├── core/           # Shared scraper utilities
+│   │   │   ├── mcp_client.py    # MCP server client
+│   │   │   ├── data_extractors.py  # Data extraction utilities
+│   │   │   └── storage.py      # Data storage utilities
+│   │   ├── brokers/        # Broker-specific scrapers
+│   │   │   ├── acrmultifamily/  # ACR Multifamily scraper
+│   │   │   └── [other brokers]/  # Additional broker scrapers
+│   │   ├── helpers/        # Helper utilities
+│   │   └── run_scraper.py  # Command-line interface
 │   └── requirements.txt    # Python dependencies
 ├── frontend/               # Next.js frontend
 │   ├── public/             # Static files
@@ -104,6 +114,10 @@ Acquire Apartments is a web-based application designed to aggregate and display 
 │   │   ├── pages/          # Next.js pages
 │   │   └── styles/         # CSS styles
 │   └── package.json        # Node.js dependencies
+├── data/                   # Generated data
+│   ├── screenshots/        # Screenshot captures
+│   ├── html/               # HTML source files
+│   └── extracted/          # Extracted property data
 ├── docs/                   # Documentation
 ├── .env.example            # Example environment variables
 └── README.md               # Project documentation
@@ -116,6 +130,8 @@ For more detailed documentation, see the [docs](./docs) directory:
 - [Project Overview](./docs/project-overview.md)
 - [Tech Stack](./docs/tech-stack.md)
 - [Sprint Plan](./docs/sprint.md)
+- [Scraper Architecture](./docs/scraper-architecture.md)
+- [Scraper Usage Guide](./docs/scraper-usage-guide.md)
 
 ## License
 

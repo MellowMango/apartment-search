@@ -1,3 +1,7 @@
+"""
+Main FastAPI application module.
+"""
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import socketio
@@ -5,7 +9,7 @@ import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
 
 from app.core.config import settings
-from app.api.api_v1.api import api_router
+from app.api.api import api_router
 
 # Initialize Sentry if DSN is provided
 if settings.SENTRY_DSN:
@@ -24,25 +28,21 @@ sio = socketio.AsyncServer(
 
 # Create FastAPI app
 app = FastAPI(
-    title="Austin Multifamily Property Listing Map API",
-    description="API for the Austin Multifamily Property Listing Map",
-    version="0.1.0",
-    docs_url="/api/docs",
-    redoc_url="/api/redoc",
-    openapi_url="/api/openapi.json"
+    title=settings.PROJECT_NAME,
+    openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
 
 # Set up CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ORIGINS,
+    allow_origins=[str(origin) for origin in settings.CORS_ORIGINS],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
 # Include API router
-app.include_router(api_router, prefix="/api/v1")
+app.include_router(api_router, prefix=settings.API_V1_STR)
 
 # Create Socket.IO app
 socket_app = socketio.ASGIApp(sio, app)
@@ -55,6 +55,11 @@ async def connect(sid, environ):
 @sio.event
 async def disconnect(sid):
     print(f"Client disconnected: {sid}")
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint."""
+    return {"status": "healthy"}
 
 # For direct uvicorn execution
 if __name__ == "__main__":

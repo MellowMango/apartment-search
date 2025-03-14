@@ -45,6 +45,7 @@ This document outlines the technology stack and architecture for the Acquire Apa
 
 ### Data Aggregation
 - **Web Scraping**: 
+  - Organized in modular `backend/scrapers/` directory
   - Model Context Protocol (MCP) servers for browser automation
   - MCP-Playwright for JavaScript-heavy broker websites
   - LLM-guided data extraction for adaptive scraping
@@ -52,6 +53,11 @@ This document outlines the technology stack and architecture for the Acquire Apa
     - [Firecrawl MCP Server](https://github.com/mendableai/firecrawl-mcp-server): Specialized web scraping with built-in rate limiting and batch processing
     - [MCP-Playwright](https://github.com/executeautomation/mcp-playwright): General-purpose browser automation with Playwright
     - [MCP-Puppeteer](https://github.com/modelcontextprotocol/servers/tree/HEAD/src/puppeteer): General-purpose browser automation with Puppeteer
+  - Structured directory organization:
+    - Core utilities in `backend/scrapers/core/`
+    - Broker-specific scrapers in `backend/scrapers/brokers/<broker_name>/`
+    - Command-line interface in `backend/scrapers/run_scraper.py`
+    - Data stored in organized `data/` directory (gitignored)
   
 - **Email Processing**:
   - Python's imaplib and email libraries
@@ -94,11 +100,12 @@ This document outlines the technology stack and architecture for the Acquire Apa
    - OCR processing for images in emails
 
 ### Data Flow
-1. Data is collected via MCP-powered browser automation and email processing
-2. Processed data is stored in Supabase
-3. Celery tasks (using PostgreSQL as broker) sync relevant data to Neo4j for relationship modeling
-4. FastAPI serves data to the frontend
-5. Real-time updates are pushed via Socket.IO when data changes
+1. Data is collected via MCP-powered browser automation (organized in `backend/scrapers/` modules) and email processing
+2. Scraped data is stored in organized directories under `data/` for debugging and analysis
+3. Processed data is stored in Supabase
+4. Celery tasks (using PostgreSQL as broker) sync relevant data to Neo4j for relationship modeling
+5. FastAPI serves data to the frontend
+6. Real-time updates are pushed via Socket.IO when data changes
 
 ## MCP Server Comparison
 

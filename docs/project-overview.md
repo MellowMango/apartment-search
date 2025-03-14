@@ -96,6 +96,12 @@ The Austin Multifamily Property Listing Map is a web-based application designed 
 - **Email Service**: SendGrid for transactional emails and notifications
 - **Payment Processing**: Stripe for subscription management
 - **Deployment**: Heroku for backend, Vercel/Heroku for frontend
+- **Data Acquisition**:
+  - Modular scraper architecture with specialized scrapers for each broker
+  - Model Context Protocol (MCP) servers for browser automation
+  - Organized data storage for screenshots, HTML, and extracted data
+  - Command-line interface for running and managing scrapers
+  - Scheduled scraping via Celery tasks
 
 ## Success Criteria
 

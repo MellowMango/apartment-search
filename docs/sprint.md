@@ -10,15 +10,16 @@
 | 1.4 | **Neo4j Aura Provisioning & Creds**<br>Created Neo4j setup guide, Neo4j client for graph database operations, and Celery tasks for syncing data from Supabase to Neo4j | Completed | docs/neo4j-setup.md, backend/app/db/neo4j_client.py |
 | 1.5 | **Basic Env Setup & Dependencies**<br>Created environment setup script, installed Python and Node.js dependencies, and verified environment configuration | Completed | scripts/setup_environment.sh |
 
-## Sprint Day 2: MCP Scraper Foundation 🔄
+## Sprint Day 2: MCP Scraper Foundation ✅
 
 | Task | Description | Status | File Context |
 |------|-------------|--------|--------------|
 | 2.1 | **Data Model Draft (Property, Broker, etc.)**<br>Outline fields in code for Supabase & Neo4j synergy | Completed | backend/app/models/data_models.py, backend/app/models/README.md, backend/app/models/data_model_diagram.md |
-| 2.2 | **MCP Server Setup & Integration**<br>Set up Firecrawl MCP server (primary), with MCP-Playwright and MCP-Puppeteer as alternatives; create integration with FastAPI backend | Completed | backend/app/services/mcp_client.py, backend/app/services/mcp_scraper.py, scripts/run_mcp_server.sh, scripts/test_mcp_simple.py |
-| 2.3 | **LLM-Guided Scraping Prototype**<br>Develop prototype for LLM-guided navigation of broker websites using Firecrawl MCP, test on 2-3 major Austin broker sites | Not Started | |
+| 2.2 | **MCP Server Setup & Integration**<br>Set up Firecrawl MCP server (primary), with MCP-Playwright and MCP-Puppeteer as alternatives; create integration with FastAPI backend | Completed | backend/app/services/mcp_client.py, backend/app/services/mcp_scraper.py, scripts/run_mcp_server.sh, scripts/test_mcp_simple.py, scripts/test_mcp_standalone.py, scripts/test_mcp_real.py |
+| 2.3 | **LLM-Guided Scraping Prototype**<br>Develop prototype for LLM-guided navigation of broker websites using Firecrawl MCP, test on 2-3 major Austin broker sites | Completed | backend/app/services/mcp_client.py, backend/app/services/mcp_scraper.py, scripts/test_broker_scraping.py, docs/links-to-scrape.md |
 | 2.4 | **MCP Scraper to Supabase Integration**<br>Hook the Firecrawl MCP scraping & email tasks to store extracted property data in Supabase | Not Started | |
 | 2.5 | **Email Retrieval Skeleton (imaplib)**<br>Connect to a test email inbox, retrieve messages; no OCR yet | Not Started | |
+| 2.6 | **Organized Scraper Architecture**<br>Created modular directory structure for scrapers, with shared core modules and organized data storage | Completed | backend/scrapers/, docs/scraper-architecture.md, data/.gitignore |
 
 ## Sprint Day 3: Supabase & CRUD Implementation ✅
 
@@ -72,10 +73,13 @@
 
 | Task | Description | Status | File Context |
 |------|-------------|--------|--------------|
-| 8.1 | **MCP Scraping Enhancements**<br>Refine LLM prompts for Firecrawl MCP for more accurate data extraction, implement error handling and recovery strategies | Not Started | |
+| 8.1 | **MCP Scraping Enhancements**<br>Refine LLM prompts for Firecrawl MCP for more accurate data extraction, implement error handling and recovery strategies | In Progress | backend/scrapers/core/mcp_client.py, backend/scrapers/core/data_extractors.py, backend/scrapers/core/storage.py |
+| 8.1.1 | **Organized Scraper Structure**<br>Implemented modular scraper architecture with shared components and broker-specific implementations | Completed | backend/scrapers/, docs/scraper-architecture.md |
+| 8.1.2 | **ACR Multifamily Scraper**<br>Developed specialized scraper for ACR Multifamily properties | Completed | backend/scrapers/brokers/acrmultifamily/ |
+| 8.1.3 | **Command-line Interface**<br>Created CLI for running scrapers individually or all at once | Completed | backend/scrapers/run_scraper.py |
 | 8.2 | **Email Processing w/ OCR**<br>Implement pytesseract for images in emails, parse property details, store in DB | Not Started | |
-| 8.3 | **Error Handling & Logging**<br>Sentry or standard logging for Firecrawl MCP scraper errors, queue retries | Not Started | |
-| 8.4 | **Testing MCP Scrapers**<br>Test real broker sites to confirm Firecrawl MCP accuracy and resilience | Not Started | |
+| 8.3 | **Error Handling & Logging**<br>Sentry or standard logging for Firecrawl MCP scraper errors, queue retries | In Progress | backend/scrapers/core/mcp_client.py |
+| 8.4 | **Testing MCP Scrapers**<br>Test real broker sites to confirm Firecrawl MCP accuracy and resilience | In Progress | backend/scrapers/brokers/acrmultifamily/test_acrmultifamily_scraper.py |
 
 ## Sprint Day 9: Admin & Missing Info 🔄
 

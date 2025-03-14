@@ -118,6 +118,32 @@
       - Tracking of sent requests and responses
       - Ability to update property data when responses are received
 
+### Data Acquisition
+
+14. As a developer, I want to run scrapers for specific broker websites so that I can test and debug data extraction for individual sources.
+    - **Acceptance Criteria:**
+      - Command-line interface for running specific scrapers
+      - Clear output showing scraping results
+      - Error messages that help identify issues
+
+15. As a developer, I want to add new broker scrapers to the system so that we can expand our data coverage.
+    - **Acceptance Criteria:**
+      - Modular architecture that makes adding new scrapers easy
+      - Documentation on how to create new scrapers
+      - Shared components that handle common tasks
+
+16. As an admin, I want to schedule regular scraping of broker websites so that our data stays current without manual intervention.
+    - **Acceptance Criteria:**
+      - Scheduled scraping at configurable intervals
+      - Logs of scheduled runs and their outcomes
+      - Notification system for scraping failures
+
+17. As a data analyst, I want to review the raw data collected from scrapers so that I can identify patterns and improve extraction algorithms.
+    - **Acceptance Criteria:**
+      - Organized storage of screenshots, HTML, and extracted data
+      - Timestamps on all collected data
+      - Ability to compare data across multiple scraper runs
+
 ## MVP Scope Confirmation
 
 For the MVP release, we will focus on implementing user stories 1-5 (Map & Property Viewing, Search & Filter) as core functionality, along with user stories 6-8 (User Account & Subscription) to enable the business model. User stories 9-10 (Notifications & Updates) will be implemented to provide a dynamic user experience. Admin features (user stories 11-13) will be implemented with basic functionality to support data management.
