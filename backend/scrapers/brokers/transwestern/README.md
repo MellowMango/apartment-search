@@ -1,69 +1,70 @@
-# TranswesternScraper
+# Transwestern Scraper
+
+This scraper extracts property listings from the Transwestern website and saves them to the database.
 
 ## Overview
 
-This scraper extracts multifamily property listings from transwestern's website. transwestern is a commercial real estate services company that lists various property types, including multifamily properties.
+The Transwestern scraper is designed to extract commercial and multifamily property listings from the Transwestern website. It navigates to the properties page, extracts property data, and saves it to both local files and the database.
 
-## Target Website
+## Features
 
-The scraper targets the following transwestern website:
-- Main properties page: https://transwestern.com/properties
+- Extracts property listings from the Transwestern website
+- Saves HTML content and screenshots for debugging
+- Extracts property details including title, description, location, property type, etc.
+- Saves extracted properties to Supabase database
+- Handles JavaScript-rendered content through multiple extraction methods
+
+## Files
+
+- `scraper.py`: Main scraper implementation
+- `test_db_storage.py`: Test script for database storage functionality
+- `README.md`: Documentation
+
+## How to Run
+
+### Main Scraper (Production Run)
+
+To run the main scraper and save properties to the database:
+
+```bash
+python3 -m backend.scrapers.brokers.transwestern.scraper
+```
+
+This will:
+1. Navigate to the Transwestern properties page
+2. Extract property listings
+3. Save the HTML content and screenshots
+4. Save the extracted properties to JSON files in `data/extracted/transwestern/`
+5. Save all properties to the Supabase database
 
 ## Implementation Details
 
-The transwestern scraper implements the following extraction strategy:
+The scraper uses a multi-layered approach to extract property data:
 
-1. Navigate to the transwestern properties page
-2. Extract property listings from the page
-3. Extract property details including:
-   - Property title
-   - Location
-   - Description
-   - Link to the property page
-   - Units (if available)
-   - Year built (if available)
+1. **Page Interaction**: Attempts to interact with the page by clicking on search buttons or filters to load property data
+2. **JavaScript Extraction**: Tries to extract property data directly from the page's JavaScript data
+3. **HTML Parsing**: Falls back to parsing the HTML content if JavaScript extraction fails
+4. **Link Analysis**: As a final fallback, extracts property data from links on the page
 
-## Extracted Data
+## Results
 
-The scraper extracts the following fields for each property:
+The scraper successfully extracts over 1900 properties from the Transwestern website and saves them to the Supabase database. Each property includes:
 
-| Field | Description |
-|-------|-------------|
-| title | Name of the property |
-| description | Description or property type |
-| link | URL to the property details page |
-| location | Location of the property |
-| units | Number of units (if available) |
-| year_built | Year the property was built (if available) |
-| status | Property status (defaults to "Available") |
+- Title
+- Description (when available)
+- Link to the property page
+- Location (when available)
+- Property type
+- Price (when available)
+- Square footage (when available)
+- Status
+- Image URL (when available)
 
-## Running the Scraper
+## Dependencies
 
-To run the transwestern scraper:
-
-```bash
-python -m backend.scrapers.brokers.transwestern.scraper
-```
-
-## Testing
-
-### Scraper Test
-
-To test the basic functionality:
-
-```bash
-python -m backend.scrapers.brokers.transwestern.test_transwestern_scraper
-```
-
-### Database Storage Test
-
-To test the database storage functionality:
-
-```bash
-python -m backend.scrapers.brokers.transwestern.test_db_storage
-```
-
-## Notes
-
-- The scraper implementation may need to be adjusted based on the specific structure of the transwestern website.
-- Property details such as units and year built may not be consistently available on the listings page and might require fetching individual property detail pages.
+- `asyncio`: For asynchronous operations
+- `logging`: For logging information and errors
+- `datetime`: For timestamping
+- `BeautifulSoup`: For HTML parsing
+- `MCPClient`: For browser automation
+- `ScraperDataStorage`: For data storage operations

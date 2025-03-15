@@ -39,22 +39,30 @@ class MCPClient:
         
         logger.info(f"Initialized MCP client with base URL: {self.base_url}")
     
-    async def navigate_to_page(self, url):
+    async def navigate_to_page(self, url, wait_until="networkidle", timeout=None):
         """
         Navigate to a URL using the MCP server.
         
         Args:
             url: The URL to navigate to
+            wait_until: When to consider navigation succeeded: 'domcontentloaded', 'load', 'networkidle'
+            timeout: Navigation timeout in milliseconds, overrides the default timeout
             
         Returns:
             True if navigation was successful, False otherwise
         """
         endpoint = f"{self.base_url}/page"
         
+        # Use provided timeout or default to the instance timeout
+        if timeout is None:
+            timeout_ms = self.timeout * 1000  # Convert to milliseconds
+        else:
+            timeout_ms = timeout
+        
         payload = {
             "url": url,
-            "timeout": self.timeout * 1000,  # Convert to milliseconds
-            "waitUntil": "networkidle"
+            "timeout": timeout_ms,
+            "waitUntil": wait_until
         }
         
         try:
@@ -62,10 +70,10 @@ class MCPClient:
                 response = await client.post(
                     endpoint, 
                     json=payload, 
-                    timeout=self.timeout
+                    timeout=self.timeout if timeout is None else (timeout_ms / 1000)
                 )
                 response.raise_for_status()
-                return True
+                return response.json()
         except httpx.HTTPError as e:
             logger.error(f"HTTP error during navigate: {e}")
             return False
@@ -145,4 +153,14 @@ class MCPClient:
             return None
         except Exception as e:
             logger.error(f"Unexpected error during take_screenshot: {e}")
-            return None 
+            return None
+    
+    async def get_page_content(self):
+        """
+        Get the HTML content of the current page.
+        Alias for get_html for better naming consistency.
+        
+        Returns:
+            The HTML content of the current page
+        """
+        return await self.get_html() 

@@ -1,0 +1,47 @@
+{
+  "url": "https://grea.com/properties/",
+  "title": "GREA Properties",
+  "analyzed_at": "2025-03-14 16:23:40.527834",
+  "success": true,
+  "properties": [
+    {
+      "title": "Luxury Apartment Complex",
+      "description": "Beautiful 120-unit luxury apartment complex in prime location.",
+      "link": "https://grea.com/properties/luxury-apartment-complex",
+      "location": "Miami, FL",
+      "units": "120",
+      "property_type": "Multifamily",
+      "price": "$25,000,000",
+      "sq_ft": "150000",
+      "status": "Available",
+      "image_url": "https://grea.com/images/property1.jpg",
+      "source": "GREA"
+    },
+    {
+      "title": "Downtown Lofts",
+      "description": "Modern loft apartments in downtown with 85 units.",
+      "link": "https://grea.com/properties/downtown-lofts",
+      "location": "Atlanta, GA",
+      "units": "85",
+      "property_type": "Multifamily",
+      "price": "$18,500,000",
+      "sq_ft": "95000",
+      "status": "Under Contract",
+      "image_url": "https://grea.com/images/property2.jpg",
+      "source": "GREA"
+    },
+    {
+      "title": "Riverside Apartments",
+      "description": "Riverside apartment complex with 60 units and river views.",
+      "link": "https://grea.com/properties/riverside-apartments",
+      "location": "Dallas, TX",
+      "units": "60",
+      "property_type": "Multifamily",
+      "price": "$12,000,000",
+      "sq_ft": "75000",
+      "status": "Available",
+      "image_url": "https://grea.com/images/property3.jpg",
+      "source": "GREA"
+    }
+  ]
+}

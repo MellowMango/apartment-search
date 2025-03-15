@@ -1,0 +1,578 @@
+[
+  {
+    "source": "ipa_texas",
+    "source_id": "midlandportfolio",
+    "url": "https://ipatexasmultifamily.com/property/midlandportfolio/",
+    "title": "Midland Value-Add Portfolio",
+    "description": "",
+    "location": "Midland, TX",
+    "property_type": "Multifamily",
+    "units": 0,
+    "year_built": 0,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Midland-Value-Add-Portfolio_RCM-Photos2-250x193.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "hyperionwindrush",
+    "url": "https://ipatexasmultifamily.com/property/hyperionwindrush/",
+    "title": "Hyperion & Windrush",
+    "description": "",
+    "location": "San Antonio, TX",
+    "property_type": "Multifamily",
+    "units": 333,
+    "year_built": 1985,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Hyperion_Windrush_RCM2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "championsatponderosa",
+    "url": "https://ipatexasmultifamily.com/property/championsatponderosa/",
+    "title": "Champions at Ponderosa",
+    "description": "",
+    "location": "Houston, TX",
+    "property_type": "Multifamily",
+    "units": 177,
+    "year_built": 1979,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Champions-at-Ponderosa-RCM_3-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "westviewlanddevelopmentsite",
+    "url": "https://ipatexasmultifamily.com/property/westviewlanddevelopmentsite/",
+    "title": "Westview Land Development Site",
+    "description": "",
+    "location": "Round ROck, TX",
+    "property_type": "Multifamily",
+    "units": 15,
+    "year_built": 0,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Westview-Round-Rock-Land_RCM2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "arden231",
+    "url": "https://ipatexasmultifamily.com/property/arden231/",
+    "title": "Arden 231",
+    "description": "",
+    "location": "San Marcos, TX",
+    "property_type": "Multifamily",
+    "units": 249,
+    "year_built": 2024,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Arden-231_IPA_RCM-Photos2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "rusticofmckinney-copy-copy",
+    "url": "https://ipatexasmultifamily.com/property/rusticofmckinney-copy-copy/",
+    "title": "23Hundred at Ridgeview",
+    "description": "",
+    "location": "Plano, TX",
+    "property_type": "Multifamily",
+    "units": 480,
+    "year_built": 1998,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/23hundred-RCM2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "tapestryattherealm",
+    "url": "https://ipatexasmultifamily.com/property/tapestryattherealm/",
+    "title": "Tapestry at the Realm",
+    "description": "",
+    "location": "Lewisville, TX",
+    "property_type": "Multifamily",
+    "units": 362,
+    "year_built": 2024,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Tapestry-at-the-Realm_RCM3-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "thecourtyard",
+    "url": "https://ipatexasmultifamily.com/property/thecourtyard/",
+    "title": "The Courtyard",
+    "description": "",
+    "location": "Garland, TX",
+    "property_type": "Multifamily",
+    "units": 123,
+    "year_built": 1984,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Courtyard_RCM2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "theburgundy",
+    "url": "https://ipatexasmultifamily.com/property/theburgundy/",
+    "title": "The Burgundy",
+    "description": "",
+    "location": "Dallas, TX",
+    "property_type": "Multifamily",
+    "units": 138,
+    "year_built": 1972,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Burgundy_RCM3-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "ltdwestcommerce",
+    "url": "https://ipatexasmultifamily.com/property/ltdwestcommerce/",
+    "title": "LTD West Commerce",
+    "description": "",
+    "location": "Dallas, TX",
+    "property_type": "Multifamily",
+    "units": 308,
+    "year_built": 2018,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/LTD-West-Commerce_RCM2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "valenciaatmedical",
+    "url": "https://ipatexasmultifamily.com/property/valenciaatmedical/",
+    "title": "Valencia at Medical",
+    "description": "",
+    "location": "San Antonio, TX",
+    "property_type": "Multifamily",
+    "units": 346,
+    "year_built": 1982,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Valencia-at-Medical_RCM2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "aylaatcastlehills",
+    "url": "https://ipatexasmultifamily.com/property/aylaatcastlehills/",
+    "title": "Ayla at Castle Hills",
+    "description": "",
+    "location": "San Antonio, TX",
+    "property_type": "Multifamily",
+    "units": 164,
+    "year_built": 1975,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Ayla-at-Castle-Hills_RCM2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "azure-townhomes",
+    "url": "https://ipatexasmultifamily.com/property/azure-townhomes/",
+    "title": "Azure Townhomes",
+    "description": "",
+    "location": "Austin, TX",
+    "property_type": "Multifamily",
+    "units": 199,
+    "year_built": 1967,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Azure_RCM2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "the-casey-at-frisco-station",
+    "url": "https://ipatexasmultifamily.com/property/the-casey-at-frisco-station/",
+    "title": "The Casey at Frisco Station",
+    "description": "",
+    "location": "Frisco, TX",
+    "property_type": "Multifamily",
+    "units": 300,
+    "year_built": 2024,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Casey-at-Frisco-Station_IPA-Texas_RCM-Photos2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "tiffanyportfolio",
+    "url": "https://ipatexasmultifamily.com/property/tiffanyportfolio/",
+    "title": "Tiffany Galleria Portfolio",
+    "description": "",
+    "location": "Houston, TX",
+    "property_type": "Multifamily",
+    "units": 188,
+    "year_built": 1972,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Copy-of-0O7A1718-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "internationalatvalleyranch",
+    "url": "https://ipatexasmultifamily.com/property/internationalatvalleyranch/",
+    "title": "The International at Valley Ranch",
+    "description": "",
+    "location": "Irving, TX",
+    "property_type": "Multifamily",
+    "units": 236,
+    "year_built": 2024,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/International-at-Valley-Ranch_RCM-Photos2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "residencesatpaytonplace",
+    "url": "https://ipatexasmultifamily.com/property/residencesatpaytonplace/",
+    "title": "Residences at Payton Place",
+    "description": "",
+    "location": "Arlington Heights, IL",
+    "property_type": "Multifamily",
+    "units": 263,
+    "year_built": 2021,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Residences-at-Payton-Place_RCM2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "contigowestoverhills",
+    "url": "https://ipatexasmultifamily.com/property/contigowestoverhills/",
+    "title": "Contigo Westover Hills",
+    "description": "",
+    "location": "San Antonio, TX",
+    "property_type": "Multifamily",
+    "units": 220,
+    "year_built": 1996,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Contigo-Westover-Hills_RCM_2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "magnoliaview",
+    "url": "https://ipatexasmultifamily.com/property/magnoliaview/",
+    "title": "Magnolia View",
+    "description": "",
+    "location": "Fort Worth, TX",
+    "property_type": "Multifamily",
+    "units": 374,
+    "year_built": 2020,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Magnolia-View_RCM2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "seguindevelopmentsite",
+    "url": "https://ipatexasmultifamily.com/property/seguindevelopmentsite/",
+    "title": "Seguin Development Site",
+    "description": "",
+    "location": "Seguin, TX",
+    "property_type": "Multifamily",
+    "units": 0,
+    "year_built": 0,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Seguin-RCM_2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "wynwood",
+    "url": "https://ipatexasmultifamily.com/property/wynwood/",
+    "title": "Wynwood",
+    "description": "",
+    "location": "Clarksville, TN",
+    "property_type": "Multifamily",
+    "units": 404,
+    "year_built": 2020,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Wynwood_RCM_Photos2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "24longview",
+    "url": "https://ipatexasmultifamily.com/property/24longview/",
+    "title": "24 Longview",
+    "description": "",
+    "location": "Austin, TX",
+    "property_type": "Multifamily",
+    "units": 70,
+    "year_built": 2012,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/2401-Longview-RCM_3-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "socialsmtx",
+    "url": "https://ipatexasmultifamily.com/property/socialsmtx/",
+    "title": "The Social SMTX",
+    "description": "",
+    "location": "Marcos, TX",
+    "property_type": "Multifamily",
+    "units": 109,
+    "year_built": 2001,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Social_RCM2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "heritagesquare",
+    "url": "https://ipatexasmultifamily.com/property/heritagesquare/",
+    "title": "Heritage Square",
+    "description": "",
+    "location": "Sellersburg, IN",
+    "property_type": "Multifamily",
+    "units": 183,
+    "year_built": 2022,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Heritage-Square_RCM2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "300eastlasalle",
+    "url": "https://ipatexasmultifamily.com/property/300eastlasalle/",
+    "title": "300 East LaSalle",
+    "description": "",
+    "location": "South Bend, IN",
+    "property_type": "Multifamily",
+    "units": 144,
+    "year_built": 2022,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/300-LaSalle_RCM_2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "bellaireoaks",
+    "url": "https://ipatexasmultifamily.com/property/bellaireoaks/",
+    "title": "Bellaire Oaks",
+    "description": "",
+    "location": "Houston, TX",
+    "property_type": "Multifamily",
+    "units": 711,
+    "year_built": 0,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Bellaire-Oaks_RCM2-1-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "ferro",
+    "url": "https://ipatexasmultifamily.com/property/ferro/",
+    "title": "Ferro",
+    "description": "",
+    "location": "Plano, TX",
+    "property_type": "Multifamily",
+    "units": 379,
+    "year_built": 2022,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Ferro_RCM_Photos3-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "vantageathutto",
+    "url": "https://ipatexasmultifamily.com/property/vantageathutto/",
+    "title": "Vantage at Hutto",
+    "description": "",
+    "location": "Hutto, TX",
+    "property_type": "Multifamily",
+    "units": 288,
+    "year_built": 2023,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Vantage-at-Hutto-RCM_2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "reattaranch",
+    "url": "https://ipatexasmultifamily.com/property/reattaranch/",
+    "title": "Reatta Ranch",
+    "description": "",
+    "location": "Justin, TX",
+    "property_type": "Multifamily",
+    "units": 300,
+    "year_built": 2020,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Reatta-Ranch_RCM2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "theatwell",
+    "url": "https://ipatexasmultifamily.com/property/theatwell/",
+    "title": "The Atwell",
+    "description": "",
+    "location": "Mansfield, TX",
+    "property_type": "Multifamily",
+    "units": 297,
+    "year_built": 2022,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Atwell_RCM2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "unionhouse",
+    "url": "https://ipatexasmultifamily.com/property/unionhouse/",
+    "title": "Union House",
+    "description": "",
+    "location": "Aubrey, TX",
+    "property_type": "Multifamily",
+    "units": 322,
+    "year_built": 2022,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Union-House_RCM2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "shreveportportfolio",
+    "url": "https://ipatexasmultifamily.com/property/shreveportportfolio/",
+    "title": "Shreveport Portfolio",
+    "description": "",
+    "location": "Shreveport, LA",
+    "property_type": "Multifamily",
+    "units": 786,
+    "year_built": 1980,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Shreveport-Portfolio_RCM-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "windhamchase",
+    "url": "https://ipatexasmultifamily.com/property/windhamchase/",
+    "title": "Windham Chase",
+    "description": "",
+    "location": "Richardson, TX",
+    "property_type": "Multifamily",
+    "units": 236,
+    "year_built": 1971,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Windham-Chase_RCM3-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "theclusters-copy",
+    "url": "https://ipatexasmultifamily.com/property/theclusters-copy/",
+    "title": "The Permian Value-Add Portfolio",
+    "description": "",
+    "location": "Midland/Odessa, TX",
+    "property_type": "Multifamily",
+    "units": 352,
+    "year_built": 1982,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Permian-Value-Add-Portfolio_RCM3-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "presidiumrevelstoke-copy",
+    "url": "https://ipatexasmultifamily.com/property/presidiumrevelstoke-copy/",
+    "title": "Verlaine on the Parkway",
+    "description": "",
+    "location": "Dallas, TX",
+    "property_type": "Multifamily",
+    "units": 294,
+    "year_built": 1971,
+    "price": "",
+    "status": "Active",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Verlaine-on-the-Parkway_RCM2-370x250.jpg"
+    ]
+  },
+  {
+    "source": "ipa_texas",
+    "source_id": "ipa-0000",
+    "url": "",
+    "title": "",
+    "description": "",
+    "location": "Montgomery, TX",
+    "property_type": "Multifamily",
+    "units": 144,
+    "year_built": 2016,
+    "price": "",
+    "status": "Under Contract",
+    "images": [
+      "https://ipatexasmultifamily.com/wp-content/uploads/Harbor-Shores_1-370x250.jpg"
+    ]
+  }
+]

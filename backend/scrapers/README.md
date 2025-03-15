@@ -85,6 +85,65 @@ Additionally, all extracted property data is stored in both Supabase and Neo4j d
 
 See the [Scraper Architecture](../../docs/scraper-architecture.md) and [Scraper Usage Guide](../../docs/scraper-usage-guide.md) for detailed instructions.
 
+## Key Lessons from CBRE DealFlow Scraper
+
+The CBRE DealFlow scraper implementation provided several important lessons that are valuable for future scraper development:
+
+### 1. MCP Server Port Configuration
+
+A critical detail for successful scraper operation is the correct port configuration for the MCP server:
+
+```python
+# Initialize the MCP client with the correct port
+browser_client = MCPClient(base_url="http://localhost:3001")
+```
+
+The MCP server runs on port 3001 by default, not port 3000. This must be correctly specified in both the scraper code and the `.env` file:
+
+```
+MCP_PLAYWRIGHT_URL=http://localhost:3001
+```
+
+### 2. Asynchronous Methods
+
+All methods that interact with the MCP client must be asynchronous:
+
+```python
+async def extract_properties(self, browser_client):
+    # Navigate to the page
+    success = await browser_client.navigate_to_page(self.base_url)
+    
+    # Get HTML content
+    html_content = await browser_client.get_html()
+    
+    # Execute JavaScript
+    result = await browser_client.execute_script("return document.title")
+```
+
+### 3. Database Storage Configuration
+
+To ensure data is saved to Supabase, the `ScraperDataStorage` must be initialized with `save_to_db=True`:
+
+```python
+self.storage = ScraperDataStorage("cbredealflow", save_to_db=True)
+```
+
+Additionally, the `save_to_database` method must be explicitly called:
+
+```python
+await self.storage.save_to_database(properties)
+```
+
+### 4. HTML Parsing Strategies
+
+The CBRE DealFlow scraper demonstrated effective HTML parsing strategies:
+
+1. First attempt to extract data from JavaScript variables
+2. Fall back to HTML parsing with BeautifulSoup if JavaScript extraction fails
+3. Use specific CSS selectors to target property elements
+
+This multi-layered approach ensures maximum data extraction reliability.
+
 ## Core Components
 
 ### MCP Client

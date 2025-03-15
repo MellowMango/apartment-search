@@ -26,6 +26,10 @@ logger = logging.getLogger(__name__)
 # List of available scrapers
 AVAILABLE_SCRAPERS = {
     "acrmultifamily": "backend.scrapers.brokers.acrmultifamily.scraper",
+    "henrysmiller": "backend.scrapers.brokers.henrysmiller.scraper",
+    "cbredealflow": "backend.scrapers.brokers.cbredealflow.scraper",
+    "cbre": "backend.scrapers.brokers.cbre.scraper",
+    "ipa_texas": "backend.scrapers.brokers.ipa_texas.scraper",
     # Add more scrapers here as they are implemented
 }
 

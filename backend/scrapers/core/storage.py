@@ -201,6 +201,7 @@ class ScraperDataStorage:
                 
                 # Process properties
                 success_count = 0
+                skipped_count = 0
                 
                 # First, get or create broker entry
                 try:
@@ -323,20 +324,38 @@ class ScraperDataStorage:
                                 db_property[field] = 0
                         
                         # Insert into Supabase
-                        logger.info(f"Inserting property {db_property['name']} into Supabase")
-                        result = supabase.table("properties").insert(db_property).execute()
-                        logger.info(f"Successfully inserted property {db_property['name']} into Supabase (ID: {result.data[0]['id'] if result.data else None})")
+                        logger.info(f"Checking if property {db_property['name']} already exists in database")
                         
-                        success_count += 1
+                        # Check if property already exists by name and broker_id
+                        existing_prop = None
+                        if broker_id:
+                            existing_resp = supabase.table("properties").select("*").eq("name", db_property['name']).eq("broker_id", broker_id).execute()
+                            existing_prop = existing_resp.data and len(existing_resp.data) > 0
+                        
+                        if existing_prop:
+                            logger.info(f"Property {db_property['name']} already exists in database, updating")
+                            # Update the existing property with new data
+                            db_property["updated_at"] = datetime.datetime.now().isoformat()
+                            result = supabase.table("properties").update(db_property).eq("name", db_property['name']).eq("broker_id", broker_id).execute()
+                            logger.info(f"Successfully updated property {db_property['name']} in Supabase")
+                            skipped_count += 1
+                        else:
+                            logger.info(f"Inserting new property {db_property['name']} into Supabase")
+                            result = supabase.table("properties").insert(db_property).execute()
+                            logger.info(f"Successfully inserted property {db_property['name']} into Supabase (ID: {result.data[0]['id'] if result.data else None})")
+                            success_count += 1
+                        
                     except Exception as e:
                         logger.error(f"Error saving property to database: {e}")
                 
                 # Calculate success rate
-                success_rate = (success_count / len(properties)) * 100 if properties else 0
-                logger.info(f"Saved {success_count}/{len(properties)} properties to database (success rate: {success_rate:.2f}%)")
+                total_processed = success_count + skipped_count
+                success_rate = (total_processed / len(properties)) * 100 if properties else 0
+                logger.info(f"Processed {total_processed}/{len(properties)} properties (success rate: {success_rate:.2f}%)")
+                logger.info(f"Added {success_count} new properties, updated {skipped_count} existing properties")
                 
                 # Consider partial success as success for now
-                return success_count > 0
+                return total_processed > 0
             
             except ImportError as e:
                 logger.error(f"Missing required database libraries: {e}")
