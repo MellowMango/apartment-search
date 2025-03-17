@@ -17,7 +17,7 @@
 | 2.1 | **Data Model Draft (Property, Broker, etc.)**<br>Outline fields in code for Supabase & Neo4j synergy | Completed | backend/app/models/data_models.py, backend/app/models/README.md, backend/app/models/data_model_diagram.md |
 | 2.2 | **MCP Server Setup & Integration**<br>Set up Firecrawl MCP server (primary), with MCP-Playwright and MCP-Puppeteer as alternatives; create integration with FastAPI backend | Completed | backend/app/services/mcp_client.py, backend/app/services/mcp_scraper.py, scripts/run_mcp_server.sh, scripts/test_mcp_simple.py, scripts/test_mcp_standalone.py, scripts/test_mcp_real.py |
 | 2.3 | **LLM-Guided Scraping Prototype**<br>Develop prototype for LLM-guided navigation of broker websites using Firecrawl MCP, test on 2-3 major Austin broker sites | Completed | backend/app/services/mcp_client.py, backend/app/services/mcp_scraper.py, scripts/test_broker_scraping.py, docs/links-to-scrape.md |
-| 2.4 | **MCP Scraper to Supabase Integration**<br>Hook the Firecrawl MCP scraping & email tasks to store extracted property data in Supabase | Not Started | |
+| 2.4 | **MCP Scraper to Supabase Integration**<br>Hook the Firecrawl MCP scraping & email tasks to store extracted property data in Supabase | Completed | backend/scrapers/core/storage.py |
 | 2.5 | **Email Retrieval Skeleton (imaplib)**<br>Connect to a test email inbox, retrieve messages; no OCR yet | Not Started | |
 | 2.6 | **Organized Scraper Architecture**<br>Created modular directory structure for scrapers, with shared core modules and organized data storage | Completed | backend/scrapers/, docs/scraper-architecture.md, data/.gitignore |
 
@@ -40,64 +40,89 @@
 | 4.3 | **Graph Query Endpoint in FastAPI**<br>Implemented endpoints for related properties and broker networks using Neo4j graph queries | Completed | backend/app/api/api_v1/endpoints/properties.py, backend/app/api/api_v1/endpoints/brokers.py |
 | 4.4 | **Validation & Basic Graph Testing**<br>Created test script to validate data consistency across Supabase & Neo4j; successfully tested with sample properties and brokers | Completed | backend/scripts/test_neo4j_sync.py |
 
-## Sprint Day 5: Frontend Scaffold (Next.js) 🔄
+## Sprint Day 5: MCP Scraper & Email Agents Finalization ✅
 
 | Task | Description | Status | File Context |
 |------|-------------|--------|--------------|
-| 5.1 | **Next.js Project Initialization**<br>Set up Next.js project with appropriate folder structure | Not Started | |
-| 5.2 | **Context API Setup**<br>Implement React Context for state management | Not Started | |
-| 5.3 | **Basic UI Layout (Header, Nav, Footer)**<br>Implement Acquire Apartments branding with Tailwind CSS or Material-UI | Not Started | |
-| 5.4 | **Supabase Client Integration**<br>Set up client-side data fetching from Supabase | Not Started | |
-| 5.5 | **Setup Next.js Routing**<br>Configure routing for Home, MapView, Admin, etc. | Not Started | |
-| 5.6 | **Authentication Pages**<br>Create login, register, reset-password, and account pages | Not Started | |
+| 5.1 | **MCP Scraping Enhancements**<br>Refine LLM prompts for Firecrawl MCP for more accurate data extraction, implement error handling and recovery strategies | Completed | backend/scrapers/core/mcp_client.py, backend/scrapers/core/data_extractors.py, backend/scrapers/core/storage.py |
+| 5.1.1 | **Organized Scraper Structure**<br>Implemented modular scraper architecture with shared components and broker-specific implementations | Completed | backend/scrapers/, docs/scraper-architecture.md |
+| 5.1.2 | **ACR Multifamily Scraper**<br>Developed specialized scraper for ACR Multifamily properties | Completed | backend/scrapers/brokers/acrmultifamily/ |
+| 5.1.3 | **Command-line Interface**<br>Created CLI for running scrapers individually or all at once | Completed | backend/scrapers/run_scraper.py |
+| 5.1.4 | **Matthews Scraper**<br>Developed specialized scraper for Matthews properties with pagination support | Completed | backend/scrapers/brokers/matthews/ |
+| 5.1.5 | **IPA Texas Scraper**<br>Developed specialized scraper for IPA Texas properties | Completed | backend/scrapers/brokers/ipa_texas/ |
+| 5.1.6 | **Henry S Miller Scraper**<br>Developed specialized scraper for Henry S Miller properties | Completed | backend/scrapers/brokers/henry_s_miller/ |
+| 5.1.7 | **CBRE DealFlow Scraper**<br>Developed specialized scraper for CBRE DealFlow properties | Completed | backend/scrapers/brokers/cbre_dealflow/ |
+| 5.2 | **Email Processing w/ OCR**<br>Implement pytesseract for images in emails, parse property details, store in DB | Not Started | |
+| 5.3 | **Error Handling & Logging**<br>Implemented comprehensive error handling and logging for all scrapers | Completed | backend/scrapers/core/mcp_client.py |
+| 5.4 | **Testing MCP Scrapers**<br>Tested all broker sites to confirm Firecrawl MCP accuracy and resilience | Completed | backend/scrapers/brokers/*/test_*_scraper.py |
 
-## Sprint Day 6: Map & Sidebar 🔄
-
-| Task | Description | Status | File Context |
-|------|-------------|--------|--------------|
-| 6.1 | **react-leaflet Integration**<br>Display Austin map, load property markers from Context | Not Started | |
-| 6.2 | **Sidebar with Property List**<br>Scrollable list of properties; on marker or list click, show property summary | Not Started | |
-| 6.3 | **Marker Info Panels & Basic UI Polish**<br>Hover or click markers for quick summary; refine styling with Acquire Apartments branding | Not Started | |
-| 6.4 | **Preliminary End-to-End Testing**<br>Verify data flow: Firecrawl MCP scraper → Supabase → Neo4j → API → Next.js map/list | Not Started | |
-
-## Sprint Day 7: Search, Filter & Real-Time Updates 🔄
+## Sprint Day 6: Data Cleaning & Enrichment ✅
 
 | Task | Description | Status | File Context |
 |------|-------------|--------|--------------|
-| 7.1 | **Search & Filter Implementation**<br>Filter by property status, year built, etc.; refresh map & sidebar | Not Started | |
-| 7.2 | **Socket.IO Real-Time Setup**<br>Add Socket.IO server to FastAPI; broadcast property status changes | Not Started | |
-| 7.3 | **Socket.IO Client in Next.js**<br>Listen for "property-updated" event; update Context state | Not Started | |
-| 7.4 | **Verify Real-Time Flow**<br>Manual test: update property in Supabase → triggers Celery → notifies Socket.IO → Next.js updates | Not Started | |
+| 6.1 | **Data Cleaning System**<br>Build a system to deduplicate properties across brokers, remove example properties, and standardize property attributes | Completed | backend/data_cleaning/ |
+| 6.2 | **Property Deduplication Logic**<br>Implement algorithms to identify and merge duplicate property listings based on address, name, and other attributes | Completed | backend/data_cleaning/deduplication/property_matcher.py |
+| 6.3 | **Data Standardization**<br>Create rules for normalizing property types, statuses, and other categorical fields | Completed | backend/data_cleaning/standardization/property_standardizer.py |
+| 6.4 | **Data Validation**<br>Implement validation rules to ensure critical fields contain valid data | Completed | backend/data_cleaning/validation/property_validator.py |
+| 6.5 | **Scheduled Cleaning Jobs**<br>Set up periodic jobs to clean the database and maintain data quality | Completed | backend/data_cleaning/review_and_approve.py, backend/data_cleaning/test_real_db.py |
 
-## Sprint Day 8: MCP Scraper & Email Agents Finalization 🔄
-
-| Task | Description | Status | File Context |
-|------|-------------|--------|--------------|
-| 8.1 | **MCP Scraping Enhancements**<br>Refine LLM prompts for Firecrawl MCP for more accurate data extraction, implement error handling and recovery strategies | In Progress | backend/scrapers/core/mcp_client.py, backend/scrapers/core/data_extractors.py, backend/scrapers/core/storage.py |
-| 8.1.1 | **Organized Scraper Structure**<br>Implemented modular scraper architecture with shared components and broker-specific implementations | Completed | backend/scrapers/, docs/scraper-architecture.md |
-| 8.1.2 | **ACR Multifamily Scraper**<br>Developed specialized scraper for ACR Multifamily properties | Completed | backend/scrapers/brokers/acrmultifamily/ |
-| 8.1.3 | **Command-line Interface**<br>Created CLI for running scrapers individually or all at once | Completed | backend/scrapers/run_scraper.py |
-| 8.2 | **Email Processing w/ OCR**<br>Implement pytesseract for images in emails, parse property details, store in DB | Not Started | |
-| 8.3 | **Error Handling & Logging**<br>Sentry or standard logging for Firecrawl MCP scraper errors, queue retries | In Progress | backend/scrapers/core/mcp_client.py |
-| 8.4 | **Testing MCP Scrapers**<br>Test real broker sites to confirm Firecrawl MCP accuracy and resilience | In Progress | backend/scrapers/brokers/acrmultifamily/test_acrmultifamily_scraper.py |
-
-## Sprint Day 9: Admin & Missing Info 🔄
+## Sprint Day 7: Data Enrichment & Geocoding 🔄
 
 | Task | Description | Status | File Context |
 |------|-------------|--------|--------------|
-| 9.1 | **Admin UI & Authentication**<br>Secure admin routes using Supabase auth; manage scraping targets, logs, missing info queue | Not Started | |
-| 9.2 | **Missing Info Detection & Emails**<br>Track incomplete fields, weekly Celery job sends broker requests via SendGrid; admin can review & approve updates | Not Started | |
-| 9.3 | **Data Corrections Submission**<br>Let users submit corrections, queue for admin review; final updates in Supabase & Neo4j | Not Started | |
-| 9.4 | **Integration Testing for Admin Flows**<br>Ensure Firecrawl MCP scraper tasks + admin overrides + property updates flow seamlessly | Not Started | |
+| 7.1 | **Data Enrichment Agent**<br>Create an agent to enhance property data with additional information from public sources | Not Started | |
+| 7.2 | **Geocoding Integration**<br>Implement geocoding to convert addresses to precise latitude/longitude for Mapbox integration | Not Started | |
+| 7.3 | **Property Details Enhancement**<br>Gather additional information about properties from public sources | Not Started | |
+| 7.4 | **Market Data Integration**<br>Add neighborhood statistics, market trends, and comparable properties | Not Started | |
+| 7.5 | **Image Enhancement**<br>Collect additional property images if available from public sources | Not Started | |
+| 7.6 | **AI-Based Text Extraction**<br>Use AI to extract structured data from unstructured property descriptions | Not Started | |
 
-## Sprint Day 10: Payment Integration & Final QA 🔄
+## Sprint Day 8: Frontend Scaffold (Next.js) 🔄
 
 | Task | Description | Status | File Context |
 |------|-------------|--------|--------------|
-| 10.1 | **Stripe Integration**<br>Set up Stripe API, create subscription products and prices, implement webhook handling | Not Started | |
-| 10.2 | **Subscription UI & User Flow**<br>Create subscription pages, checkout process, and account management for subscriptions | Not Started | |
-| 10.3 | **Paywall Implementation**<br>Restrict access to detailed property information based on subscription status | Not Started | |
-| 10.4 | **Unit & Integration Tests**<br>Expand coverage (pytest, Jest); ensure Firecrawl MCP scraper concurrency & map rendering are stable | Not Started | |
-| 10.5 | **Basic Analytics & CSV Export**<br>Summaries of active listings, average metrics; CSV export from Supabase or Neo4j queries | Not Started | |
-| 10.6 | **Deployment**<br>Deploy backend to Heroku (web dyno + Celery worker)<br>Deploy Next.js frontend to Vercel or Heroku | Not Started | |
-| 10.7 | **Final Verification & Handover**<br>Confirm Firecrawl MCP scrapers run on schedule, real-time updates flow, data integrity across DBs, final handoff | Not Started | |
+| 8.1 | **Next.js Project Initialization**<br>Set up Next.js project with appropriate folder structure | Not Started | |
+| 8.2 | **Context API Setup**<br>Implement React Context for state management | Not Started | |
+| 8.3 | **Basic UI Layout (Header, Nav, Footer)**<br>Implement Acquire Apartments branding with Tailwind CSS or Material-UI | Not Started | |
+| 8.4 | **Supabase Client Integration**<br>Set up client-side data fetching from Supabase | Not Started | |
+| 8.5 | **Setup Next.js Routing**<br>Configure routing for Home, MapView, Admin, etc. | Not Started | |
+| 8.6 | **Authentication Pages**<br>Create login, register, reset-password, and account pages | Not Started | |
+
+## Sprint Day 9: Map & Sidebar 🔄
+
+| Task | Description | Status | File Context |
+|------|-------------|--------|--------------|
+| 9.1 | **react-leaflet Integration**<br>Display Austin map, load property markers from Context | Not Started | |
+| 9.2 | **Sidebar with Property List**<br>Scrollable list of properties; on marker or list click, show property summary | Not Started | |
+| 9.3 | **Marker Info Panels & Basic UI Polish**<br>Hover or click markers for quick summary; refine styling with Acquire Apartments branding | Not Started | |
+| 9.4 | **Preliminary End-to-End Testing**<br>Verify data flow: Firecrawl MCP scraper → Supabase → Neo4j → API → Next.js map/list | Not Started | |
+
+## Sprint Day 10: Search, Filter & Real-Time Updates 🔄
+
+| Task | Description | Status | File Context |
+|------|-------------|--------|--------------|
+| 10.1 | **Search & Filter Implementation**<br>Filter by property status, year built, etc.; refresh map & sidebar | Not Started | |
+| 10.2 | **Socket.IO Real-Time Setup**<br>Add Socket.IO server to FastAPI; broadcast property status changes | Not Started | |
+| 10.3 | **Socket.IO Client in Next.js**<br>Listen for "property-updated" event; update Context state | Not Started | |
+| 10.4 | **Verify Real-Time Flow**<br>Manual test: update property in Supabase → triggers Celery → notifies Socket.IO → Next.js updates | Not Started | |
+
+## Sprint Day 11: Admin & Missing Info 🔄
+
+| Task | Description | Status | File Context |
+|------|-------------|--------|--------------|
+| 11.1 | **Admin UI & Authentication**<br>Secure admin routes using Supabase auth; manage scraping targets, logs, missing info queue | Not Started | |
+| 11.2 | **Missing Info Detection & Emails**<br>Track incomplete fields, weekly Celery job sends broker requests via SendGrid; admin can review & approve updates | Not Started | |
+| 11.3 | **Data Corrections Submission**<br>Let users submit corrections, queue for admin review; final updates in Supabase & Neo4j | Not Started | |
+| 11.4 | **Integration Testing for Admin Flows**<br>Ensure Firecrawl MCP scraper tasks + admin overrides + property updates flow seamlessly | Not Started | |
+
+## Sprint Day 12: Payment Integration & Final QA 🔄
+
+| Task | Description | Status | File Context |
+|------|-------------|--------|--------------|
+| 12.1 | **Stripe Integration**<br>Set up Stripe API, create subscription products and prices, implement webhook handling | Not Started | |
+| 12.2 | **Subscription UI & User Flow**<br>Create subscription pages, checkout process, and account management for subscriptions | Not Started | |
+| 12.3 | **Paywall Implementation**<br>Restrict access to detailed property information based on subscription status | Not Started | |
+| 12.4 | **Unit & Integration Tests**<br>Expand coverage (pytest, Jest); ensure Firecrawl MCP scraper concurrency & map rendering are stable | Not Started | |
+| 12.5 | **Basic Analytics & CSV Export**<br>Summaries of active listings, average metrics; CSV export from Supabase or Neo4j queries | Not Started | |
+| 12.6 | **Deployment**<br>Deploy backend to Heroku (web dyno + Celery worker)<br>Deploy Next.js frontend to Vercel or Heroku | Not Started | |
+| 12.7 | **Final Verification & Handover**<br>Confirm Firecrawl MCP scrapers run on schedule, real-time updates flow, data integrity across DBs, final handoff | Not Started | |

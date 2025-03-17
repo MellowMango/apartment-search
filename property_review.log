@@ -1,0 +1,128 @@
+2025-03-15 18:22:42,191 - __main__ - INFO - Displaying review candidates from data/review/sample_review_candidates.json
+2025-03-15 18:22:42,191 - backend.data_cleaning.review.property_review - INFO - Loaded 9 review candidates from data/review/sample_review_candidates.json
+2025-03-15 18:22:48,451 - __main__ - INFO - Updating candidate status for test_3_4
+2025-03-15 18:22:48,451 - backend.data_cleaning.review.property_review - INFO - Loaded 9 review candidates from data/review/sample_review_candidates.json
+2025-03-15 18:22:48,451 - backend.data_cleaning.review.property_review - INFO - Updated candidate test_3_4 status to approved
+2025-03-15 18:22:48,452 - __main__ - INFO - Saved 9 review candidates to data/review/sample_review_candidates.json
+2025-03-15 18:22:53,550 - __main__ - INFO - Displaying review candidates from data/review/sample_review_candidates.json
+2025-03-15 18:22:53,551 - backend.data_cleaning.review.property_review - INFO - Loaded 9 review candidates from data/review/sample_review_candidates.json
+2025-03-15 18:28:39,354 - __main__ - INFO - Generating review candidates
+2025-03-15 18:28:39,359 - backend.data_cleaning.database.db_operations - INFO - Loading environment variables from: /Users/guyma/code/projects/acquire/backend/.env
+2025-03-15 18:28:39,361 - backend.data_cleaning.database.db_operations - INFO - Supabase URL: https://vdrtfnphuixbguedqhox.supabase.co
+2025-03-15 18:28:39,630 - numexpr.utils - INFO - NumExpr defaulting to 10 threads.
+2025-03-15 18:28:40,013 - backend.data_cleaning.database.db_operations - INFO - Supabase client initialized successfully
+2025-03-15 18:28:40,013 - __main__ - INFO - Loaded 6 properties from data/sample/sample_properties.json
+2025-03-15 18:28:40,013 - backend.data_cleaning.review.property_review - INFO - Generating review candidates for 6 properties
+2025-03-15 18:28:40,014 - backend.data_cleaning.review.property_review - INFO - Identifying duplicate candidates among 6 properties
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - WARNING - Could not standardize property type: 'UNKNOWN', defaulting to SPECIAL_PURPOSE
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - WARNING - Could not standardize property status: 'UNKNOWN', defaulting to ACTIVE
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - WARNING - Year built '0' is outside reasonable range
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,014 - backend.data_cleaning.deduplication.property_matcher - INFO - Found duplicate: Sunset Apartments and Sunset Apts with similarity 0.99
+2025-03-15 18:28:40,014 - backend.data_cleaning.deduplication.property_matcher - INFO - Found duplicate: Oak Ridge Office Building and Oak Ridge Offices with similarity 0.91
+2025-03-15 18:28:40,015 - backend.data_cleaning.review.property_review - INFO - Identified 2 duplicate candidates for review
+2025-03-15 18:28:40,015 - backend.data_cleaning.review.property_review - INFO - Identifying test property candidates among 6 properties
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - WARNING - Could not standardize property type: 'UNKNOWN', defaulting to SPECIAL_PURPOSE
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - WARNING - Could not standardize property status: 'UNKNOWN', defaulting to ACTIVE
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - WARNING - Year built '0' is outside reasonable range
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.review.property_review - INFO - Identified 6 test property candidates for review
+2025-03-15 18:28:40,015 - backend.data_cleaning.review.property_review - INFO - Identifying invalid property candidates among 6 properties
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - WARNING - Could not standardize property type: 'UNKNOWN', defaulting to SPECIAL_PURPOSE
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - WARNING - Could not standardize property status: 'UNKNOWN', defaulting to ACTIVE
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - WARNING - Year built '0' is outside reasonable range
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'latitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'longitude' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.standardization.property_standardizer - INFO - Added missing field 'description' with default value
+2025-03-15 18:28:40,015 - backend.data_cleaning.review.property_review - INFO - Identified 1 invalid property candidates for review
+2025-03-15 18:28:40,015 - backend.data_cleaning.review.property_review - INFO - Generated 9 total review candidates
+2025-03-15 18:28:40,016 - __main__ - INFO - Saved 9 review candidates to data/review/review-session-1.json
+2025-03-15 18:28:46,373 - __main__ - INFO - Displaying review candidates from data/review/review-session-1.json
+2025-03-15 18:28:46,373 - backend.data_cleaning.review.property_review - INFO - Loaded 9 review candidates from data/review/review-session-1.json
+2025-03-15 18:28:53,746 - __main__ - INFO - Updating candidate status for dup_0_1_2
+2025-03-15 18:28:53,746 - backend.data_cleaning.review.property_review - INFO - Loaded 9 review candidates from data/review/review-session-1.json
+2025-03-15 18:28:53,746 - backend.data_cleaning.review.property_review - INFO - Updated candidate dup_0_1_2 status to approved
+2025-03-15 18:28:53,747 - __main__ - INFO - Saved 9 review candidates to data/review/review-session-1.json
+2025-03-15 18:28:59,678 - __main__ - INFO - Updating candidate status for test_3_4
+2025-03-15 18:28:59,679 - backend.data_cleaning.review.property_review - INFO - Loaded 9 review candidates from data/review/review-session-1.json
+2025-03-15 18:28:59,679 - backend.data_cleaning.review.property_review - INFO - Updated candidate test_3_4 status to approved
+2025-03-15 18:28:59,679 - __main__ - INFO - Saved 9 review candidates to data/review/review-session-1.json
+2025-03-15 18:29:06,381 - __main__ - INFO - Updating candidate status for test_2_3
+2025-03-15 18:29:06,381 - backend.data_cleaning.review.property_review - INFO - Loaded 9 review candidates from data/review/review-session-1.json
+2025-03-15 18:29:06,381 - backend.data_cleaning.review.property_review - INFO - Updated candidate test_2_3 status to disapproved
+2025-03-15 18:29:06,381 - __main__ - INFO - Saved 9 review candidates to data/review/review-session-1.json
+2025-03-15 18:29:12,474 - __main__ - INFO - Updating candidate status for invalid_4_5
+2025-03-15 18:29:12,474 - backend.data_cleaning.review.property_review - INFO - Loaded 9 review candidates from data/review/review-session-1.json
+2025-03-15 18:29:12,474 - backend.data_cleaning.review.property_review - INFO - Updated candidate invalid_4_5 status to approved
+2025-03-15 18:29:12,475 - __main__ - INFO - Saved 9 review candidates to data/review/review-session-1.json
+2025-03-15 18:29:18,345 - __main__ - INFO - Displaying review candidates from data/review/review-session-1.json
+2025-03-15 18:29:18,346 - backend.data_cleaning.review.property_review - INFO - Loaded 9 review candidates from data/review/review-session-1.json
+2025-03-15 18:29:24,610 - __main__ - INFO - Applying approved actions
+2025-03-15 18:29:24,633 - backend.data_cleaning.database.db_operations - INFO - Loading environment variables from: /Users/guyma/code/projects/acquire/backend/.env
+2025-03-15 18:29:24,649 - backend.data_cleaning.database.db_operations - INFO - Supabase URL: https://vdrtfnphuixbguedqhox.supabase.co
+2025-03-15 18:29:24,903 - numexpr.utils - INFO - NumExpr defaulting to 10 threads.
+2025-03-15 18:29:25,271 - backend.data_cleaning.database.db_operations - INFO - Supabase client initialized successfully
+2025-03-15 18:29:25,271 - backend.data_cleaning.review.property_review - INFO - Loaded 9 review candidates from data/review/review-session-1.json
+2025-03-15 18:29:25,922 - httpx - INFO - HTTP Request: GET https://vdrtfnphuixbguedqhox.supabase.co/rest/v1/properties?select=%2A&id=eq.1 "HTTP/2 400 Bad Request"
+2025-03-15 18:29:25,958 - backend.data_cleaning.database.db_operations - ERROR - Error merging properties: {'code': '22P02', 'details': None, 'hint': None, 'message': 'invalid input syntax for type uuid: "1"'}
+2025-03-15 18:29:25,958 - backend.data_cleaning.review.property_review - ERROR - Failed to merge property 2 into 1
+2025-03-15 18:29:25,958 - backend.data_cleaning.database.db_operations - INFO - Updating property ID 4 in database
+2025-03-15 18:29:26,275 - httpx - INFO - HTTP Request: PATCH https://vdrtfnphuixbguedqhox.supabase.co/rest/v1/properties?id=eq.4 "HTTP/2 400 Bad Request"
+2025-03-15 18:29:26,283 - backend.data_cleaning.database.db_operations - ERROR - Error updating property ID 4 in database: {'code': 'PGRST204', 'details': None, 'hint': None, 'message': "Could not find the 'additional_data' column of 'properties' in the schema cache"}
+2025-03-15 18:29:26,283 - backend.data_cleaning.database.db_operations - INFO - Deleting property ID 4 from database
+2025-03-15 18:29:26,414 - httpx - INFO - HTTP Request: DELETE https://vdrtfnphuixbguedqhox.supabase.co/rest/v1/properties?id=eq.4 "HTTP/2 400 Bad Request"
+2025-03-15 18:29:26,442 - backend.data_cleaning.database.db_operations - ERROR - Error deleting property ID 4 from database: {'code': '22P02', 'details': None, 'hint': None, 'message': 'invalid input syntax for type uuid: "4"'}
+2025-03-15 18:29:26,443 - backend.data_cleaning.review.property_review - ERROR - Failed to delete property 4
+2025-03-15 18:29:26,443 - backend.data_cleaning.database.db_operations - INFO - Updating property ID 5 in database
+2025-03-15 18:29:26,580 - httpx - INFO - HTTP Request: PATCH https://vdrtfnphuixbguedqhox.supabase.co/rest/v1/properties?id=eq.5 "HTTP/2 400 Bad Request"
+2025-03-15 18:29:26,637 - backend.data_cleaning.database.db_operations - ERROR - Error updating property ID 5 in database: {'code': 'PGRST204', 'details': None, 'hint': None, 'message': "Could not find the 'additional_data' column of 'properties' in the schema cache"}
+2025-03-15 18:29:26,638 - backend.data_cleaning.review.property_review - INFO - Successfully flagged property 5

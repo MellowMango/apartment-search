@@ -58,6 +58,15 @@ This document outlines the technology stack and architecture for the Acquire Apa
     - Broker-specific scrapers in `backend/scrapers/brokers/<broker_name>/`
     - Command-line interface in `backend/scrapers/run_scraper.py`
     - Data stored in organized `data/` directory (gitignored)
+
+- **Data Cleaning System**:
+  - Comprehensive system for cleaning property data in `backend/data_cleaning/` directory
+  - Two-step approval process to ensure no write actions occur without explicit approval
+  - Property deduplication using fuzzy matching on addresses, names, and other attributes
+  - Data standardization for normalizing property types, statuses, and other categorical fields
+  - Data validation to ensure critical fields contain valid data
+  - Test property detection to identify and remove test/example properties
+  - Command-line interface in `backend/data_cleaning/review_and_approve.py` for reviewing and approving actions
   
 - **Email Processing**:
   - Python's imaplib and email libraries
