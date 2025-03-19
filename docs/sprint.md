@@ -96,14 +96,14 @@
 | 8.5 | **Setup Next.js Routing**<br>Configure routing for Home, MapView, Admin, etc. | Not Started | |
 | 8.6 | **Authentication Pages**<br>Create login, register, reset-password, and account pages | Not Started | |
 
-## Sprint Day 9: Map & Sidebar 🔄
+## Sprint Day 9: Map & Sidebar ✅
 
 | Task | Description | Status | File Context |
 |------|-------------|--------|--------------|
-| 9.1 | **react-leaflet Integration**<br>Display Austin map, load property markers from Context | Not Started | |
-| 9.2 | **Sidebar with Property List**<br>Scrollable list of properties; on marker or list click, show property summary | Not Started | |
-| 9.3 | **Marker Info Panels & Basic UI Polish**<br>Hover or click markers for quick summary; refine styling with Acquire Apartments branding | Not Started | |
-| 9.4 | **Preliminary End-to-End Testing**<br>Verify data flow: Firecrawl MCP scraper → Supabase → Neo4j → API → Next.js map/list | Not Started | |
+| 9.1 | **react-leaflet Integration**<br>Display Austin map, load property markers from Context | Completed | frontend/src/components/MapComponent.tsx |
+| 9.2 | **Sidebar with Property List**<br>Scrollable list of properties; on marker or list click, show property summary | Completed | frontend/src/components/PropertySidebar.tsx |
+| 9.3 | **Marker Info Panels & Basic UI Polish**<br>Hover or click markers for quick summary; refine styling with Acquire Apartments branding | Completed | frontend/src/components/PropertyDetails.tsx |
+| 9.4 | **Preliminary End-to-End Testing**<br>Verify data flow: Firecrawl MCP scraper → Supabase → Neo4j → API → Next.js map/list | Completed | frontend/src/pages/map.tsx |
 
 ## Sprint Day 10: Search, Filter & Real-Time Updates 🔄
 
