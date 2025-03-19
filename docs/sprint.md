@@ -66,16 +66,24 @@
 | 6.4 | **Data Validation**<br>Implement validation rules to ensure critical fields contain valid data | Completed | backend/data_cleaning/validation/property_validator.py |
 | 6.5 | **Scheduled Cleaning Jobs**<br>Set up periodic jobs to clean the database and maintain data quality | Completed | backend/data_cleaning/review_and_approve.py, backend/data_cleaning/test_real_db.py |
 
-## Sprint Day 7: Data Enrichment & Geocoding 🔄
+## Sprint Day 7: Data Enrichment & Geocoding ✅
 
 | Task | Description | Status | File Context |
 |------|-------------|--------|--------------|
-| 7.1 | **Data Enrichment Agent**<br>Create an agent to enhance property data with additional information from public sources | Not Started | |
-| 7.2 | **Geocoding Integration**<br>Implement geocoding to convert addresses to precise latitude/longitude for Mapbox integration | Not Started | |
-| 7.3 | **Property Details Enhancement**<br>Gather additional information about properties from public sources | Not Started | |
-| 7.4 | **Market Data Integration**<br>Add neighborhood statistics, market trends, and comparable properties | Not Started | |
-| 7.5 | **Image Enhancement**<br>Collect additional property images if available from public sources | Not Started | |
-| 7.6 | **AI-Based Text Extraction**<br>Use AI to extract structured data from unstructured property descriptions | Not Started | |
+| 7.1 | **Data Enrichment Agent**<br>Create an agent to enhance property data with additional information from public sources | Completed | backend/data_enrichment/ |
+| 7.2 | **Geocoding Integration**<br>Implement geocoding to convert addresses to precise latitude/longitude for Mapbox integration | Completed | backend/data_enrichment/geocoding_service.py, backend/data_enrichment/test_geocoding.py |
+| 7.3 | **Property Details Enhancement**<br>Gather additional information about properties from public sources | Completed | backend/data_enrichment/property_researcher.py |
+| 7.6 | **AI-Based Text Extraction**<br>Use AI to extract structured data from unstructured property descriptions | Completed | backend/data_enrichment/research_enrichers/ |
+
+## Sprint Day 7.5: Frontend Preparation Documentation 🔄
+
+| Task | Description | Status | File Context |
+|------|-------------|--------|--------------|
+| 7.5.1 | **API Endpoints Documentation**<br>Document all available API endpoints with request/response formats for frontend integration | Not Started | |
+| 7.5.2 | **Property Data Structure**<br>Document the structure of property data that will be consumed by the frontend | Not Started | |
+| 7.5.3 | **Search & Filter Capabilities**<br>Document available search and filter parameters for the frontend to implement | Not Started | |
+| 7.5.4 | **Real-Time Update Flow**<br>Document the architecture and flow for real-time property updates | Not Started | |
+| 7.5.5 | **Authentication Flow**<br>Document the user authentication process and integration with Supabase Auth | Not Started | |
 
 ## Sprint Day 8: Frontend Scaffold (Next.js) 🔄
 
@@ -126,3 +134,13 @@
 | 12.5 | **Basic Analytics & CSV Export**<br>Summaries of active listings, average metrics; CSV export from Supabase or Neo4j queries | Not Started | |
 | 12.6 | **Deployment**<br>Deploy backend to Heroku (web dyno + Celery worker)<br>Deploy Next.js frontend to Vercel or Heroku | Not Started | |
 | 12.7 | **Final Verification & Handover**<br>Confirm Firecrawl MCP scrapers run on schedule, real-time updates flow, data integrity across DBs, final handoff | Not Started | |
+
+## Earmarked for Future Sprints
+
+| Task | Description | Status | File Context |
+|------|-------------|--------|--------------|
+| F.1 | **Market Data Integration**<br>Add neighborhood statistics, market trends, and comparable properties | Planned for Future | |
+| F.2 | **Image Enhancement**<br>Collect additional property images if available from public sources | Planned for Future | |
+| F.3 | **Advanced Graph Analytics**<br>Implement more sophisticated graph queries and visualizations using Neo4j | Planned for Future | |
+| F.4 | **Mobile App Development**<br>Create native mobile apps for iOS and Android | Planned for Future | |
+| F.5 | **AI-Powered Recommendations**<br>Develop personalized property recommendations based on user preferences | Planned for Future | |
