@@ -376,4 +376,4 @@ class InvestmentMetricsEnricher:
         })
         
         # Repositioning scenario
-        scenarios.appen
+        scenarios.append

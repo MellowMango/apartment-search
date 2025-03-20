@@ -85,16 +85,16 @@
 | 7.5.4 | **Real-Time Update Flow**<br>Document the architecture and flow for real-time property updates | Completed | docs/real-time-updates.md |
 | 7.5.5 | **Authentication Flow**<br>Document the user authentication process and integration with Supabase Auth | Completed | docs/authentication-flow.md |
 
-## Sprint Day 8: Frontend Scaffold (Next.js) 🔄
+## Sprint Day 8: Frontend Scaffold (Next.js) ✅
 
 | Task | Description | Status | File Context |
 |------|-------------|--------|--------------|
-| 8.1 | **Next.js Project Initialization**<br>Set up Next.js project with appropriate folder structure | Not Started | |
-| 8.2 | **Context API Setup**<br>Implement React Context for state management | Not Started | |
-| 8.3 | **Basic UI Layout (Header, Nav, Footer)**<br>Implement Acquire Apartments branding with Tailwind CSS or Material-UI | Not Started | |
-| 8.4 | **Supabase Client Integration**<br>Set up client-side data fetching from Supabase | Not Started | |
-| 8.5 | **Setup Next.js Routing**<br>Configure routing for Home, MapView, Admin, etc. | Not Started | |
-| 8.6 | **Authentication Pages**<br>Create login, register, reset-password, and account pages | Not Started | |
+| 8.1 | **Next.js Project Initialization**<br>Set up Next.js project with appropriate folder structure | Completed | frontend/src/ |
+| 8.2 | **Context API Setup**<br>Implement React Context for state management | Completed | frontend/src/contexts/AuthContext.tsx |
+| 8.3 | **Basic UI Layout (Header, Nav, Footer)**<br>Implement Acquire Apartments branding with Tailwind CSS | Completed | frontend/src/components/Layout.tsx, frontend/src/components/Header.tsx, frontend/src/components/Footer.tsx |
+| 8.4 | **Supabase Client Integration**<br>Set up client-side data fetching from Supabase | Completed | frontend/lib/supabase.js |
+| 8.5 | **Setup Next.js Routing**<br>Configure routing for Home, MapView, About, Dashboard, etc. | Completed | frontend/src/pages/ |
+| 8.6 | **Authentication Pages**<br>Create login, register, and account dashboard pages | Completed | frontend/src/pages/login.tsx, frontend/src/pages/signup.tsx, frontend/src/pages/dashboard.tsx |
 
 ## Sprint Day 9: Map & Sidebar ✅
 
@@ -105,14 +105,14 @@
 | 9.3 | **Marker Info Panels & Basic UI Polish**<br>Hover or click markers for quick summary; refine styling with Acquire Apartments branding | Completed | frontend/src/components/PropertyDetails.tsx |
 | 9.4 | **Preliminary End-to-End Testing**<br>Verify data flow: Firecrawl MCP scraper → Supabase → Neo4j → API → Next.js map/list | Completed | frontend/src/pages/map.tsx |
 
-## Sprint Day 10: Search, Filter & Real-Time Updates 🔄
+## Sprint Day 10: Search, Filter & Real-Time Updates ✅
 
 | Task | Description | Status | File Context |
 |------|-------------|--------|--------------|
-| 10.1 | **Search & Filter Implementation**<br>Filter by property status, year built, etc.; refresh map & sidebar | Not Started | |
-| 10.2 | **Socket.IO Real-Time Setup**<br>Add Socket.IO server to FastAPI; broadcast property status changes | Not Started | |
-| 10.3 | **Socket.IO Client in Next.js**<br>Listen for "property-updated" event; update Context state | Not Started | |
-| 10.4 | **Verify Real-Time Flow**<br>Manual test: update property in Supabase → triggers Celery → notifies Socket.IO → Next.js updates | Not Started | |
+| 10.1 | **Search & Filter Implementation**<br>Filter by property status, year built, etc.; refresh map & sidebar | Completed | frontend/src/contexts/FilterContext.tsx, frontend/src/components/PropertyFilter.tsx |
+| 10.2 | **Real-Time Update Components**<br>Create web socket connection for real-time property updates | Completed | frontend/src/components/RealTimeUpdates.tsx |
+| 10.3 | **Socket.IO Client in Next.js**<br>Listen for "property-updated" and "property-created" events; update state | Completed | frontend/src/pages/map.tsx, frontend/lib/supabase.js |
+| 10.4 | **Dark Mode Implementation**<br>Added system-preference aware dark mode with toggle and persistence | Completed | frontend/src/contexts/ThemeContext.tsx, frontend/tailwind.config.js |
 
 ## Sprint Day 11: Admin & Missing Info 🔄
 
@@ -128,6 +128,7 @@
 | Task | Description | Status | File Context |
 |------|-------------|--------|--------------|
 | 12.1 | **Stripe Integration**<br>Set up Stripe API, create subscription products and prices, implement webhook handling | Not Started | |
+| 12.1.2 | **ChargeBee Integration**<br>Connect Stripe and ChargeBee for subscription analytics | Not Started | |
 | 12.2 | **Subscription UI & User Flow**<br>Create subscription pages, checkout process, and account management for subscriptions | Not Started | |
 | 12.3 | **Paywall Implementation**<br>Restrict access to detailed property information based on subscription status | Not Started | |
 | 12.4 | **Unit & Integration Tests**<br>Expand coverage (pytest, Jest); ensure Firecrawl MCP scraper concurrency & map rendering are stable | Not Started | |

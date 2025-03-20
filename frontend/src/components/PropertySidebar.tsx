@@ -133,7 +133,9 @@ const PropertySidebar: FC<PropertySidebarProps> = ({
               className={`p-3 rounded-lg cursor-pointer transition border ${
                 selectedProperty?.id === property.id
                   ? 'bg-blue-50 border-blue-500 shadow-sm'
-                  : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
+                  : property._highlight
+                    ? 'bg-red-50 border-red-300 hover:bg-red-100'
+                    : 'bg-gray-50 border-gray-200 hover:bg-gray-100'
               }`}
               onClick={() => setSelectedProperty(property)}
             >
@@ -144,6 +146,30 @@ const PropertySidebar: FC<PropertySidebarProps> = ({
                 </span>
               </div>
               <p className="text-sm text-gray-600 mt-1">{property.address}</p>
+              {property._highlight && (
+                <p className="text-xs text-red-600 mt-1 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  Coordinate issue detected
+                </p>
+              )}
+              {property._coordinates_missing && (
+                <p className="text-xs text-amber-600 mt-1 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  No map coordinates available
+                </p>
+              )}
+              {property._geocoded && (
+                <p className="text-xs text-blue-600 mt-1 flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Location estimated from address
+                </p>
+              )}
               <div className="grid grid-cols-2 gap-x-4 mt-2 text-sm">
                 <div className="flex items-center">
                   <svg

@@ -1,0 +1,95 @@
+{
+  "api_keys": {
+    "missing_required": [],
+    "missing_optional": [],
+    "required_keys_status": true,
+    "optional_keys_status": true
+  },
+  "components": {
+    "components": {
+      "property_profiler": {
+        "status": "success",
+        "elapsed_seconds": 0.0026590824127197266,
+        "result_keys": [
+          "name",
+          "address",
+          "city",
+          "state",
+          "units",
+          "year_built",
+          "property_type",
+          "description",
+          "ownership_history",
+          "unit_mix",
+          "construction_details",
+          "amenities_analysis",
+          "zoning_information",
+          "historical_performance",
+          "latitude",
+          "longitude",
+          "property_website"
+        ]
+      },
+      "investment_metrics": {
+        "status": "success",
+        "elapsed_seconds": 0.00011181831359863281,
+        "result_keys": [
+          "property_metrics",
+          "market_data",
+          "market_comparison",
+          "value_add_opportunities",
+          "investment_scenarios"
+        ]
+      },
+      "market_analyzer": {
+        "status": "success",
+        "elapsed_seconds": 0.7163810729980469,
+        "result_keys": [
+          "overview",
+          "economic_indicators",
+          "demographic_data"
+        ]
+      },
+      "risk_assessor": {
+        "status": "success",
+        "elapsed_seconds": 0.00013208389282226562,
+        "result_keys": [
+          "overview",
+          "physical_risks",
+          "financial_risks",
+          "overall_risk_score",
+          "executive_summary",
+          "key_recommendations"
+        ]
+      },
+      "mcp_client": {
+        "status": "success",
+        "elapsed_seconds": 0.0037620067596435547,
+        "response_type": "dict"
+      }
+    },
+    "timestamp": "2025-03-18T14:29:37.827331",
+    "test_property": "Riverside Apartments",
+    "summary": {
+      "successful_components": 5,
+      "total_components": 5,
+      "success_rate": 100
+    }
+  },
+  "pipeline": {
+    "basic": {
+      "status": "success",
+      "depth": "basic",
+      "elapsed_seconds": 0.0014259815216064453,
+      "modules_found": [
+        "property_details",
+        "investment_potential"
+      ],
+      "executive_summary_length": 132,
+      "results_file": "pipeline_result_basic.json",
+      "timestamp": "2025-03-18T14:29:38.555082"
+    }
+  },
+  "timestamp": "2025-03-18T14:29:38.555213",
+  "python_version": "3.11.4 (v3.11.4:d2340ef257, Jun  6 2023, 19:15:51) [Clang 13.0.0 (clang-1300.0.29.30)]"
+}

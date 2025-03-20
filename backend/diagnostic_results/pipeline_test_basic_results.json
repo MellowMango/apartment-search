@@ -1,0 +1,12 @@
+{
+  "status": "success",
+  "depth": "basic",
+  "elapsed_seconds": 0.0014259815216064453,
+  "modules_found": [
+    "property_details",
+    "investment_potential"
+  ],
+  "executive_summary_length": 132,
+  "results_file": "pipeline_result_basic.json",
+  "timestamp": "2025-03-18T14:29:38.555082"
+}

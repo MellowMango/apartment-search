@@ -1,0 +1,760 @@
+{
+  "name": "Riverside Apartments",
+  "address": "1234 Riverside Dr",
+  "city": "Austin",
+  "state": "TX",
+  "units": 120,
+  "year_built": 1995,
+  "property_type": "multifamily",
+  "description": "Riverside Apartments is a 120-unit multifamily property built in 1995. The property features a pool, fitness center, and covered parking. Units have washer/dryer connections, granite countertops, and hardwood floors.",
+  "ownership_history": {
+    "current_owner": {
+      "name": "Current Owner LLC",
+      "type": "LLC",
+      "acquisition_date": "2025-01-15",
+      "contact_information": {
+        "address": "123 Business St, Suite 500",
+        "city": "Austin",
+        "state": "TX",
+        "phone": "555-123-4567",
+        "email": "contact@currentowner.com"
+      }
+    },
+    "previous_owners": [
+      {
+        "name": "Previous Owner 2 LLC",
+        "type": "LLC",
+        "ownership_period": {
+          "from": "2015-01-15",
+          "to": "2025-01-15",
+          "years": 10
+        }
+      },
+      {
+        "name": "Previous Owner 1 LLC",
+        "type": "LLC",
+        "ownership_period": {
+          "from": "2005-01-15",
+          "to": "2015-01-15",
+          "years": 10
+        }
+      }
+    ],
+    "transactions": [
+      {
+        "date": "2025-01-15",
+        "type": "Sale",
+        "price": 1000000.0,
+        "buyer": "Current Owner 3 LLC",
+        "seller": "Previous Owner 4 LLC"
+      },
+      {
+        "date": "2015-01-15",
+        "type": "Sale",
+        "price": 744000.0,
+        "buyer": "Previous Owner 2 LLC",
+        "seller": "Previous Owner 3 LLC"
+      },
+      {
+        "date": "2005-01-15",
+        "type": "Sale",
+        "price": 554000.0,
+        "buyer": "Previous Owner 1 LLC",
+        "seller": "Previous Owner 2 LLC"
+      }
+    ]
+  },
+  "unit_mix": {
+    "total_units": 120,
+    "unit_types": [
+      {
+        "type": "Studio",
+        "count": 18,
+        "avg_size": 550,
+        "avg_rent": 1100
+      },
+      {
+        "type": "1 bed 1 bath",
+        "count": 48,
+        "avg_size": 750,
+        "avg_rent": 1400
+      },
+      {
+        "type": "2 bed 1 bath",
+        "count": 18,
+        "avg_size": 950,
+        "avg_rent": 1700
+      },
+      {
+        "type": "2 bed 2 bath",
+        "count": 24,
+        "avg_size": 1100,
+        "avg_rent": 1900
+      },
+      {
+        "type": "3 bed 2 bath",
+        "count": 12,
+        "avg_size": 1400,
+        "avg_rent": 2300
+      }
+    ],
+    "average_unit_size": 885,
+    "occupancy_rate": 90
+  },
+  "construction_details": {
+    "year_built": 1995,
+    "construction_type": "Steel Frame with Masonry",
+    "foundation_type": "Reinforced Concrete",
+    "roof_type": "EPDM Membrane",
+    "total_square_feet": null,
+    "renovations": [
+      {
+        "year": 2025,
+        "type": "Moderate Renovation",
+        "description": "Unit interior upgrades, exterior refresh, and amenity enhancements",
+        "estimated_cost": "$5000 per square foot"
+      }
+    ],
+    "building_class": "B"
+  },
+  "amenities_analysis": {
+    "property_amenities": [
+      "pool",
+      "fitness center",
+      "covered parking"
+    ],
+    "unit_amenities": [
+      "washer/dryer",
+      "granite countertops",
+      "hardwood floors"
+    ],
+    "amenity_comparison": {
+      "vs_market": "average",
+      "missing_key_amenities": [
+        "dishwasher",
+        "high-speed internet"
+      ],
+      "competitive_advantages": []
+    }
+  },
+  "zoning_information": {
+    "zoning_code": "MF-4",
+    "zoning_description": "Multifamily Residence - High Density",
+    "allowed_uses": [
+      "Multifamily housing",
+      "Apartment buildings",
+      "Condominiums",
+      "Limited commercial"
+    ],
+    "development_potential": {
+      "max_units": "60 per acre",
+      "max_height": "60 feet",
+      "max_far": 2.0,
+      "opportunities": []
+    },
+    "zoning_restrictions": [
+      "Compatibility standards near single-family residential",
+      "Parking requirements: 1.5 spaces per unit",
+      "Impervious cover limitation: 70%"
+    ]
+  },
+  "historical_performance": {
+    "occupancy_history": [
+      {
+        "year": 2015,
+        "quarterly_occupancy": [
+          {
+            "quarter": 1,
+            "rate": 89.0
+          },
+          {
+            "quarter": 2,
+            "rate": 95.0
+          },
+          {
+            "quarter": 3,
+            "rate": 95.0
+          },
+          {
+            "quarter": 4,
+            "rate": 91.0
+          }
+        ],
+        "annual_average": 92.5
+      },
+      {
+        "year": 2016,
+        "quarterly_occupancy": [
+          {
+            "quarter": 1,
+            "rate": 89.5
+          },
+          {
+            "quarter": 2,
+            "rate": 95.5
+          },
+          {
+            "quarter": 3,
+            "rate": 96.5
+          },
+          {
+            "quarter": 4,
+            "rate": 88.5
+          }
+        ],
+        "annual_average": 92.5
+      },
+      {
+        "year": 2017,
+        "quarterly_occupancy": [
+          {
+            "quarter": 1,
+            "rate": 89.0
+          },
+          {
+            "quarter": 2,
+            "rate": 95.0
+          },
+          {
+            "quarter": 3,
+            "rate": 93.0
+          },
+          {
+            "quarter": 4,
+            "rate": 91.0
+          }
+        ],
+        "annual_average": 92.0
+      },
+      {
+        "year": 2018,
+        "quarterly_occupancy": [
+          {
+            "quarter": 1,
+            "rate": 89.5
+          },
+          {
+            "quarter": 2,
+            "rate": 97.5
+          },
+          {
+            "quarter": 3,
+            "rate": 97.5
+          },
+          {
+            "quarter": 4,
+            "rate": 90.5
+          }
+        ],
+        "annual_average": 93.8
+      },
+      {
+        "year": 2019,
+        "quarterly_occupancy": [
+          {
+            "quarter": 1,
+            "rate": 94.0
+          },
+          {
+            "quarter": 2,
+            "rate": 97.0
+          },
+          {
+            "quarter": 3,
+            "rate": 97.0
+          },
+          {
+            "quarter": 4,
+            "rate": 91.0
+          }
+        ],
+        "annual_average": 94.8
+      },
+      {
+        "year": 2020,
+        "quarterly_occupancy": [
+          {
+            "quarter": 1,
+            "rate": 90.5
+          },
+          {
+            "quarter": 2,
+            "rate": 96.5
+          },
+          {
+            "quarter": 3,
+            "rate": 96.5
+          },
+          {
+            "quarter": 4,
+            "rate": 94.5
+          }
+        ],
+        "annual_average": 94.5
+      },
+      {
+        "year": 2021,
+        "quarterly_occupancy": [
+          {
+            "quarter": 1,
+            "rate": 91.0
+          },
+          {
+            "quarter": 2,
+            "rate": 95.0
+          },
+          {
+            "quarter": 3,
+            "rate": 98
+          },
+          {
+            "quarter": 4,
+            "rate": 95.0
+          }
+        ],
+        "annual_average": 94.8
+      },
+      {
+        "year": 2022,
+        "quarterly_occupancy": [
+          {
+            "quarter": 1,
+            "rate": 95.5
+          },
+          {
+            "quarter": 2,
+            "rate": 97.5
+          },
+          {
+            "quarter": 3,
+            "rate": 95.5
+          },
+          {
+            "quarter": 4,
+            "rate": 91.5
+          }
+        ],
+        "annual_average": 95.0
+      },
+      {
+        "year": 2023,
+        "quarterly_occupancy": [
+          {
+            "quarter": 1,
+            "rate": 95.0
+          },
+          {
+            "quarter": 2,
+            "rate": 98
+          },
+          {
+            "quarter": 3,
+            "rate": 97.0
+          },
+          {
+            "quarter": 4,
+            "rate": 94.0
+          }
+        ],
+        "annual_average": 96.0
+      },
+      {
+        "year": 2024,
+        "quarterly_occupancy": [
+          {
+            "quarter": 1,
+            "rate": 95.5
+          },
+          {
+            "quarter": 2,
+            "rate": 98
+          },
+          {
+            "quarter": 3,
+            "rate": 98
+          },
+          {
+            "quarter": 4,
+            "rate": 92.5
+          }
+        ],
+        "annual_average": 96.0
+      },
+      {
+        "year": 2025,
+        "quarterly_occupancy": [
+          {
+            "quarter": 1,
+            "rate": 96
+          },
+          {
+            "quarter": 2,
+            "rate": 98
+          },
+          {
+            "quarter": 3,
+            "rate": 98
+          },
+          {
+            "quarter": 4,
+            "rate": 97
+          }
+        ],
+        "annual_average": 97.2
+      }
+    ],
+    "rent_history": [
+      {
+        "year": 2015,
+        "average_rent": 1236,
+        "annual_growth_percent": 3.0
+      },
+      {
+        "year": 2016,
+        "average_rent": 1285,
+        "annual_growth_percent": 4.0
+      },
+      {
+        "year": 2017,
+        "average_rent": 1311,
+        "annual_growth_percent": 2.0
+      },
+      {
+        "year": 2018,
+        "average_rent": 1337,
+        "annual_growth_percent": 2.0
+      },
+      {
+        "year": 2019,
+        "average_rent": 1364,
+        "annual_growth_percent": 2.0
+      },
+      {
+        "year": 2020,
+        "average_rent": 1398,
+        "annual_growth_percent": 2.5
+      },
+      {
+        "year": 2021,
+        "average_rent": 1510,
+        "annual_growth_percent": 8.0
+      },
+      {
+        "year": 2022,
+        "average_rent": 1691,
+        "annual_growth_percent": 12
+      },
+      {
+        "year": 2023,
+        "average_rent": 1844,
+        "annual_growth_percent": 9.0
+      },
+      {
+        "year": 2024,
+        "average_rent": 1899,
+        "annual_growth_percent": 3.0
+      },
+      {
+        "year": 2025,
+        "average_rent": 1975,
+        "annual_growth_percent": 4.0
+      }
+    ],
+    "expense_history": [
+      {
+        "year": 2015,
+        "expense_ratio": 41.0,
+        "major_expenses": [
+          {
+            "category": "Repairs & Maintenance",
+            "percentage": 10
+          },
+          {
+            "category": "Property Taxes",
+            "percentage": 17
+          },
+          {
+            "category": "Insurance",
+            "percentage": 5
+          },
+          {
+            "category": "Utilities",
+            "percentage": 6
+          },
+          {
+            "category": "Management",
+            "percentage": 3.0
+          }
+        ]
+      },
+      {
+        "year": 2016,
+        "expense_ratio": 43.2,
+        "major_expenses": [
+          {
+            "category": "Repairs & Maintenance",
+            "percentage": 10
+          },
+          {
+            "category": "Property Taxes",
+            "percentage": 17
+          },
+          {
+            "category": "Insurance",
+            "percentage": 6
+          },
+          {
+            "category": "Utilities",
+            "percentage": 6
+          },
+          {
+            "category": "Management",
+            "percentage": 3.0
+          }
+        ]
+      },
+      {
+        "year": 2017,
+        "expense_ratio": 42.4,
+        "major_expenses": [
+          {
+            "category": "Repairs & Maintenance",
+            "percentage": 12
+          },
+          {
+            "category": "Property Taxes",
+            "percentage": 15
+          },
+          {
+            "category": "Insurance",
+            "percentage": 5
+          },
+          {
+            "category": "Utilities",
+            "percentage": 6
+          },
+          {
+            "category": "Management",
+            "percentage": 3.0
+          }
+        ]
+      },
+      {
+        "year": 2018,
+        "expense_ratio": 43.6,
+        "major_expenses": [
+          {
+            "category": "Repairs & Maintenance",
+            "percentage": 11
+          },
+          {
+            "category": "Property Taxes",
+            "percentage": 15
+          },
+          {
+            "category": "Insurance",
+            "percentage": 6
+          },
+          {
+            "category": "Utilities",
+            "percentage": 6
+          },
+          {
+            "category": "Management",
+            "percentage": 3.0
+          }
+        ]
+      },
+      {
+        "year": 2019,
+        "expense_ratio": 43.8,
+        "major_expenses": [
+          {
+            "category": "Repairs & Maintenance",
+            "percentage": 14
+          },
+          {
+            "category": "Property Taxes",
+            "percentage": 17
+          },
+          {
+            "category": "Insurance",
+            "percentage": 6
+          },
+          {
+            "category": "Utilities",
+            "percentage": 6
+          },
+          {
+            "category": "Management",
+            "percentage": 3.0
+          }
+        ]
+      },
+      {
+        "year": 2020,
+        "expense_ratio": 42.0,
+        "major_expenses": [
+          {
+            "category": "Repairs & Maintenance",
+            "percentage": 13
+          },
+          {
+            "category": "Property Taxes",
+            "percentage": 17
+          },
+          {
+            "category": "Insurance",
+            "percentage": 6
+          },
+          {
+            "category": "Utilities",
+            "percentage": 5
+          },
+          {
+            "category": "Management",
+            "percentage": 3.0
+          }
+        ]
+      },
+      {
+        "year": 2021,
+        "expense_ratio": 43.2,
+        "major_expenses": [
+          {
+            "category": "Repairs & Maintenance",
+            "percentage": 14
+          },
+          {
+            "category": "Property Taxes",
+            "percentage": 15
+          },
+          {
+            "category": "Insurance",
+            "percentage": 5
+          },
+          {
+            "category": "Utilities",
+            "percentage": 6
+          },
+          {
+            "category": "Management",
+            "percentage": 3.0
+          }
+        ]
+      },
+      {
+        "year": 2022,
+        "expense_ratio": 41.4,
+        "major_expenses": [
+          {
+            "category": "Repairs & Maintenance",
+            "percentage": 13
+          },
+          {
+            "category": "Property Taxes",
+            "percentage": 17
+          },
+          {
+            "category": "Insurance",
+            "percentage": 7
+          },
+          {
+            "category": "Utilities",
+            "percentage": 5
+          },
+          {
+            "category": "Management",
+            "percentage": 3.0
+          }
+        ]
+      },
+      {
+        "year": 2023,
+        "expense_ratio": 45.6,
+        "major_expenses": [
+          {
+            "category": "Repairs & Maintenance",
+            "percentage": 11
+          },
+          {
+            "category": "Property Taxes",
+            "percentage": 17
+          },
+          {
+            "category": "Insurance",
+            "percentage": 6
+          },
+          {
+            "category": "Utilities",
+            "percentage": 6
+          },
+          {
+            "category": "Management",
+            "percentage": 3.0
+          }
+        ]
+      },
+      {
+        "year": 2024,
+        "expense_ratio": 42.8,
+        "major_expenses": [
+          {
+            "category": "Repairs & Maintenance",
+            "percentage": 13
+          },
+          {
+            "category": "Property Taxes",
+            "percentage": 15
+          },
+          {
+            "category": "Insurance",
+            "percentage": 7
+          },
+          {
+            "category": "Utilities",
+            "percentage": 5
+          },
+          {
+            "category": "Management",
+            "percentage": 3.0
+          }
+        ]
+      },
+      {
+        "year": 2025,
+        "expense_ratio": 43.0,
+        "major_expenses": [
+          {
+            "category": "Repairs & Maintenance",
+            "percentage": 10
+          },
+          {
+            "category": "Property Taxes",
+            "percentage": 17
+          },
+          {
+            "category": "Insurance",
+            "percentage": 5
+          },
+          {
+            "category": "Utilities",
+            "percentage": 6
+          },
+          {
+            "category": "Management",
+            "percentage": 3.0
+          }
+        ]
+      }
+    ],
+    "performance_metrics": {
+      "avg_annual_rent_growth": 5.4,
+      "avg_occupancy": 103.9,
+      "avg_expense_ratio": 47.2
+    }
+  },
+  "latitude": 30.34898906346083,
+  "longitude": -97.66711328086966,
+  "property_website": "https://www.riversideapartments.com"
+}

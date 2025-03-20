@@ -1,0 +1,1008 @@
+2025-03-18 10:02:37,736 - numexpr.utils - INFO - NumExpr defaulting to 10 threads.
+2025-03-18 10:02:37,926 - backend.data_enrichment.database_extensions - INFO - Supabase client initialized successfully
+2025-03-18 10:02:38,076 - backend.data_enrichment.database_extensions - ERROR - Failed to initialize Neo4j driver: Cannot resolve address b2701535.databases.neo4j.io:7687
+2025-03-18 10:02:38,076 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 10:02:38,077 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:02:38,077 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 10:02:38,077 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:02:38,077 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 10:02:38,077 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 10:02:38,077 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 10:02:38,077 - backend.data_enrichment.property_researcher - INFO - Property Researcher initialized with all enrichers
+2025-03-18 10:02:38,077 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 10:02:38,077 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:02:38,077 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 10:02:38,077 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 10:02:38,077 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 10:02:38,077 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 10:02:38,077 - __main__ - INFO - Checking API keys...
+2025-03-18 10:02:38,077 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 10:02:38,077 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 10:02:38,077 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 10:02:38,077 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 10:02:38,077 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 10:02:38,077 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 10:02:38,077 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 10:02:38,077 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 10:02:38,077 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 10:02:38,077 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 10:02:38,077 - __main__ - INFO - All required API keys are set
+2025-03-18 10:02:38,077 - __main__ - INFO - Diagnostics initialized with test property: Riverside Apartments
+2025-03-18 10:02:38,077 - __main__ - INFO - Testing individual components...
+2025-03-18 10:02:38,077 - __main__ - INFO - Testing PropertyProfiler...
+2025-03-18 10:02:38,077 - __main__ - ERROR - ❌ PropertyProfiler failed: 'PropertyProfiler' object has no attribute 'profile_property'
+2025-03-18 10:02:38,077 - __main__ - INFO - Testing InvestmentMetricsEnricher...
+2025-03-18 10:02:38,077 - __main__ - ERROR - ❌ InvestmentMetricsEnricher failed: 'list' object has no attribute 'appen'
+2025-03-18 10:02:38,077 - __main__ - INFO - Testing MarketAnalyzer...
+2025-03-18 10:02:38,078 - backend.data_enrichment.research_enrichers.market_analyzer - WARNING - Census API key not set, using placeholder demographic data
+2025-03-18 10:02:38,415 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 10:02:38,528 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 10:02:38,528 - __main__ - INFO - ✅ MarketAnalyzer succeeded in 0.45 seconds
+2025-03-18 10:02:38,529 - __main__ - INFO - Testing RiskAssessor...
+2025-03-18 10:02:38,529 - __main__ - ERROR - ❌ RiskAssessor failed: 'RiskAssessor' object has no attribute '_generate_risk_summary'
+2025-03-18 10:02:38,529 - __main__ - INFO - Testing MCP Client...
+2025-03-18 10:02:38,539 - backend.data_enrichment.mcp_client - ERROR - Exception during property research: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+Traceback (most recent call last):
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1116, in _wrap_create_connection
+    sock = await aiohappyeyeballs.start_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/aiohappyeyeballs/impl.py", line 123, in start_connection
+    raise OSError(first_errno, msg)
+ConnectionRefusedError: [Errno 61] Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/guyma/code/projects/acquire/backend/data_enrichment/mcp_client.py", line 61, in research_property
+    async with session.post(
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/client.py", line 1425, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1411, in _create_direct_connection
+    raise last_exc
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1380, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1135, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+2025-03-18 10:02:38,543 - __main__ - INFO - ✅ MCP Client succeeded in 0.01 seconds
+2025-03-18 10:02:38,544 - __main__ - INFO - Component testing complete: 2/5 successful (40%)
+2025-03-18 10:02:38,578 - asyncio - ERROR - Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x112685650>
+2025-03-18 10:04:00,179 - numexpr.utils - INFO - NumExpr defaulting to 10 threads.
+2025-03-18 10:04:00,304 - backend.data_enrichment.database_extensions - INFO - Supabase client initialized successfully
+2025-03-18 10:04:00,460 - backend.data_enrichment.database_extensions - ERROR - Failed to initialize Neo4j driver: Cannot resolve address b2701535.databases.neo4j.io:7687
+2025-03-18 10:04:00,460 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 10:04:00,460 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:04:00,460 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 10:04:00,460 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:04:00,460 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 10:04:00,460 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 10:04:00,460 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 10:04:00,460 - backend.data_enrichment.property_researcher - INFO - Property Researcher initialized with all enrichers
+2025-03-18 10:04:00,461 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 10:04:00,461 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:04:00,461 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 10:04:00,461 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 10:04:00,461 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 10:04:00,461 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 10:04:00,461 - __main__ - INFO - Checking API keys...
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - All required API keys are set
+2025-03-18 10:04:00,461 - __main__ - INFO - Diagnostics initialized with test property: Riverside Apartments
+2025-03-18 10:04:00,461 - __main__ - INFO - Running full diagnostics with depths: basic
+2025-03-18 10:04:00,461 - __main__ - INFO - Checking API keys...
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 10:04:00,461 - __main__ - INFO - All required API keys are set
+2025-03-18 10:04:00,462 - __main__ - INFO - Testing individual components...
+2025-03-18 10:04:00,462 - __main__ - INFO - Testing PropertyProfiler...
+2025-03-18 10:04:00,463 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Using cached property details for: Riverside Apartments
+2025-03-18 10:04:00,463 - __main__ - INFO - ✅ PropertyProfiler succeeded in 0.00 seconds
+2025-03-18 10:04:00,464 - __main__ - INFO - Testing InvestmentMetricsEnricher...
+2025-03-18 10:04:00,464 - __main__ - INFO - ✅ InvestmentMetricsEnricher succeeded in 0.00 seconds
+2025-03-18 10:04:00,465 - __main__ - INFO - Testing MarketAnalyzer...
+2025-03-18 10:04:00,466 - backend.data_enrichment.research_enrichers.market_analyzer - WARNING - Census API key not set, using placeholder demographic data
+2025-03-18 10:04:00,779 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 10:04:00,906 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 10:04:00,907 - __main__ - INFO - ✅ MarketAnalyzer succeeded in 0.44 seconds
+2025-03-18 10:04:00,908 - __main__ - INFO - Testing RiskAssessor...
+2025-03-18 10:04:00,908 - __main__ - ERROR - ❌ RiskAssessor failed: 'RiskAssessor' object has no attribute '_generate_recommendations'
+2025-03-18 10:04:00,908 - __main__ - INFO - Testing MCP Client...
+2025-03-18 10:04:00,917 - backend.data_enrichment.mcp_client - ERROR - Exception during property research: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+Traceback (most recent call last):
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1116, in _wrap_create_connection
+    sock = await aiohappyeyeballs.start_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/aiohappyeyeballs/impl.py", line 123, in start_connection
+    raise OSError(first_errno, msg)
+ConnectionRefusedError: [Errno 61] Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/guyma/code/projects/acquire/backend/data_enrichment/mcp_client.py", line 61, in research_property
+    async with session.post(
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/client.py", line 1425, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1411, in _create_direct_connection
+    raise last_exc
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1380, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1135, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+2025-03-18 10:04:00,921 - __main__ - INFO - ✅ MCP Client succeeded in 0.01 seconds
+2025-03-18 10:04:00,922 - __main__ - INFO - Component testing complete: 4/5 successful (80%)
+2025-03-18 10:04:00,922 - __main__ - INFO - Testing full pipeline with depth=basic...
+2025-03-18 10:04:00,922 - __main__ - INFO - Researching property: Riverside Apartments
+2025-03-18 10:04:00,922 - backend.data_enrichment.property_researcher - INFO - Researching property details for 1234 Riverside Dr
+2025-03-18 10:04:00,922 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Using cached property details for: Riverside Apartments
+2025-03-18 10:04:00,922 - backend.data_enrichment.property_researcher - INFO - Researching investment potential for 1234 Riverside Dr
+2025-03-18 10:04:00,924 - __main__ - ERROR - ❌ Pipeline test failed after 0.00 seconds: object NoneType can't be used in 'await' expression
+2025-03-18 10:04:00,955 - asyncio - ERROR - Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x10b4e0e50>
+2025-03-18 10:05:40,464 - numexpr.utils - INFO - NumExpr defaulting to 10 threads.
+2025-03-18 10:05:40,596 - backend.data_enrichment.database_extensions - INFO - Supabase client initialized successfully
+2025-03-18 10:05:40,773 - backend.data_enrichment.database_extensions - ERROR - Failed to initialize Neo4j driver: Cannot resolve address b2701535.databases.neo4j.io:7687
+2025-03-18 10:05:40,773 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 10:05:40,774 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:05:40,774 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 10:05:40,774 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:05:40,774 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 10:05:40,774 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 10:05:40,774 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 10:05:40,774 - backend.data_enrichment.property_researcher - INFO - Property Researcher initialized with all enrichers
+2025-03-18 10:05:40,774 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 10:05:40,774 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:05:40,774 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 10:05:40,774 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 10:05:40,775 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 10:05:40,775 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 10:05:40,775 - __main__ - INFO - Checking API keys...
+2025-03-18 10:05:40,775 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 10:05:40,775 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 10:05:40,775 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 10:05:40,775 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 10:05:40,775 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 10:05:40,775 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 10:05:40,775 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 10:05:40,775 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 10:05:40,775 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 10:05:40,775 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 10:05:40,775 - __main__ - INFO - All required API keys are set
+2025-03-18 10:05:40,775 - __main__ - INFO - Diagnostics initialized with test property: Riverside Apartments
+2025-03-18 10:05:40,775 - __main__ - INFO - Running full diagnostics with depths: basic
+2025-03-18 10:05:40,775 - __main__ - INFO - Checking API keys...
+2025-03-18 10:05:40,775 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 10:05:40,775 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 10:05:40,775 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 10:05:40,776 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 10:05:40,776 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 10:05:40,776 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 10:05:40,776 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 10:05:40,776 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 10:05:40,776 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 10:05:40,776 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 10:05:40,776 - __main__ - INFO - All required API keys are set
+2025-03-18 10:05:40,776 - __main__ - INFO - Testing individual components...
+2025-03-18 10:05:40,776 - __main__ - INFO - Testing PropertyProfiler...
+2025-03-18 10:05:40,777 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Using cached property details for: Riverside Apartments
+2025-03-18 10:05:40,777 - __main__ - INFO - ✅ PropertyProfiler succeeded in 0.00 seconds
+2025-03-18 10:05:40,778 - __main__ - INFO - Testing InvestmentMetricsEnricher...
+2025-03-18 10:05:40,779 - __main__ - INFO - ✅ InvestmentMetricsEnricher succeeded in 0.00 seconds
+2025-03-18 10:05:40,779 - __main__ - INFO - Testing MarketAnalyzer...
+2025-03-18 10:05:40,780 - backend.data_enrichment.research_enrichers.market_analyzer - WARNING - Census API key not set, using placeholder demographic data
+2025-03-18 10:05:41,085 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 10:05:41,200 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 10:05:41,200 - __main__ - INFO - ✅ MarketAnalyzer succeeded in 0.42 seconds
+2025-03-18 10:05:41,200 - __main__ - INFO - Testing RiskAssessor...
+2025-03-18 10:05:41,200 - __main__ - INFO - ✅ RiskAssessor succeeded in 0.00 seconds
+2025-03-18 10:05:41,201 - __main__ - INFO - Testing MCP Client...
+2025-03-18 10:05:41,205 - backend.data_enrichment.mcp_client - ERROR - Exception during property research: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+Traceback (most recent call last):
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1116, in _wrap_create_connection
+    sock = await aiohappyeyeballs.start_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/aiohappyeyeballs/impl.py", line 123, in start_connection
+    raise OSError(first_errno, msg)
+ConnectionRefusedError: [Errno 61] Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/guyma/code/projects/acquire/backend/data_enrichment/mcp_client.py", line 61, in research_property
+    async with session.post(
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/client.py", line 1425, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1411, in _create_direct_connection
+    raise last_exc
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1380, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1135, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+2025-03-18 10:05:41,208 - __main__ - INFO - ✅ MCP Client succeeded in 0.01 seconds
+2025-03-18 10:05:41,208 - __main__ - INFO - Component testing complete: 5/5 successful (100%)
+2025-03-18 10:05:41,208 - __main__ - INFO - Testing full pipeline with depth=basic...
+2025-03-18 10:05:41,208 - __main__ - INFO - Researching property: Riverside Apartments
+2025-03-18 10:05:41,208 - backend.data_enrichment.property_researcher - INFO - Researching property details for 1234 Riverside Dr
+2025-03-18 10:05:41,208 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Using cached property details for: Riverside Apartments
+2025-03-18 10:05:41,208 - backend.data_enrichment.property_researcher - INFO - Researching investment potential for 1234 Riverside Dr
+2025-03-18 10:05:41,209 - __main__ - ERROR - ❌ Pipeline test failed after 0.00 seconds: object NoneType can't be used in 'await' expression
+2025-03-18 10:05:41,238 - asyncio - ERROR - Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x109ac16d0>
+2025-03-18 10:06:37,700 - numexpr.utils - INFO - NumExpr defaulting to 10 threads.
+2025-03-18 10:06:37,825 - backend.data_enrichment.database_extensions - INFO - Supabase client initialized successfully
+2025-03-18 10:06:37,828 - backend.data_enrichment.database_extensions - ERROR - Failed to initialize Neo4j driver: Cannot resolve address b2701535.databases.neo4j.io:7687
+2025-03-18 10:06:37,828 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 10:06:37,828 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:06:37,828 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 10:06:37,828 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:06:37,828 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 10:06:37,828 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 10:06:37,828 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 10:06:37,828 - backend.data_enrichment.property_researcher - INFO - Property Researcher initialized with all enrichers
+2025-03-18 10:06:37,828 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 10:06:37,828 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:06:37,828 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 10:06:37,828 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 10:06:37,828 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 10:06:37,828 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 10:06:37,828 - __main__ - INFO - Checking API keys...
+2025-03-18 10:06:37,828 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 10:06:37,828 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 10:06:37,828 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 10:06:37,828 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 10:06:37,829 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 10:06:37,829 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 10:06:37,829 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 10:06:37,829 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 10:06:37,829 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 10:06:37,829 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 10:06:37,829 - __main__ - INFO - All required API keys are set
+2025-03-18 10:06:37,829 - __main__ - INFO - Diagnostics initialized with test property: Riverside Apartments
+2025-03-18 10:06:37,829 - __main__ - INFO - Running full diagnostics with depths: basic
+2025-03-18 10:06:37,829 - __main__ - INFO - Checking API keys...
+2025-03-18 10:06:37,829 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 10:06:37,829 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 10:06:37,829 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 10:06:37,829 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 10:06:37,829 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 10:06:37,829 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 10:06:37,829 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 10:06:37,829 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 10:06:37,829 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 10:06:37,829 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 10:06:37,829 - __main__ - INFO - All required API keys are set
+2025-03-18 10:06:37,829 - __main__ - INFO - Testing individual components...
+2025-03-18 10:06:37,829 - __main__ - INFO - Testing PropertyProfiler...
+2025-03-18 10:06:37,829 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Using cached property details for: Riverside Apartments
+2025-03-18 10:06:37,829 - __main__ - INFO - ✅ PropertyProfiler succeeded in 0.00 seconds
+2025-03-18 10:06:37,829 - __main__ - INFO - Testing InvestmentMetricsEnricher...
+2025-03-18 10:06:37,830 - __main__ - INFO - ✅ InvestmentMetricsEnricher succeeded in 0.00 seconds
+2025-03-18 10:06:37,830 - __main__ - INFO - Testing MarketAnalyzer...
+2025-03-18 10:06:37,830 - backend.data_enrichment.research_enrichers.market_analyzer - WARNING - Census API key not set, using placeholder demographic data
+2025-03-18 10:06:38,203 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 10:06:38,326 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 10:06:38,327 - __main__ - INFO - ✅ MarketAnalyzer succeeded in 0.50 seconds
+2025-03-18 10:06:38,328 - __main__ - INFO - Testing RiskAssessor...
+2025-03-18 10:06:38,328 - __main__ - INFO - ✅ RiskAssessor succeeded in 0.00 seconds
+2025-03-18 10:06:38,329 - __main__ - INFO - Testing MCP Client...
+2025-03-18 10:06:38,337 - backend.data_enrichment.mcp_client - ERROR - Exception during property research: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+Traceback (most recent call last):
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1116, in _wrap_create_connection
+    sock = await aiohappyeyeballs.start_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/aiohappyeyeballs/impl.py", line 123, in start_connection
+    raise OSError(first_errno, msg)
+ConnectionRefusedError: [Errno 61] Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/guyma/code/projects/acquire/backend/data_enrichment/mcp_client.py", line 61, in research_property
+    async with session.post(
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/client.py", line 1425, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1411, in _create_direct_connection
+    raise last_exc
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1380, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1135, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+2025-03-18 10:06:38,344 - __main__ - INFO - ✅ MCP Client succeeded in 0.01 seconds
+2025-03-18 10:06:38,344 - __main__ - INFO - Component testing complete: 5/5 successful (100%)
+2025-03-18 10:06:38,344 - __main__ - INFO - Testing full pipeline with depth=basic...
+2025-03-18 10:06:38,344 - __main__ - INFO - Researching property: Riverside Apartments
+2025-03-18 10:06:38,345 - backend.data_enrichment.property_researcher - INFO - Researching property details for 1234 Riverside Dr
+2025-03-18 10:06:38,345 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Using cached property details for: Riverside Apartments
+2025-03-18 10:06:38,345 - backend.data_enrichment.property_researcher - INFO - Researching investment potential for 1234 Riverside Dr
+2025-03-18 10:06:38,346 - __main__ - ERROR - ❌ Pipeline test failed after 0.00 seconds: object NoneType can't be used in 'await' expression
+2025-03-18 10:06:38,378 - asyncio - ERROR - Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x10d9dd610>
+2025-03-18 10:07:27,216 - numexpr.utils - INFO - NumExpr defaulting to 10 threads.
+2025-03-18 10:07:27,366 - backend.data_enrichment.database_extensions - INFO - Supabase client initialized successfully
+2025-03-18 10:07:27,527 - backend.data_enrichment.database_extensions - ERROR - Failed to initialize Neo4j driver: Cannot resolve address b2701535.databases.neo4j.io:7687
+2025-03-18 10:07:27,527 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 10:07:27,527 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:07:27,527 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 10:07:27,527 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:07:27,527 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 10:07:27,527 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 10:07:27,527 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 10:07:27,527 - backend.data_enrichment.property_researcher - INFO - Property Researcher initialized with all enrichers
+2025-03-18 10:07:27,527 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 10:07:27,527 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:07:27,527 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 10:07:27,527 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 10:07:27,527 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 10:07:27,527 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 10:07:27,527 - __main__ - INFO - Checking API keys...
+2025-03-18 10:07:27,527 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 10:07:27,527 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 10:07:27,527 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 10:07:27,527 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 10:07:27,527 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 10:07:27,528 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 10:07:27,528 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 10:07:27,528 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 10:07:27,528 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 10:07:27,528 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 10:07:27,528 - __main__ - INFO - All required API keys are set
+2025-03-18 10:07:27,528 - __main__ - INFO - Diagnostics initialized with test property: Riverside Apartments
+2025-03-18 10:07:27,528 - __main__ - INFO - Running full diagnostics with depths: basic
+2025-03-18 10:07:27,528 - __main__ - INFO - Checking API keys...
+2025-03-18 10:07:27,528 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 10:07:27,528 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 10:07:27,528 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 10:07:27,528 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 10:07:27,528 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 10:07:27,528 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 10:07:27,528 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 10:07:27,528 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 10:07:27,528 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 10:07:27,528 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 10:07:27,528 - __main__ - INFO - All required API keys are set
+2025-03-18 10:07:27,528 - __main__ - INFO - Testing individual components...
+2025-03-18 10:07:27,528 - __main__ - INFO - Testing PropertyProfiler...
+2025-03-18 10:07:27,528 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Using cached property details for: Riverside Apartments
+2025-03-18 10:07:27,528 - __main__ - INFO - ✅ PropertyProfiler succeeded in 0.00 seconds
+2025-03-18 10:07:27,529 - __main__ - INFO - Testing InvestmentMetricsEnricher...
+2025-03-18 10:07:27,529 - __main__ - INFO - ✅ InvestmentMetricsEnricher succeeded in 0.00 seconds
+2025-03-18 10:07:27,530 - __main__ - INFO - Testing MarketAnalyzer...
+2025-03-18 10:07:27,530 - backend.data_enrichment.research_enrichers.market_analyzer - WARNING - Census API key not set, using placeholder demographic data
+2025-03-18 10:07:27,845 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 10:07:27,997 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 10:07:27,997 - __main__ - INFO - ✅ MarketAnalyzer succeeded in 0.47 seconds
+2025-03-18 10:07:27,998 - __main__ - INFO - Testing RiskAssessor...
+2025-03-18 10:07:27,999 - __main__ - INFO - ✅ RiskAssessor succeeded in 0.00 seconds
+2025-03-18 10:07:27,999 - __main__ - INFO - Testing MCP Client...
+2025-03-18 10:07:28,008 - backend.data_enrichment.mcp_client - ERROR - Exception during property research: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+Traceback (most recent call last):
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1116, in _wrap_create_connection
+    sock = await aiohappyeyeballs.start_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/aiohappyeyeballs/impl.py", line 123, in start_connection
+    raise OSError(first_errno, msg)
+ConnectionRefusedError: [Errno 61] Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/guyma/code/projects/acquire/backend/data_enrichment/mcp_client.py", line 61, in research_property
+    async with session.post(
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/client.py", line 1425, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1411, in _create_direct_connection
+    raise last_exc
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1380, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1135, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+2025-03-18 10:07:28,012 - __main__ - INFO - ✅ MCP Client succeeded in 0.01 seconds
+2025-03-18 10:07:28,012 - __main__ - INFO - Component testing complete: 5/5 successful (100%)
+2025-03-18 10:07:28,012 - __main__ - INFO - Testing full pipeline with depth=basic...
+2025-03-18 10:07:28,012 - __main__ - INFO - Researching property: Riverside Apartments
+2025-03-18 10:07:28,013 - backend.data_enrichment.property_researcher - INFO - Researching property details for 1234 Riverside Dr
+2025-03-18 10:07:28,013 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Using cached property details for: Riverside Apartments
+2025-03-18 10:07:28,013 - backend.data_enrichment.property_researcher - INFO - Researching investment potential for 1234 Riverside Dr
+2025-03-18 10:07:28,015 - __main__ - ERROR - ❌ Pipeline test failed after 0.00 seconds: object NoneType can't be used in 'await' expression
+2025-03-18 10:07:28,046 - asyncio - ERROR - Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x127b37f90>
+2025-03-18 10:08:01,987 - numexpr.utils - INFO - NumExpr defaulting to 10 threads.
+2025-03-18 10:08:02,127 - backend.data_enrichment.database_extensions - INFO - Supabase client initialized successfully
+2025-03-18 10:08:02,130 - backend.data_enrichment.database_extensions - ERROR - Failed to initialize Neo4j driver: Cannot resolve address b2701535.databases.neo4j.io:7687
+2025-03-18 10:08:02,130 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 10:08:02,130 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:08:02,130 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 10:08:02,130 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:08:02,130 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 10:08:02,130 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 10:08:02,130 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 10:08:02,130 - backend.data_enrichment.property_researcher - INFO - Property Researcher initialized with all enrichers
+2025-03-18 10:08:02,130 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 10:08:02,131 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:08:02,131 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 10:08:02,131 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 10:08:02,131 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 10:08:02,131 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 10:08:02,131 - __main__ - INFO - Checking API keys...
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - All required API keys are set
+2025-03-18 10:08:02,131 - __main__ - INFO - Diagnostics initialized with test property: Riverside Apartments
+2025-03-18 10:08:02,131 - __main__ - INFO - Running full diagnostics with depths: basic
+2025-03-18 10:08:02,131 - __main__ - INFO - Checking API keys...
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 10:08:02,131 - __main__ - INFO - All required API keys are set
+2025-03-18 10:08:02,131 - __main__ - INFO - Testing individual components...
+2025-03-18 10:08:02,131 - __main__ - INFO - Testing PropertyProfiler...
+2025-03-18 10:08:02,131 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Using cached property details for: Riverside Apartments
+2025-03-18 10:08:02,131 - __main__ - INFO - ✅ PropertyProfiler succeeded in 0.00 seconds
+2025-03-18 10:08:02,132 - __main__ - INFO - Testing InvestmentMetricsEnricher...
+2025-03-18 10:08:02,132 - __main__ - INFO - ✅ InvestmentMetricsEnricher succeeded in 0.00 seconds
+2025-03-18 10:08:02,132 - __main__ - INFO - Testing MarketAnalyzer...
+2025-03-18 10:08:02,132 - backend.data_enrichment.research_enrichers.market_analyzer - WARNING - Census API key not set, using placeholder demographic data
+2025-03-18 10:08:02,583 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 10:08:02,712 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 10:08:02,712 - __main__ - INFO - ✅ MarketAnalyzer succeeded in 0.58 seconds
+2025-03-18 10:08:02,712 - __main__ - INFO - Testing RiskAssessor...
+2025-03-18 10:08:02,713 - __main__ - INFO - ✅ RiskAssessor succeeded in 0.00 seconds
+2025-03-18 10:08:02,713 - __main__ - INFO - Testing MCP Client...
+2025-03-18 10:08:02,716 - backend.data_enrichment.mcp_client - ERROR - Exception during property research: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+Traceback (most recent call last):
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1116, in _wrap_create_connection
+    sock = await aiohappyeyeballs.start_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/aiohappyeyeballs/impl.py", line 123, in start_connection
+    raise OSError(first_errno, msg)
+ConnectionRefusedError: [Errno 61] Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/guyma/code/projects/acquire/backend/data_enrichment/mcp_client.py", line 61, in research_property
+    async with session.post(
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/client.py", line 1425, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1411, in _create_direct_connection
+    raise last_exc
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1380, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1135, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+2025-03-18 10:08:02,718 - __main__ - INFO - ✅ MCP Client succeeded in 0.01 seconds
+2025-03-18 10:08:02,718 - __main__ - INFO - Component testing complete: 5/5 successful (100%)
+2025-03-18 10:08:02,718 - __main__ - INFO - Testing full pipeline with depth=basic...
+2025-03-18 10:08:02,718 - __main__ - INFO - Researching property: Riverside Apartments
+2025-03-18 10:08:02,718 - backend.data_enrichment.property_researcher - INFO - Executing 2 research tasks concurrently
+2025-03-18 10:08:02,718 - backend.data_enrichment.property_researcher - INFO - Researching property details for 1234 Riverside Dr
+2025-03-18 10:08:02,719 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Using cached property details for: Riverside Apartments
+2025-03-18 10:08:02,719 - backend.data_enrichment.property_researcher - INFO - Researching investment potential for 1234 Riverside Dr
+2025-03-18 10:08:02,719 - backend.data_enrichment.property_researcher - INFO - Adding result keys: ['property_details']
+2025-03-18 10:08:02,719 - backend.data_enrichment.property_researcher - INFO - Adding result keys: ['investment_potential']
+2025-03-18 10:08:02,719 - __main__ - ERROR - ❌ Pipeline test failed after 0.00 seconds: object NoneType can't be used in 'await' expression
+2025-03-18 10:08:02,739 - asyncio - ERROR - Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x10772d890>
+2025-03-18 10:08:35,669 - numexpr.utils - INFO - NumExpr defaulting to 10 threads.
+2025-03-18 10:08:35,800 - backend.data_enrichment.database_extensions - INFO - Supabase client initialized successfully
+2025-03-18 10:08:35,802 - backend.data_enrichment.database_extensions - ERROR - Failed to initialize Neo4j driver: Cannot resolve address b2701535.databases.neo4j.io:7687
+2025-03-18 10:08:35,802 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 10:08:35,802 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:08:35,802 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 10:08:35,803 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:08:35,803 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 10:08:35,803 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 10:08:35,803 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 10:08:35,803 - backend.data_enrichment.property_researcher - INFO - Property Researcher initialized with all enrichers
+2025-03-18 10:08:35,803 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 10:08:35,803 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 10:08:35,803 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 10:08:35,803 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 10:08:35,803 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 10:08:35,803 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 10:08:35,803 - __main__ - INFO - Checking API keys...
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - All required API keys are set
+2025-03-18 10:08:35,803 - __main__ - INFO - Diagnostics initialized with test property: Riverside Apartments
+2025-03-18 10:08:35,803 - __main__ - INFO - Running full diagnostics with depths: basic
+2025-03-18 10:08:35,803 - __main__ - INFO - Checking API keys...
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 10:08:35,803 - __main__ - INFO - All required API keys are set
+2025-03-18 10:08:35,803 - __main__ - INFO - Testing individual components...
+2025-03-18 10:08:35,803 - __main__ - INFO - Testing PropertyProfiler...
+2025-03-18 10:08:35,803 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Using cached property details for: Riverside Apartments
+2025-03-18 10:08:35,803 - __main__ - INFO - ✅ PropertyProfiler succeeded in 0.00 seconds
+2025-03-18 10:08:35,804 - __main__ - INFO - Testing InvestmentMetricsEnricher...
+2025-03-18 10:08:35,804 - __main__ - INFO - ✅ InvestmentMetricsEnricher succeeded in 0.00 seconds
+2025-03-18 10:08:35,804 - __main__ - INFO - Testing MarketAnalyzer...
+2025-03-18 10:08:35,805 - backend.data_enrichment.research_enrichers.market_analyzer - WARNING - Census API key not set, using placeholder demographic data
+2025-03-18 10:08:36,124 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 10:08:36,262 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 10:08:36,264 - __main__ - INFO - ✅ MarketAnalyzer succeeded in 0.46 seconds
+2025-03-18 10:08:36,264 - __main__ - INFO - Testing RiskAssessor...
+2025-03-18 10:08:36,265 - __main__ - INFO - ✅ RiskAssessor succeeded in 0.00 seconds
+2025-03-18 10:08:36,265 - __main__ - INFO - Testing MCP Client...
+2025-03-18 10:08:36,274 - backend.data_enrichment.mcp_client - ERROR - Exception during property research: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+Traceback (most recent call last):
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1116, in _wrap_create_connection
+    sock = await aiohappyeyeballs.start_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/aiohappyeyeballs/impl.py", line 123, in start_connection
+    raise OSError(first_errno, msg)
+ConnectionRefusedError: [Errno 61] Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/guyma/code/projects/acquire/backend/data_enrichment/mcp_client.py", line 61, in research_property
+    async with session.post(
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/client.py", line 1425, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1411, in _create_direct_connection
+    raise last_exc
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1380, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/Library/Python/3.11/lib/python/site-packages/aiohttp/connector.py", line 1135, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+2025-03-18 10:08:36,279 - __main__ - INFO - ✅ MCP Client succeeded in 0.01 seconds
+2025-03-18 10:08:36,279 - __main__ - INFO - Component testing complete: 5/5 successful (100%)
+2025-03-18 10:08:36,280 - __main__ - INFO - Testing full pipeline with depth=basic...
+2025-03-18 10:08:36,280 - __main__ - INFO - Researching property: Riverside Apartments
+2025-03-18 10:08:36,280 - backend.data_enrichment.property_researcher - INFO - Executing 2 research tasks concurrently
+2025-03-18 10:08:36,280 - backend.data_enrichment.property_researcher - INFO - Researching property details for 1234 Riverside Dr
+2025-03-18 10:08:36,280 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Using cached property details for: Riverside Apartments
+2025-03-18 10:08:36,280 - backend.data_enrichment.property_researcher - INFO - Researching investment potential for 1234 Riverside Dr
+2025-03-18 10:08:36,280 - backend.data_enrichment.property_researcher - INFO - Adding result keys: ['property_details']
+2025-03-18 10:08:36,280 - backend.data_enrichment.property_researcher - INFO - Adding result keys: ['investment_potential']
+2025-03-18 10:08:36,282 - __main__ - ERROR - ❌ Pipeline test failed after 0.00 seconds: object NoneType can't be used in 'await' expression
+2025-03-18 10:08:36,318 - asyncio - ERROR - Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x123a8f4d0>
+2025-03-18 13:28:44,348 - backend.data_enrichment.database_extensions - INFO - Supabase client initialized successfully
+2025-03-18 13:28:44,443 - backend.data_enrichment.database_extensions - ERROR - Failed to initialize Neo4j driver: Cannot resolve address b2701535.databases.neo4j.io:7687
+2025-03-18 13:28:44,444 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 13:28:44,444 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 13:28:44,444 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 13:28:44,444 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 13:28:44,444 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 13:28:44,444 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 13:28:44,444 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 13:28:44,444 - backend.data_enrichment.property_researcher - INFO - Property Researcher initialized with all enrichers
+2025-03-18 13:28:44,444 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 13:28:44,444 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 13:28:44,444 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 13:28:44,444 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 13:28:44,444 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 13:28:44,444 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 13:28:44,444 - __main__ - INFO - Checking API keys...
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - All required API keys are set
+2025-03-18 13:28:44,444 - __main__ - INFO - Diagnostics initialized with test property: Riverside Apartments
+2025-03-18 13:28:44,444 - __main__ - INFO - Running full diagnostics with depths: basic
+2025-03-18 13:28:44,444 - __main__ - INFO - Checking API keys...
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 13:28:44,444 - __main__ - INFO - All required API keys are set
+2025-03-18 13:28:44,444 - __main__ - INFO - Testing individual components...
+2025-03-18 13:28:44,444 - __main__ - INFO - Testing PropertyProfiler...
+2025-03-18 13:28:44,445 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Using cached property details for: Riverside Apartments
+2025-03-18 13:28:44,445 - __main__ - INFO - ✅ PropertyProfiler succeeded in 0.00 seconds
+2025-03-18 13:28:44,446 - __main__ - INFO - Testing InvestmentMetricsEnricher...
+2025-03-18 13:28:44,446 - __main__ - INFO - ✅ InvestmentMetricsEnricher succeeded in 0.00 seconds
+2025-03-18 13:28:44,446 - __main__ - INFO - Testing MarketAnalyzer...
+2025-03-18 13:28:44,446 - backend.data_enrichment.research_enrichers.market_analyzer - WARNING - Census API key not set, using placeholder demographic data
+2025-03-18 13:28:44,958 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 13:28:45,234 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 13:28:45,235 - __main__ - INFO - ✅ MarketAnalyzer succeeded in 0.79 seconds
+2025-03-18 13:28:45,235 - __main__ - INFO - Testing RiskAssessor...
+2025-03-18 13:28:45,236 - __main__ - INFO - ✅ RiskAssessor succeeded in 0.00 seconds
+2025-03-18 13:28:45,236 - __main__ - INFO - Testing MCP Client...
+2025-03-18 13:28:45,241 - backend.data_enrichment.mcp_client - ERROR - Exception during property research: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+Traceback (most recent call last):
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 1116, in _wrap_create_connection
+    sock = await aiohappyeyeballs.start_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohappyeyeballs/impl.py", line 141, in start_connection
+    raise OSError(first_errno, msg)
+ConnectionRefusedError: [Errno 61] Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/guyma/code/projects/acquire/backend/data_enrichment/mcp_client.py", line 61, in research_property
+    async with session.post(
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/client.py", line 1425, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 1411, in _create_direct_connection
+    raise last_exc
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 1380, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 1135, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+2025-03-18 13:28:45,246 - __main__ - INFO - ✅ MCP Client succeeded in 0.01 seconds
+2025-03-18 13:28:45,247 - __main__ - INFO - Component testing complete: 5/5 successful (100%)
+2025-03-18 13:28:45,247 - __main__ - INFO - Testing full pipeline with depth=basic...
+2025-03-18 13:28:45,247 - __main__ - INFO - Researching property: Riverside Apartments
+2025-03-18 13:28:45,247 - backend.data_enrichment.property_researcher - INFO - Executing 2 research tasks concurrently
+2025-03-18 13:28:45,247 - backend.data_enrichment.property_researcher - INFO - Researching property details for 1234 Riverside Dr
+2025-03-18 13:28:45,248 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Using cached property details for: Riverside Apartments
+2025-03-18 13:28:45,248 - backend.data_enrichment.property_researcher - INFO - Researching investment potential for 1234 Riverside Dr
+2025-03-18 13:28:45,249 - backend.data_enrichment.property_researcher - INFO - Adding result keys: ['property_details']
+2025-03-18 13:28:45,249 - backend.data_enrichment.property_researcher - INFO - Adding result keys: ['investment_potential']
+2025-03-18 13:28:45,251 - __main__ - INFO - ✅ Pipeline test succeeded in 0.00 seconds
+2025-03-18 13:28:45,253 - __main__ - INFO - Modules found: property_details, investment_potential
+2025-03-18 13:28:45,253 - __main__ - INFO - Results saved to diagnostic_results/pipeline_result_basic.json
+2025-03-18 13:28:45,254 - asyncio - ERROR - Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x121340fd0>
+2025-03-18 13:29:14,875 - backend.data_enrichment.database_extensions - INFO - Supabase client initialized successfully
+2025-03-18 13:29:14,879 - backend.data_enrichment.database_extensions - ERROR - Failed to initialize Neo4j driver: Cannot resolve address b2701535.databases.neo4j.io:7687
+2025-03-18 13:29:14,879 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 13:29:14,879 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 13:29:14,879 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 13:29:14,879 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 13:29:14,879 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 13:29:14,879 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 13:29:14,879 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 13:29:14,879 - backend.data_enrichment.property_researcher - INFO - Property Researcher initialized with all enrichers
+2025-03-18 13:29:14,879 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 13:29:14,879 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 13:29:14,879 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 13:29:14,879 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 13:29:14,879 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 13:29:14,879 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 13:29:14,879 - __main__ - INFO - Checking API keys...
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - All required API keys are set
+2025-03-18 13:29:14,879 - __main__ - INFO - Diagnostics initialized with test property: Riverside Apartments
+2025-03-18 13:29:14,879 - __main__ - INFO - Running full diagnostics with depths: basic
+2025-03-18 13:29:14,879 - __main__ - INFO - Checking API keys...
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 13:29:14,879 - __main__ - INFO - All required API keys are set
+2025-03-18 13:29:14,879 - __main__ - INFO - Testing individual components...
+2025-03-18 13:29:14,879 - __main__ - INFO - Testing PropertyProfiler...
+2025-03-18 13:29:14,879 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Using cached property details for: Riverside Apartments
+2025-03-18 13:29:14,880 - __main__ - INFO - ✅ PropertyProfiler succeeded in 0.00 seconds
+2025-03-18 13:29:14,880 - __main__ - INFO - Testing InvestmentMetricsEnricher...
+2025-03-18 13:29:14,880 - __main__ - INFO - ✅ InvestmentMetricsEnricher succeeded in 0.00 seconds
+2025-03-18 13:29:14,880 - __main__ - INFO - Testing MarketAnalyzer...
+2025-03-18 13:29:14,880 - backend.data_enrichment.research_enrichers.market_analyzer - WARNING - Census API key not set, using placeholder demographic data
+2025-03-18 13:29:15,067 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 13:29:15,216 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 13:29:15,216 - __main__ - INFO - ✅ MarketAnalyzer succeeded in 0.34 seconds
+2025-03-18 13:29:15,217 - __main__ - INFO - Testing RiskAssessor...
+2025-03-18 13:29:15,218 - __main__ - INFO - ✅ RiskAssessor succeeded in 0.00 seconds
+2025-03-18 13:29:15,218 - __main__ - INFO - Testing MCP Client...
+2025-03-18 13:29:15,221 - backend.data_enrichment.mcp_client - ERROR - Exception during property research: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+Traceback (most recent call last):
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 1116, in _wrap_create_connection
+    sock = await aiohappyeyeballs.start_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohappyeyeballs/impl.py", line 141, in start_connection
+    raise OSError(first_errno, msg)
+ConnectionRefusedError: [Errno 61] Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/guyma/code/projects/acquire/backend/data_enrichment/mcp_client.py", line 61, in research_property
+    async with session.post(
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/client.py", line 1425, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 1411, in _create_direct_connection
+    raise last_exc
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 1380, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 1135, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+2025-03-18 13:29:15,225 - __main__ - INFO - ✅ MCP Client succeeded in 0.01 seconds
+2025-03-18 13:29:15,226 - __main__ - INFO - Component testing complete: 5/5 successful (100%)
+2025-03-18 13:29:15,226 - __main__ - INFO - Testing full pipeline with depth=basic...
+2025-03-18 13:29:15,226 - __main__ - INFO - Researching property: Riverside Apartments
+2025-03-18 13:29:15,226 - backend.data_enrichment.property_researcher - INFO - Executing 2 research tasks concurrently
+2025-03-18 13:29:15,226 - backend.data_enrichment.property_researcher - INFO - Researching property details for 1234 Riverside Dr
+2025-03-18 13:29:15,226 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Using cached property details for: Riverside Apartments
+2025-03-18 13:29:15,226 - backend.data_enrichment.property_researcher - INFO - Researching investment potential for 1234 Riverside Dr
+2025-03-18 13:29:15,227 - backend.data_enrichment.property_researcher - INFO - Adding result keys: ['property_details']
+2025-03-18 13:29:15,227 - backend.data_enrichment.property_researcher - INFO - Adding result keys: ['investment_potential']
+2025-03-18 13:29:15,228 - __main__ - INFO - ✅ Pipeline test succeeded in 0.00 seconds
+2025-03-18 13:29:15,230 - __main__ - INFO - Modules found: property_details, investment_potential
+2025-03-18 13:29:15,230 - __main__ - INFO - Results saved to diagnostic_results/pipeline_result_basic.json
+2025-03-18 13:29:15,230 - asyncio - ERROR - Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x11273d850>
+2025-03-18 14:29:37,673 - backend.data_enrichment.database_extensions - INFO - Supabase client initialized successfully
+2025-03-18 14:29:37,825 - backend.data_enrichment.database_extensions - ERROR - Failed to initialize Neo4j driver: Cannot resolve address b2701535.databases.neo4j.io:7687
+2025-03-18 14:29:37,826 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 14:29:37,826 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 14:29:37,826 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 14:29:37,826 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 14:29:37,826 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 14:29:37,826 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 14:29:37,826 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 14:29:37,826 - backend.data_enrichment.property_researcher - INFO - Property Researcher initialized with all enrichers
+2025-03-18 14:29:37,826 - backend.data_enrichment.mcp_client - INFO - Initialized Deep Research MCP client with URL: http://localhost:6020/sse
+2025-03-18 14:29:37,826 - backend.data_enrichment.cache_manager - INFO - Research cache initialized with cache directory: data/research_cache
+2025-03-18 14:29:37,826 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Property Profiler initialized
+2025-03-18 14:29:37,826 - backend.data_enrichment.research_enrichers.investment_metrics - INFO - Investment Metrics Enricher initialized
+2025-03-18 14:29:37,826 - backend.data_enrichment.research_enrichers.market_analyzer - INFO - Market Analyzer initialized
+2025-03-18 14:29:37,826 - backend.data_enrichment.research_enrichers.risk_assessor - INFO - Risk Assessor initialized
+2025-03-18 14:29:37,826 - __main__ - INFO - Checking API keys...
+2025-03-18 14:29:37,826 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 14:29:37,826 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 14:29:37,826 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 14:29:37,826 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 14:29:37,826 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 14:29:37,826 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 14:29:37,826 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 14:29:37,826 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 14:29:37,826 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 14:29:37,826 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 14:29:37,826 - __main__ - INFO - All required API keys are set
+2025-03-18 14:29:37,826 - __main__ - INFO - Diagnostics initialized with test property: Riverside Apartments
+2025-03-18 14:29:37,827 - __main__ - INFO - Running full diagnostics with depths: basic
+2025-03-18 14:29:37,827 - __main__ - INFO - Checking API keys...
+2025-03-18 14:29:37,827 - __main__ - INFO - ✅ Required API key found: OPENAI_API_KEY
+2025-03-18 14:29:37,827 - __main__ - INFO - ✅ Required API key found: ANTHROPIC_API_KEY
+2025-03-18 14:29:37,827 - __main__ - INFO - ✅ Optional API key found: GOOGLE_PLACES_API_KEY
+2025-03-18 14:29:37,827 - __main__ - INFO - ✅ Optional API key found: MAPBOX_ACCESS_TOKEN
+2025-03-18 14:29:37,827 - __main__ - INFO - ✅ Optional API key found: WALKSCORE_API_KEY
+2025-03-18 14:29:37,827 - __main__ - INFO - ✅ Optional API key found: FMP_API_KEY
+2025-03-18 14:29:37,827 - __main__ - INFO - ✅ Optional API key found: FRED_API_KEY
+2025-03-18 14:29:37,827 - __main__ - INFO - ✅ Optional API key found: POLYGON_API_KEY
+2025-03-18 14:29:37,827 - __main__ - INFO - ✅ Optional API key found: ALPHA_VANTAGE_API_KEY
+2025-03-18 14:29:37,827 - __main__ - INFO - ✅ Optional API key found: SEC_API_KEY
+2025-03-18 14:29:37,827 - __main__ - INFO - All required API keys are set
+2025-03-18 14:29:37,827 - __main__ - INFO - Testing individual components...
+2025-03-18 14:29:37,827 - __main__ - INFO - Testing PropertyProfiler...
+2025-03-18 14:29:37,828 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Generated sample coordinates for 1234 Riverside Dr, Austin, TX
+2025-03-18 14:29:37,830 - __main__ - INFO - ✅ PropertyProfiler succeeded in 0.00 seconds
+2025-03-18 14:29:37,831 - __main__ - INFO - Testing InvestmentMetricsEnricher...
+2025-03-18 14:29:37,831 - __main__ - INFO - ✅ InvestmentMetricsEnricher succeeded in 0.00 seconds
+2025-03-18 14:29:37,831 - __main__ - INFO - Testing MarketAnalyzer...
+2025-03-18 14:29:37,831 - backend.data_enrichment.research_enrichers.market_analyzer - WARNING - Census API key not set, using placeholder demographic data
+2025-03-18 14:29:38,451 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 14:29:38,547 - backend.data_enrichment.research_enrichers.market_analyzer - ERROR - FRED API error: {"error_code":400,"error_message":"Bad Request.  The series does not exist."}
+2025-03-18 14:29:38,548 - __main__ - INFO - ✅ MarketAnalyzer succeeded in 0.72 seconds
+2025-03-18 14:29:38,548 - __main__ - INFO - Testing RiskAssessor...
+2025-03-18 14:29:38,548 - __main__ - INFO - ✅ RiskAssessor succeeded in 0.00 seconds
+2025-03-18 14:29:38,548 - __main__ - INFO - Testing MCP Client...
+2025-03-18 14:29:38,550 - backend.data_enrichment.mcp_client - ERROR - Exception during property research: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+Traceback (most recent call last):
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 1116, in _wrap_create_connection
+    sock = await aiohappyeyeballs.start_connection(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohappyeyeballs/impl.py", line 141, in start_connection
+    raise OSError(first_errno, msg)
+ConnectionRefusedError: [Errno 61] Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/guyma/code/projects/acquire/backend/data_enrichment/mcp_client.py", line 61, in research_property
+    async with session.post(
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/client.py", line 1425, in __aenter__
+    self._resp: _RetType = await self._coro
+                           ^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/client.py", line 703, in _request
+    conn = await self._connector.connect(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 548, in connect
+    proto = await self._create_connection(req, traces, timeout)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 1056, in _create_connection
+    _, proto = await self._create_direct_connection(req, traces, timeout)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 1411, in _create_direct_connection
+    raise last_exc
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 1380, in _create_direct_connection
+    transp, proto = await self._wrap_create_connection(
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/guyma/code/projects/acquire/backend/venv/lib/python3.11/site-packages/aiohttp/connector.py", line 1135, in _wrap_create_connection
+    raise client_error(req.connection_key, exc) from exc
+aiohttp.client_exceptions.ClientConnectorError: Cannot connect to host localhost:6020 ssl:default [Multiple exceptions: [Errno 61] Connect call failed ('::1', 6020, 0, 0), [Errno 61] Connect call failed ('127.0.0.1', 6020)]
+2025-03-18 14:29:38,552 - __main__ - INFO - ✅ MCP Client succeeded in 0.00 seconds
+2025-03-18 14:29:38,552 - __main__ - INFO - Component testing complete: 5/5 successful (100%)
+2025-03-18 14:29:38,552 - __main__ - INFO - Testing full pipeline with depth=basic...
+2025-03-18 14:29:38,552 - __main__ - INFO - Researching property: Riverside Apartments
+2025-03-18 14:29:38,552 - backend.data_enrichment.property_researcher - INFO - Executing 2 research tasks concurrently
+2025-03-18 14:29:38,553 - backend.data_enrichment.property_researcher - INFO - Researching property details for 1234 Riverside Dr
+2025-03-18 14:29:38,553 - backend.data_enrichment.research_enrichers.property_profiler - INFO - Using cached property details for: Riverside Apartments
+2025-03-18 14:29:38,553 - backend.data_enrichment.property_researcher - INFO - Researching investment potential for 1234 Riverside Dr
+2025-03-18 14:29:38,553 - backend.data_enrichment.property_researcher - INFO - Adding result keys: ['property_details']
+2025-03-18 14:29:38,553 - backend.data_enrichment.property_researcher - INFO - Adding result keys: ['investment_potential']
+2025-03-18 14:29:38,554 - __main__ - INFO - ✅ Pipeline test succeeded in 0.00 seconds
+2025-03-18 14:29:38,555 - __main__ - INFO - Modules found: property_details, investment_potential
+2025-03-18 14:29:38,555 - __main__ - INFO - Results saved to diagnostic_results/pipeline_result_basic.json
+2025-03-18 14:29:38,555 - asyncio - ERROR - Unclosed client session
+client_session: <aiohttp.client.ClientSession object at 0x11870dad0>

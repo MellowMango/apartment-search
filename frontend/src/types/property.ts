@@ -41,6 +41,17 @@ export interface Property {
   created_at?: string;
   updated_at?: string;
   amenities?: string[];
+  
+  // Flags for coordinate status
+  _coordinates_missing?: boolean;  // Flag for properties without valid coordinates
+  _needs_geocoding?: boolean;      // Flag for properties that need geocoding
+  _geocoded?: boolean;             // Flag for properties that were geocoded
+  _is_grid_pattern?: boolean;      // Flag for properties with coordinates in a grid pattern
+  _is_invalid_range?: boolean;     // Flag for properties with coordinates outside valid ranges
+  _outside_austin?: boolean;       // Flag for properties with coordinates outside Austin area
+  _coordinates_from_research?: boolean; // Flag for coordinates that came from research
+  _is_test_property?: boolean;     // Flag for test properties
+  _highlight?: boolean;            // Flag for highlighting properties in the UI
 }
 
 export interface PropertySearchParams {

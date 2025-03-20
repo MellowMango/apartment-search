@@ -1,0 +1,22 @@
+{
+  "overview": {
+    "city": "Austin",
+    "state": "TX",
+    "property_type": "multifamily",
+    "analysis_date": "2025-03-18T14:29:38.548133"
+  },
+  "economic_indicators": {
+    "unemployment_rate": 0,
+    "median_income_growth": 0,
+    "job_growth": 1.5,
+    "data_source": "FRED (Federal Reserve Economic Data)",
+    "as_of_date": "2025-03-18"
+  },
+  "demographic_data": {
+    "note": "Placeholder data - Census API key not configured",
+    "population": 350000,
+    "median_age": 34.5,
+    "median_household_income": 65000,
+    "renter_occupied_percentage": 42
+  }
+}

@@ -180,6 +180,75 @@ class DeepResearchMCPClient:
             logger.exception(f"Exception during market intelligence: {e}")
             return {"error": f"Client error: {str(e)}"}
     
+    async def generate_executive_summary(self, context: Dict[str, Any]) -> str:
+        """
+        Generate an executive summary for research results.
+        
+        Args:
+            context: Dictionary containing property data and research results
+            
+        Returns:
+            Executive summary text
+        """
+        session = await self._ensure_session()
+        
+        payload = {
+            "request_type": "executive_summary",
+            "context": context,
+            "api_credentials": self._get_api_credentials()
+        }
+        
+        try:
+            async with session.post(
+                f"{self.base_url}/summarize",
+                json=payload
+            ) as response:
+                if response.status != 200:
+                    error_text = await response.text()
+                    logger.error(f"Error generating executive summary: {error_text}")
+                    return f"Error generating executive summary: MCP server error {response.status}"
+                    
+                response_data = await response.json()
+                return response_data.get("summary", "No summary available")
+        except Exception as e:
+            logger.exception(f"Exception during executive summary generation: {e}")
+            return f"Error generating executive summary: {str(e)}"
+    
+    async def market_intelligence_analysis(self, property_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Get comprehensive market intelligence analysis.
+        
+        Args:
+            property_data: Property details with location information
+            
+        Returns:
+            Comprehensive market intelligence
+        """
+        # This is similar to get_market_intelligence but includes comprehensive analysis
+        location = {
+            "city": property_data.get("city", ""),
+            "state": property_data.get("state", ""),
+            "zip_code": property_data.get("zip_code", ""),
+            "latitude": property_data.get("latitude"),
+            "longitude": property_data.get("longitude")
+        }
+        
+        property_type = property_data.get("property_type", "multifamily")
+        
+        return await self.get_market_intelligence(location, property_type)
+    
+    async def risk_assessment_analysis(self, property_data: Dict[str, Any]) -> Dict[str, Any]:
+        """
+        Get comprehensive risk assessment analysis.
+        
+        Args:
+            property_data: Property details
+            
+        Returns:
+            Comprehensive risk assessment
+        """
+        return await self.identify_risks(property_data)
+    
     def _get_api_credentials(self) -> Dict[str, str]:
         """Get API credentials from environment variables"""
         return {
