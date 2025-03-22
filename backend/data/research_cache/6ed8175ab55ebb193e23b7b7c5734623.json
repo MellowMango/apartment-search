@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 28.0205733,
+    "longitude": -97.0544341,
+    "formatted_address": "Rockport, TX, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJhxNx92CzaYYRHJaDCjYg6mw",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:25:30.941171",
+  "data_type": "default"
+}

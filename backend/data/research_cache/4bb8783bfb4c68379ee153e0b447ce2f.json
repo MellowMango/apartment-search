@@ -1,0 +1,20 @@
+{
+  "data": {
+    "latitude": 41.6782607,
+    "longitude": -86.2874289,
+    "formatted_address": "South Bend, Indiana, 2702 W Washington St, South Bend, IN 46628, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJCabkjvIyEYgR790uIRO3VfI",
+      "types": [
+        "establishment",
+        "point_of_interest",
+        "train_station",
+        "transit_station"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:25:31.059883",
+  "data_type": "default"
+}

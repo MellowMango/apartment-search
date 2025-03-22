@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 33.0012356,
+    "longitude": -97.4844657,
+    "formatted_address": "Newark, TX, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJa5IloajnTYYRgi4DKIYI4H4",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:26:43.897151",
+  "data_type": "default"
+}

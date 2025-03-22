@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 32.9090739,
+    "longitude": -96.4500618,
+    "formatted_address": "Rockwall, TX, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJp4bgl80BTIYRazC-XrvdLYo",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:26:43.234836",
+  "data_type": "default"
+}

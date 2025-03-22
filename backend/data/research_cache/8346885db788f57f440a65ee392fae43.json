@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 32.5130159,
+    "longitude": -93.7514874,
+    "formatted_address": "Shreveport, LA, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJH-mYF40qMYYR3ZykhxYsvS4",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:25:32.291434",
+  "data_type": "default"
+}

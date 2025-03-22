@@ -1,0 +1,19 @@
+{
+  "data": {
+    "latitude": 31.13641999999999,
+    "longitude": -97.32978,
+    "formatted_address": "Temple, TX, Temple, TX 76501, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJA_RLgyJsRYYRWnpdpZ4UB34",
+      "types": [
+        "establishment",
+        "point_of_interest",
+        "transit_station"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:25:31.485056",
+  "data_type": "default"
+}

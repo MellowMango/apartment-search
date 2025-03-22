@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 31.3345562,
+    "longitude": -94.7321127,
+    "formatted_address": "Lufkin, TX, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJsbOqGT03OIYRSb8SwfR5Q0k",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:25:31.226202",
+  "data_type": "default"
+}

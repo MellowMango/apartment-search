@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 29.3474565,
+    "longitude": -99.14142489999999,
+    "formatted_address": "Hondo, TX 78861, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJwas4YPkmXIYRUWixkpGrOCo",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:26:43.018242",
+  "data_type": "default"
+}

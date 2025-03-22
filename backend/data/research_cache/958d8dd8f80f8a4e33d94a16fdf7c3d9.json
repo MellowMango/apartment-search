@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 31.1212466,
+    "longitude": -97.73316899999999,
+    "formatted_address": "Killeen, TX, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJXVOYyI9LRYYR2j9j0feBS3k",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:29:49.714344",
+  "data_type": "default"
+}

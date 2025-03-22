@@ -14,7 +14,13 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 // Create Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  }
+});
 
 /**
  * Get the current authenticated user
@@ -73,8 +79,6 @@ export const signOut = async () => {
  * @returns {Promise<Array>} Array of normalized properties
  */
 export const fetchProperties = async (options = {}) => {
-  let selectFields = 'properties.*';
-  
   // Check if we should join with research data
   if (options.includeResearch !== false) {
     // Include research data in our query - we'll join with property_research table
@@ -118,10 +122,18 @@ export const fetchProperties = async (options = {}) => {
       
       // If we need complete properties with coordinates for the map
       if (!options.includeIncomplete) {
-        // Check for valid coordinates in either the properties table or the modules in property_research
-        // This is a bit complex due to the join - we need to use an OR condition
-        const coordFilter = 'not.or=(latitude.is.null,longitude.is.null,latitude.eq.0,longitude.eq.0)';
-        query = query.or(coordFilter);
+        // Use a more precise filter to avoid empty/zero coordinates
+        // First prioritize properties with valid coordinates (either direct or from research)
+        query = query
+          .not('latitude', 'is', null)
+          .not('longitude', 'is', null)
+          .not('latitude', 'eq', 0)
+          .not('longitude', 'eq', 0)
+          .order('created_at', { ascending: false });
+        
+        console.log('Querying for properties with valid coordinates only');
+      } else {
+        console.log('Including all properties regardless of coordinates');
       }
       
       // Apply pagination
@@ -194,6 +206,24 @@ export const fetchProperties = async (options = {}) => {
           return normalizedProperty;
         });
         
+        // For map view, filter out properties without valid coordinates
+        if (!options.includeIncomplete) {
+          const propertiesWithCoordinates = normalizedProperties.filter(
+            p => p.latitude && p.longitude && 
+                (p._coordinates_from_research || 
+                  (!p._coordinates_missing && !p._is_grid_pattern))
+          );
+          
+          console.log(`Filtered to ${propertiesWithCoordinates.length} properties with valid coordinates`);
+          
+          if (propertiesWithCoordinates.length > 0) {
+            return propertiesWithCoordinates;
+          }
+          
+          // If all properties were filtered out, return them anyway to avoid empty map
+          console.warn('All properties were filtered out for having invalid coordinates');
+        }
+        
         return normalizedProperties;
       }
     } catch (joinError) {
@@ -238,28 +268,18 @@ export const fetchProperties = async (options = {}) => {
   
   // If we need complete properties with coordinates for the map
   if (!options.includeIncomplete) {
-    // Try to determine what coordinate fields exist in the database
-    // This handles cases where the database schema might differ from expectations
-    try {
-      // Exclude null coordinates and "0" coordinates which are usually placeholders
-      // Use a more flexible approach that tries different conditions
-      query = query
-        .not('latitude', 'is', null)
-        .not('longitude', 'is', null);
-        
-      // Avoid adding the .eq(0) filters if the database schema might not have numeric coordinates
-      // Only add these if we're confident they won't cause errors
-      try {
-        query = query
-          .not('latitude', 'eq', 0)
-          .not('longitude', 'eq', 0);
-      } catch (coordError) {
-        console.warn('Could not filter zero coordinates, they may not be numeric:', coordError);
-      }
-    } catch (schemaError) {
-      console.warn('Error applying coordinate filters, schema may be different:', schemaError);
-      // If filtering by coordinates fails, we'll return all properties
-    }
+    // Use a more precise filter to avoid empty/zero coordinates
+    // First prioritize properties with valid coordinates (either direct or from research)
+    query = query
+      .not('latitude', 'is', null)
+      .not('longitude', 'is', null)
+      .not('latitude', 'eq', 0)
+      .not('longitude', 'eq', 0)
+      .order('created_at', { ascending: false });
+    
+    console.log('Querying for properties with valid coordinates only');
+  } else {
+    console.log('Including all properties regardless of coordinates');
   }
   
   // Apply pagination

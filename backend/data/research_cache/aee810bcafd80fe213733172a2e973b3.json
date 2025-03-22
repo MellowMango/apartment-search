@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 34.6840246,
+    "longitude": -99.917889,
+    "formatted_address": "114 W Hollis St # 1, Hollis, OK 73550, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJY7QsVJn9qocRLCNSAYvZtms",
+      "types": [
+        "establishment",
+        "point_of_interest"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:29:49.230241",
+  "data_type": "default"
+}

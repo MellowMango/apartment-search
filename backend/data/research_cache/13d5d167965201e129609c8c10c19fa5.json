@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 30.2612591,
+    "longitude": -97.75790470000001,
+    "formatted_address": "1200 Barton Springs Rd, Austin, TX 78704, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJQ6U6KBq1RIYRekW1PX58EEg",
+      "types": [
+        "premise",
+        "street_address"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:13:49.154015",
+  "data_type": "default"
+}

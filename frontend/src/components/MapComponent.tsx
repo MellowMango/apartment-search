@@ -285,6 +285,17 @@ const MapComponent: FC<MapComponentProps> = ({
 
   // Add helper function to get the right marker icon based on property status
   const getMarkerIcon = (property: Property) => {
+    // If the property has verified coordinates, use a verified icon
+    if (property.verified_address) {
+      return L.icon({
+        iconUrl: '/icons/marker-verified.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+    }
+    
     // If the property has coordinate issues, use a warning icon
     if (property._is_grid_pattern || property._is_invalid_range || 
         property._outside_austin || property._coordinates_from_research) {
@@ -409,6 +420,48 @@ const MapComponent: FC<MapComponentProps> = ({
     });
   }, [properties]);
   
+  // Check if property has valid coordinates
+  const hasValidCoordinates = (property: Property): boolean => {
+    if (!property) return false;
+
+    // If the property has a verified address, it has valid coordinates
+    if (property.verified_address) {
+      return true;
+    }
+    
+    // Basic type checks
+    const lat = typeof property.latitude === 'number' ? property.latitude : parseFloat(property.latitude as string);
+    const lng = typeof property.longitude === 'number' ? property.longitude : parseFloat(property.longitude as string);
+    
+    // Check for NaN, null, undefined
+    if (isNaN(lat) || isNaN(lng) || lat === null || lng === null) return false;
+    
+    // Check for zero values (often default)
+    if (lat === 0 || lng === 0) return false;
+    
+    // Check for reasonable coordinate ranges
+    if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return false;
+    
+    // Check for Austin default (if property state is not Texas)
+    const isAustinArea = lat > 30.0 && lat < 30.5 && lng > -97.9 && lng < -97.5;
+    const isTexas = property.state?.toLowerCase() === 'tx' || property.state?.toLowerCase() === 'texas';
+    
+    if (isAustinArea && !isTexas) {
+      console.warn(`Property ${property.id} has coordinates in Austin but state is ${property.state}`);
+      return false;
+    }
+    
+    return true;
+  };
+  
+  // Get properties with valid coordinates
+  const propertiesWithCoordinates = useMemo(() => {
+    if (!processedProperties || !Array.isArray(processedProperties)) {
+      return [];
+    }
+    return processedProperties.filter(property => hasValidCoordinates(property));
+  }, [processedProperties]);
+  
   return (
     <div className="h-[80vh] lg:h-[85vh] rounded-lg shadow overflow-hidden relative">
       {/* Geocoding status indicator */}
@@ -422,25 +475,8 @@ const MapComponent: FC<MapComponentProps> = ({
         </div>
       )}
       
-      {processedProperties.filter(p => {
-        const hasCoordinates = p.latitude && 
-          p.longitude && 
-          typeof p.latitude === 'number' && 
-          typeof p.longitude === 'number';
-        
-        const isNotZero = !(p.latitude === 0 && p.longitude === 0);
-        const isInValidRange = p.latitude >= -90 && p.latitude <= 90 && 
-                              p.longitude >= -180 && p.longitude <= 180;
-        const fromResearch = p._coordinates_from_research === true;
-        
-        // For properties with coordinates from research, or valid normal coordinates
-        // Filter out grid patterns, invalid ranges, and missing coordinates
-        const isValid = (fromResearch && hasCoordinates && isNotZero && isInValidRange) || 
-                        (hasCoordinates && isNotZero && isInValidRange && 
-                         !p._coordinates_missing && !p._is_grid_pattern && !p._is_invalid_range);
-        
-        return isValid;
-      }).length === 0 && (
+      {/* No properties with valid coordinates message */}
+      {propertiesWithCoordinates.length === 0 && (
         <div className="absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md text-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mx-auto mb-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -476,28 +512,9 @@ const MapComponent: FC<MapComponentProps> = ({
         <ZoomControl position="topright" />
         
         {/* Map markers for properties */}
-        {processedProperties.map(property => {
-          // Check if the property has valid coordinates from research or directly
-          const hasCoordinates = property.latitude && 
-              property.longitude && 
-              typeof property.latitude === 'number' && 
-              typeof property.longitude === 'number';
-          
-          const isNotZero = !(property.latitude === 0 && property.longitude === 0);
-          const isInValidRange = property.latitude >= -90 && property.latitude <= 90 && 
-                                property.longitude >= -180 && property.longitude <= 180;
-          const fromResearch = property._coordinates_from_research === true;
-          
-          // For properties with coordinates from research, or valid normal coordinates
-          // Filter out grid patterns, invalid ranges, and missing coordinates
-          const isValid = (fromResearch && hasCoordinates && isNotZero && isInValidRange) || 
-                          (hasCoordinates && isNotZero && isInValidRange && 
-                           !property._coordinates_missing && !property._is_grid_pattern && 
-                           !property._is_invalid_range);
-          
-          if (isValid) {
-            // Property has valid coordinates - proceed with marker
-            return (
+        {propertiesWithCoordinates.length > 0 && (
+          <>
+            {propertiesWithCoordinates.map((property) => (
               <Marker
                 key={property.id}
                 position={[property.latitude, property.longitude]}
@@ -513,17 +530,30 @@ const MapComponent: FC<MapComponentProps> = ({
                 <Popup>
                   <div className="min-w-[220px]">
                     <h3 className="font-bold text-lg">{property.name}</h3>
-                    <p className="text-gray-600">{property.address}</p>
-                    {property._geocoded && (
-                      <p className="text-xs text-blue-600 mt-1">
-                        <span className="flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          Location estimated from address
-                        </span>
+                    
+                    {/* Show verified address if available, otherwise show regular address */}
+                    <p className="text-gray-600">
+                      {property.verified_address || property.address}
+                    </p>
+                    
+                    {/* Add verification status indicator */}
+                    {property.verified_address && (
+                      <p className="text-xs text-green-600 flex items-center mt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                        Verified with Google Maps
                       </p>
                     )}
+                    {!property.verified_address && property.geocoded_at && (
+                      <p className="text-xs text-blue-600 flex items-center mt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                        </svg>
+                        Location estimated from address
+                      </p>
+                    )}
+                    
                     <div className="grid grid-cols-2 gap-1 my-2">
                       <div>
                         <span className="text-gray-500 text-sm">Units:</span>
@@ -565,10 +595,9 @@ const MapComponent: FC<MapComponentProps> = ({
                   </div>
                 </Popup>
               </Marker>
-            );
-          }
-          return null;
-        })}
+            ))}
+          </>
+        )}
         
         {/* Map controllers */}
         <MapRecenter selectedProperty={selectedProperty} />

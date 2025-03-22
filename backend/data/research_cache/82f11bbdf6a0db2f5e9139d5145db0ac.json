@@ -1,0 +1,16 @@
+{
+  "data": {
+    "latitude": 30.272758344039104,
+    "longitude": -97.73501995807996,
+    "formatted_address": "1234, Red River Street, Medical District, Austin, Travis County, Texas, 78701, United States",
+    "confidence": "low",
+    "provider_response": {
+      "osm_id": 189139450,
+      "osm_type": "way",
+      "importance": 9.99999999995449e-06
+    },
+    "geocoding_provider": "nominatim"
+  },
+  "timestamp": "2025-03-20T21:09:38.759510",
+  "data_type": "default"
+}

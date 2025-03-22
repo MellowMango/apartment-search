@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 31.124062,
+    "longitude": -97.90307849999999,
+    "formatted_address": "Copperas Cove, TX, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJV8xSucakWoYRlHlMmZ3o3d8",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:29:49.642497",
+  "data_type": "default"
+}

@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 35.9595442,
+    "longitude": -95.36941159999999,
+    "formatted_address": "Wagoner, OK 74467, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJw2aqUUkNtocR7DZje23AEzo",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:26:44.445236",
+  "data_type": "default"
+}

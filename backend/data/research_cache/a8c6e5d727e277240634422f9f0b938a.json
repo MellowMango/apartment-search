@@ -1,0 +1,19 @@
+{
+  "data": {
+    "latitude": 29.72687,
+    "longitude": -98.07938,
+    "formatted_address": "New Braunfels, TX, New Braunfels, TX 78130, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJ4d2XqdK8XIYRtApIXBUbLzc",
+      "types": [
+        "establishment",
+        "point_of_interest",
+        "transit_station"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:26:44.444433",
+  "data_type": "default"
+}

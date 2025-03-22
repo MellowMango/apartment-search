@@ -528,6 +528,10 @@ class PropertyResearcher:
         
         # Update properties with geocoded coordinates
         updated_properties = []
+        success_count = 0
+        verified_count = 0
+        approximate_count = 0
+        suspicious_count = 0
         
         for prop in properties:
             property_id = prop.get("id", "")
@@ -541,11 +545,65 @@ class PropertyResearcher:
                 
                 # Update property with coordinates if no error
                 if "error" not in geocode_result:
-                    updated_prop["latitude"] = geocode_result.get("latitude")
-                    updated_prop["longitude"] = geocode_result.get("longitude")
+                    success_count += 1
                     
-                    if "formatted_address" in geocode_result:
-                        updated_prop["formatted_address"] = geocode_result.get("formatted_address")
+                    # Determine if we should update the coordinates based on verification
+                    should_update = True
+                    
+                    # Only update coordinates if they're verified or we don't have any coordinates yet
+                    has_existing_coords = (
+                        updated_prop.get("latitude") is not None and 
+                        updated_prop.get("longitude") is not None
+                    )
+                    
+                    is_verified = geocode_result.get("geocode_verified", False)
+                    
+                    # If we have existing coordinates that are already verified, and the new ones aren't verified,
+                    # don't update them unless force_refresh is True
+                    if has_existing_coords and updated_prop.get("geocode_verified", False) and not is_verified and not force_refresh:
+                        should_update = False
+                        logger.info(f"Skipping unverified coordinates update for property {property_id} with existing verified coordinates")
+                    
+                    if should_update:
+                        # Update coordinates and related fields
+                        updated_prop["latitude"] = geocode_result.get("latitude")
+                        updated_prop["longitude"] = geocode_result.get("longitude")
+                        
+                        # Set geocode_verified flag based on result
+                        updated_prop["geocode_verified"] = is_verified
+                        if is_verified:
+                            verified_count += 1
+                        
+                        # Add confidence score if available
+                        if "confidence" in geocode_result:
+                            updated_prop["geocode_confidence"] = geocode_result.get("confidence")
+                        
+                        # Add formatted address if available
+                        if "formatted_address" in geocode_result:
+                            updated_prop["formatted_address"] = geocode_result.get("formatted_address")
+                        
+                        # If coordinates are approximate, flag them
+                        if geocode_result.get("approximate", False):
+                            updated_prop["geocode_approximate"] = True
+                            approximate_count += 1
+                        
+                        # If coordinates are suspicious, flag them
+                        if geocode_result.get("suspicious_coordinates", False):
+                            updated_prop["suspicious_coordinates"] = True
+                            suspicious_count += 1
+                        
+                        # Add additional flags for better tracking
+                        if geocode_result.get("zero_coordinates", False):
+                            updated_prop["zero_coordinates"] = True
+                        
+                        if geocode_result.get("out_of_range_coordinates", False):
+                            updated_prop["out_of_range_coordinates"] = True
+                        
+                        if geocode_result.get("invalid_coordinate_format", False):
+                            updated_prop["invalid_coordinate_format"] = True
+                        
+                        if geocode_result.get("city_mismatch", False):
+                            updated_prop["city_mismatch"] = True
                 
                 updated_properties.append(updated_prop)
             else:
@@ -555,7 +613,13 @@ class PropertyResearcher:
         # Return the updated properties and geocoding statistics
         return {
             "properties": updated_properties,
-            "stats": batch_results["stats"]
+            "stats": {
+                **batch_results["stats"],
+                "verified_count": verified_count,
+                "approximate_count": approximate_count,
+                "suspicious_count": suspicious_count,
+                "success": success_count
+            }
         }
     
     def _has_valid_coordinates(self, property_data: Dict[str, Any]) -> bool:

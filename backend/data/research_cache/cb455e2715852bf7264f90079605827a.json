@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 10.71115,
+    "longitude": 16.649411,
+    "formatted_address": "Tour, Chari-Baguirmi, Chad",
+    "confidence": "medium",
+    "provider_response": {
+      "id": "locality.92555994",
+      "place_type": [
+        "locality"
+      ],
+      "relevance": 0.580741
+    },
+    "geocoding_provider": "mapbox"
+  },
+  "timestamp": "2025-03-20T21:26:43.308395",
+  "data_type": "default"
+}

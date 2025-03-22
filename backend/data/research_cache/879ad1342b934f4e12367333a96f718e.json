@@ -1,0 +1,20 @@
+{
+  "data": {
+    "latitude": 32.3416791,
+    "longitude": -94.89698279999999,
+    "formatted_address": "11409 Farm to Market Rd 2012, Kilgore, TX 75684, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJSdK1ydktNoYREZesnI0xZvU",
+      "types": [
+        "establishment",
+        "food",
+        "point_of_interest",
+        "restaurant"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:26:44.217203",
+  "data_type": "default"
+}

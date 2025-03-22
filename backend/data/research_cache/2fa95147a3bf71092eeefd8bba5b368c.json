@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 36.1551375,
+    "longitude": -95.98950099999999,
+    "formatted_address": "Tulsa, OK, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJjy7R3biStocR92rZG8gQaec",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:18:48.133953",
+  "data_type": "default"
+}

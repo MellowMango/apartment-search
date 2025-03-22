@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 31.0560132,
+    "longitude": -97.46445299999999,
+    "formatted_address": "Belton, TX, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJRXpxaQ1ARYYRcP8Fy5TVOHE",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:26:43.431047",
+  "data_type": "default"
+}

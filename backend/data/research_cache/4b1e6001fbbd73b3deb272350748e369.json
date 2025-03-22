@@ -1,0 +1,19 @@
+{
+  "data": {
+    "latitude": 32.6806852,
+    "longitude": -97.3773903,
+    "formatted_address": "3945 Weyburn Dr, Fort Worth, TX 76109, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJla6r0iptToYRkvCzBGcPSfw",
+      "types": [
+        "establishment",
+        "local_government_office",
+        "point_of_interest"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:24:58.439160",
+  "data_type": "default"
+}

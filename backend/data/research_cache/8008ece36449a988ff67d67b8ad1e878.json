@@ -1,0 +1,19 @@
+{
+  "data": {
+    "latitude": 35.5581642,
+    "longitude": -97.6420385,
+    "formatted_address": "8549 N Rockwell Ave, Oklahoma City, OK 73132, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJW_CaSukEsocRd_QVO3zib8o",
+      "types": [
+        "establishment",
+        "health",
+        "point_of_interest"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:18:47.928723",
+  "data_type": "default"
+}

@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 29.79466409999999,
+    "longitude": -98.7319703,
+    "formatted_address": "Boerne, TX, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJdT7ey6F2XIYRKyY5Qva3kRw",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:25:32.005573",
+  "data_type": "default"
+}

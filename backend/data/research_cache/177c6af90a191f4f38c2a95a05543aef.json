@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 31.8456816,
+    "longitude": -102.3676431,
+    "formatted_address": "Odessa, TX, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJ-XwTOWrJ-4YRRl9hVDSrJRY",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:25:30.806250",
+  "data_type": "default"
+}

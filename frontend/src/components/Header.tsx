@@ -1,25 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { getCurrentUser, signOut } from '../../lib/supabase';
+import { useAuth } from '../contexts/AuthContext';
 
 const Header: React.FC = () => {
-  const [user, setUser] = useState<any>(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
   const router = useRouter();
-
-  useEffect(() => {
-    const checkUser = async () => {
-      const currentUser = await getCurrentUser();
-      setUser(currentUser);
-    };
-    
-    checkUser();
-  }, []);
+  const { user, signOut } = useAuth();
 
   const handleSignOut = async () => {
     await signOut();
-    setUser(null);
     router.push('/');
   };
 
@@ -49,6 +40,32 @@ const Header: React.FC = () => {
                 <Link href="/dashboard" className={`hover:text-blue-600 ${router.pathname === '/dashboard' ? 'text-blue-600' : ''}`}>
                   Dashboard
                 </Link>
+
+                {/* Admin Dropdown */}
+                <div className="relative">
+                  <button 
+                    onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)}
+                    className={`hover:text-blue-600 flex items-center ${router.pathname.startsWith('/admin') ? 'text-blue-600' : ''}`}
+                  >
+                    Admin
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 ml-1">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                  </button>
+                  
+                  {isAdminMenuOpen && (
+                    <div className="absolute right-0 mt-2 py-2 w-48 bg-white rounded-md shadow-lg z-10">
+                      <Link 
+                        href="/admin/geocoding" 
+                        className="block px-4 py-2 text-sm hover:bg-gray-100"
+                        onClick={() => setIsAdminMenuOpen(false)}
+                      >
+                        Geocoding
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
                 <button 
                   onClick={handleSignOut}
                   className="hover:text-blue-600"
@@ -96,6 +113,28 @@ const Header: React.FC = () => {
                 <Link href="/dashboard" className="block hover:text-blue-600">
                   Dashboard
                 </Link>
+                
+                {/* Mobile Admin Menu */}
+                <div className="mt-2">
+                  <div 
+                    onClick={() => setIsAdminMenuOpen(!isAdminMenuOpen)}
+                    className="flex justify-between items-center hover:text-blue-600 cursor-pointer"
+                  >
+                    <span>Admin</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className={`w-4 h-4 transition-transform ${isAdminMenuOpen ? 'rotate-180' : ''}`}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                    </svg>
+                  </div>
+                  
+                  {isAdminMenuOpen && (
+                    <div className="ml-4 mt-2 space-y-2">
+                      <Link href="/admin/geocoding" className="block hover:text-blue-600">
+                        Geocoding
+                      </Link>
+                    </div>
+                  )}
+                </div>
+                
                 <button 
                   onClick={handleSignOut}
                   className="block hover:text-blue-600 w-full text-left"

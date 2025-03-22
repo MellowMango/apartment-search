@@ -11,6 +11,12 @@ from sentry_sdk.integrations.fastapi import FastApiIntegration
 from app.core.config import settings
 from app.api.api import api_router
 
+# Import the batch_geocode_api router
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from scripts.batch_geocode_api import router as geocoding_router
+
 # Initialize Sentry if DSN is provided
 if settings.SENTRY_DSN:
     sentry_sdk.init(
@@ -43,6 +49,13 @@ app.add_middleware(
 
 # Include API router
 app.include_router(api_router, prefix=settings.API_V1_STR)
+
+# Include geocoding router
+app.include_router(
+    geocoding_router, 
+    prefix=f"{settings.API_V1_STR}/admin/geocoding",
+    tags=["geocoding"]
+)
 
 # Create Socket.IO app
 socket_app = socketio.ASGIApp(sio, app)

@@ -40,6 +40,8 @@ export interface Property {
   brokerage_id?: string;
   created_at?: string;
   updated_at?: string;
+  geocoded_at?: string;
+  verified_address?: string;  // Field for Google Maps verified address
   amenities?: string[];
   
   // Flags for coordinate status

@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 29.7600771,
+    "longitude": -95.37011079999999,
+    "formatted_address": "Houston, TX, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJAYWNSLS4QIYROwVl894CDco",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:24:58.590759",
+  "data_type": "default"
+}

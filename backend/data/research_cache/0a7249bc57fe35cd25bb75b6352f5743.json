@@ -1,0 +1,20 @@
+{
+  "data": {
+    "latitude": 33.0243206,
+    "longitude": -96.6745042,
+    "formatted_address": "Plano, TX 75074, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJ4-3WYwAZTIYRwDJphT3WSAY",
+      "types": [
+        "establishment",
+        "food",
+        "point_of_interest",
+        "restaurant"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:24:59.149186",
+  "data_type": "default"
+}

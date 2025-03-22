@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 33.3042834,
+    "longitude": -96.98611799999999,
+    "formatted_address": "Aubrey, TX, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJQR3YBSU1TIYRk3YhsSnxCdU",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:25:31.534932",
+  "data_type": "default"
+}

@@ -71,7 +71,11 @@
 | Task | Description | Status | File Context |
 |------|-------------|--------|--------------|
 | 7.1 | **Data Enrichment Agent**<br>Create an agent to enhance property data with additional information from public sources | Completed | backend/data_enrichment/ |
-| 7.2 | **Geocoding Integration**<br>Implement geocoding to convert addresses to precise latitude/longitude for Mapbox integration | Completed | backend/data_enrichment/geocoding_service.py, backend/data_enrichment/test_geocoding.py |
+| 7.2 | **Geocoding Integration**<br>Implement geocoding to convert addresses to precise latitude/longitude for Mapbox integration | Completed | backend/data_enrichment/geocoding_service.py, backend/scripts/run_geocode_batch.py |
+| 7.2.1 | **Geocoding Monitoring System**<br>Created comprehensive monitoring system to track geocoding quality | Completed | backend/app/workers/geocoding_monitor.py |
+| 7.2.2 | **Geocoding Visualization**<br>Implemented visualization tools for geocoding metrics | Completed | backend/scripts/visualize_geocoding_metrics.py |
+| 7.2.3 | **Geocoding Validation**<br>Developed validation tests to ensure coordinate accuracy | Completed | backend/tests/geocoding/test_geocoding_validation.py |
+| 7.2.4 | **Geocoding Documentation**<br>Created detailed documentation of the geocoding system | Completed | backend/data_enrichment/geocoding/README.md |
 | 7.3 | **Property Details Enhancement**<br>Gather additional information about properties from public sources | Completed | backend/data_enrichment/property_researcher.py |
 | 7.6 | **AI-Based Text Extraction**<br>Use AI to extract structured data from unstructured property descriptions | Completed | backend/data_enrichment/research_enrichers/ |
 
@@ -118,9 +122,9 @@
 
 | Task | Description | Status | File Context |
 |------|-------------|--------|--------------|
-| 11.1 | **Admin UI & Authentication**<br>Secure admin routes using Supabase auth; manage scraping targets, logs, missing info queue | Not Started | |
-| 11.2 | **Missing Info Detection & Emails**<br>Track incomplete fields, weekly Celery job sends broker requests via SendGrid; admin can review & approve updates | Not Started | |
-| 11.3 | **Data Corrections Submission**<br>Let users submit corrections, queue for admin review; final updates in Supabase & Neo4j | Not Started | |
+| 11.1 | **Admin UI & Authentication**<br>Secure admin routes using Supabase auth; manage scraping targets, logs, missing info queue | In Progress | frontend/src/pages/admin/, backend/app/api/api_v1/endpoints/admin.py |
+| 11.2 | **Missing Info Detection & Emails**<br>Track incomplete fields, weekly Celery job sends broker requests via SendGrid; admin can review & approve updates | In Progress | backend/app/workers/missing_info_detector.py |
+| 11.3 | **Data Corrections Submission**<br>Let users submit corrections, queue for admin review; final updates in Supabase & Neo4j | Completed | backend/app/models/corrections.py, backend/app/services/correction_service.py, backend/app/api/api_v1/endpoints/corrections.py, frontend/components/PropertyCorrectionForm.js, frontend/components/admin/PropertyCorrectionsReview.js |
 | 11.4 | **Integration Testing for Admin Flows**<br>Ensure Firecrawl MCP scraper tasks + admin overrides + property updates flow seamlessly | Not Started | |
 
 ## Sprint Day 12: Payment Integration & Final QA 🔄

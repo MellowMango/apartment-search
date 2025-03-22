@@ -1,0 +1,19 @@
+{
+  "data": {
+    "latitude": 36.6033516,
+    "longitude": -87.281328,
+    "formatted_address": "215 Cracker Barrel Dr, Clarksville, TN 37040, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJ89NYDAAhZYgRoTC_yulaDtk",
+      "types": [
+        "establishment",
+        "lodging",
+        "point_of_interest"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:25:30.898830",
+  "data_type": "default"
+}

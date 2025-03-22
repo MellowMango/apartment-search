@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 32.5232053,
+    "longitude": -92.63792699999999,
+    "formatted_address": "Ruston, LA 71270, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJZ_Xpt5vPMYYRLXKx12QOfQ4",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:29:48.909897",
+  "data_type": "default"
+}

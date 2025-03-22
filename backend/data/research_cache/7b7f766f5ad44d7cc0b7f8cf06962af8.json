@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 30.3441042,
+    "longitude": -95.4374008,
+    "formatted_address": "225 Oxford Dr, Conroe, TX 77303, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJn8U-NCM_R4YRNCo6BcQT2Ts",
+      "types": [
+        "establishment",
+        "point_of_interest"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:26:43.920584",
+  "data_type": "default"
+}

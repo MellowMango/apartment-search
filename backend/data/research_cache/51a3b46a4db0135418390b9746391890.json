@@ -1,0 +1,20 @@
+{
+  "data": {
+    "latitude": 30.7227923,
+    "longitude": -95.5564162,
+    "formatted_address": "1106 Ave O, Huntsville, TX 77340, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJ__-bf4QIR4YRHpPN50fWJ6I",
+      "types": [
+        "accounting",
+        "establishment",
+        "finance",
+        "point_of_interest"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:25:32.165770",
+  "data_type": "default"
+}

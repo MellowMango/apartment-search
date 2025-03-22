@@ -1,0 +1,17 @@
+{
+  "data": {
+    "latitude": 32.8943694,
+    "longitude": -96.8825628,
+    "formatted_address": "Dallas Texas, Dallas, TX 75229, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJBYV_PoEnTIYRSToxpp6EGa0",
+      "types": [
+        "route"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:24:58.523374",
+  "data_type": "default"
+}

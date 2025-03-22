@@ -1,0 +1,21 @@
+{
+  "data": {
+    "latitude": 32.2858965,
+    "longitude": -95.3050434,
+    "formatted_address": "5767 S Broadway Ave, Tyler, TX 75703, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJq6rOSoHMSYYRNuj0846HRQ0",
+      "types": [
+        "establishment",
+        "food",
+        "health",
+        "point_of_interest",
+        "store"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:29:48.989171",
+  "data_type": "default"
+}

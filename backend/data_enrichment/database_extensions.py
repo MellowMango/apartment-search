@@ -570,14 +570,24 @@ class EnrichmentDatabaseOps:
                 "units": "units",
                 "year_built": "year_built",
                 "property_type": "property_type",
-                "property_status": "property_status"
+                "property_status": "property_status",
+                "geocode_verified": "geocode_verified",
+                "geocode_confidence": "geocode_confidence",
+                "formatted_address": "formatted_address",
+                "geocode_approximate": "geocode_approximate",
+                "suspicious_coordinates": "suspicious_coordinates"
                 # "property_website" field doesn't exist in properties table
             }
             
             # Add fields to update if they exist in property_details and aren't empty
             for detail_field, table_field in field_mapping.items():
-                if detail_field in property_details and property_details[detail_field]:
-                    update_fields[table_field] = property_details[detail_field]
+                if detail_field in property_details:
+                    # Allow boolean values to be false (unlike empty strings which are ignored)
+                    if detail_field == "geocode_verified" or detail_field == "geocode_approximate" or detail_field == "suspicious_coordinates":
+                        update_fields[table_field] = property_details[detail_field]
+                    # For other fields, only update if they have a non-empty value
+                    elif property_details[detail_field] or property_details[detail_field] == 0:
+                        update_fields[table_field] = property_details[detail_field]
             
             # Skip update if no fields to update
             if not update_fields:
@@ -622,6 +632,52 @@ class EnrichmentDatabaseOps:
         if self.neo4j_driver:
             self.neo4j_driver.close()
             logger.info("Neo4j driver closed")
+
+    async def get_property_count(self) -> int:
+        """
+        Get the total count of properties in the database.
+        
+        Returns:
+            Total count of properties
+        """
+        if not self.supabase:
+            logger.error("Cannot get property count: Supabase client not initialized")
+            return 0
+        
+        try:
+            result = self.supabase.table(self.supabase_property_table).select("count", count="exact").execute()
+            return result.count or 0
+        except Exception as e:
+            logger.error(f"Failed to get property count: {str(e)}")
+            return 0
+
+    async def get_properties_without_coordinates(self) -> int:
+        """
+        Get the count of properties without valid coordinates.
+        
+        Returns:
+            Count of properties without valid coordinates
+        """
+        if not self.supabase:
+            logger.error("Cannot get properties without coordinates: Supabase client not initialized")
+            return 0
+        
+        try:
+            # Query for properties with missing or invalid coordinates
+            query = self.supabase.table(self.supabase_property_table).select("count", count="exact")
+            
+            # Check for null coordinates
+            query = query.or_("latitude.is.null,longitude.is.null")
+            
+            # Check for zero coordinates (placeholder values)
+            query = query.or_("and(latitude.eq.0,longitude.eq.0)")
+            
+            # Execute query
+            result = query.execute()
+            return result.count or 0
+        except Exception as e:
+            logger.error(f"Failed to get properties without coordinates: {str(e)}")
+            return 0
 
 # Create SQL to set up the research table in Supabase
 def get_supabase_research_table_sql():

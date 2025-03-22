@@ -1,0 +1,21 @@
+{
+  "data": {
+    "latitude": 31.09157549999999,
+    "longitude": -97.731961,
+    "formatted_address": "2600 Trimmier Rd, Killeen, TX 76542, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJAQDQ8aRLRYYRun96NPulucI",
+      "types": [
+        "establishment",
+        "food",
+        "health",
+        "point_of_interest",
+        "store"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:26:42.740720",
+  "data_type": "default"
+}

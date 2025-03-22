@@ -12,6 +12,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import { Property } from '../types/property';
 import { fetchProperties, createTestProperty } from '../../lib/supabase';
 import { supabase } from '../../lib/supabase';
+import { triggerBatchGeocode, getGeocodingStats } from '../utils/geocodingApi';
 
 // Add Google Maps type declaration
 declare global {
@@ -71,6 +72,77 @@ const MapComponent = dynamic(() => import('../components/MapComponent'), {
   )
 });
 
+// Add this new component for admin controls
+const AdminControls = ({ onTriggerGeocode }) => {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [stats, setStats] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Check if the user is logged in
+    const checkAdmin = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAdmin(!!session);
+    };
+    
+    checkAdmin();
+  }, []);
+
+  useEffect(() => {
+    // If user is admin, fetch geocoding stats
+    if (isAdmin) {
+      fetchStats();
+    }
+  }, [isAdmin]);
+
+  const fetchStats = async () => {
+    try {
+      setIsLoading(true);
+      const geocodingStats = await getGeocodingStats();
+      setStats(geocodingStats);
+    } catch (error) {
+      console.error('Failed to fetch geocoding stats:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (!isAdmin) return null;
+
+  return (
+    <div className="mb-4 p-3 border rounded-lg bg-white shadow-sm">
+      <h3 className="text-md font-semibold mb-2">Admin Controls</h3>
+      {stats && (
+        <div className="text-sm mb-2">
+          <p className="mb-1">
+            Properties with coordinates: <span className="font-medium">{stats.properties_with_coordinates}</span> 
+            <span className="text-gray-500 ml-1">({stats.geocoded_percentage}%)</span>
+          </p>
+          <p className="mb-1">
+            Properties without coordinates: <span className="font-medium">{stats.properties_without_coordinates}</span>
+          </p>
+        </div>
+      )}
+      <div className="flex gap-2">
+        <button
+          className="px-3 py-1 text-xs bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
+          onClick={onTriggerGeocode}
+          disabled={isLoading || !stats || stats.properties_without_coordinates === 0}
+        >
+          {isLoading ? 'Loading...' : 'Trigger Batch Geocoding'}
+        </button>
+        <button
+          className="px-3 py-1 text-xs bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+          onClick={fetchStats}
+          disabled={isLoading}
+        >
+          Refresh Stats
+        </button>
+      </div>
+    </div>
+  );
+};
+
 // Main content of the map page, wrapped by providers
 const MapPageContent = () => {
   // State
@@ -83,6 +155,8 @@ const MapPageContent = () => {
   const { filters } = useFilter();
   const { isDarkMode, toggleTheme } = useTheme();
   const router = useRouter();
+  const [error, setError] = useState<string | null>(null);
+  const [totalProperties, setTotalProperties] = useState(0);
   
   // Get Mapbox token from environment
   const mapboxToken = process.env.NEXT_PUBLIC_MAPBOX_ACCESS_TOKEN;
@@ -121,129 +195,111 @@ const MapPageContent = () => {
 
   // Fetch properties when filters change
   useEffect(() => {
-    const loadProperties = async () => {
-      try {
-        setLoading(true);
-        
-        // Convert filter state to API parameters
-        const apiFilters: Record<string, any> = {};
-        
-        // Add text search
-        if (filters.search) {
-          // Search in name and address
-          apiFilters.or = `name.ilike.%${filters.search}%,address.ilike.%${filters.search}%`;
-        }
-        
-        // Add status filter
-        if (filters.status) {
-          apiFilters.status = filters.status;
-        }
-        
-        // Add price range
-        if (filters.min_price) {
-          apiFilters.price_gte = filters.min_price;
-        }
-        if (filters.max_price) {
-          apiFilters.price_lte = filters.max_price;
-        }
-        
-        // Add units range (handle both fields)
-        if (filters.min_units) {
-          apiFilters.or = `${apiFilters.or ? apiFilters.or + ',' : ''}units.gte.${filters.min_units},num_units.gte.${filters.min_units}`;
-        }
-        if (filters.max_units) {
-          apiFilters.or = `${apiFilters.or ? apiFilters.or + ',' : ''}units.lte.${filters.max_units},num_units.lte.${filters.max_units}`;
-        }
-        
-        // Add year built range
-        if (filters.year_built_min) {
-          apiFilters.year_built_gte = filters.year_built_min;
-        }
-        if (filters.year_built_max) {
-          apiFilters.year_built_lte = filters.year_built_max;
-        }
-        
-        // Add location filters
-        if (filters.city) {
-          apiFilters.city = filters.city;
-        }
-        if (filters.state) {
-          apiFilters.state = filters.state;
-        }
-        
-        // Fetch properties with filters
-        const data = await fetchProperties({
-          filters: apiFilters,
-          page: filters.page || 1,
-          pageSize: filters.limit || 200, // Increased limit to ensure we get enough properties
-          sortBy: filters.sort_by || 'created_at',
-          sortAsc: filters.sort_dir === 'asc',
-          includeIncomplete: true, // TEMPORARILY INCLUDE ALL PROPERTIES REGARDLESS OF COORDINATES
-          includeResearch: true // Include property research data with valid coordinates
-        });
-        
-        console.log(`Loaded ${data.length} properties with filters`);
-        
-        // Log the first few properties regardless of filtering
-        if (data.length > 0) {
-          console.log('First 3 properties (before filtering):', 
-            data.slice(0, 3).map(p => ({
-              id: p.id.substring(0, 8),
-              name: p.name,
-              address: p.address,
-              status: p.status,
-              isTest: p._is_test_property || false,
-              lat: p.latitude,
-              lng: p.longitude,
-              fromResearch: p._coordinates_from_research || false,
-              hasCoordinates: !!(p.latitude && p.longitude)
-            }))
-          );
-        } else {
-          console.log('No properties loaded from database at all');
-        }
-        
-        // Process properties to ensure valid coordinates
-        let validProperties = data;
-        
-        // Filter out test properties
-        const realProperties = validProperties.filter(p => !p._is_test_property);
-        console.log(`Filtered out ${validProperties.length - realProperties.length} test properties`);
-        validProperties = realProperties;
-        
-        // Count properties with coordinates from research
-        const fromResearch = data.filter(p => p._coordinates_from_research).length;
-        if (fromResearch > 0) {
-          console.log(`${fromResearch} properties using coordinates from research data`);
-        }
-        
-        // Log sample properties
-        if (data.length > 0) {
-          console.log('Sample properties:', 
-            data.slice(0, 3).map(p => ({
-              id: p.id.substring(0, 8),
-              name: p.name,
-              lat: p.latitude,
-              lng: p.longitude,
-              fromResearch: p._coordinates_from_research || false
-            }))
-          );
-        }
-        
-        console.log(`Found ${validProperties.length} properties with valid coordinates out of ${data.length} total`);
-        
-        // Set properties
-        setProperties(validProperties);
-      } catch (error) {
-        console.error('Error fetching properties:', error);
-        setProperties([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadProperties();
   }, [filters]);
+
+  const loadProperties = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Convert filter state to API parameters
+      const apiFilters: Record<string, any> = {};
+      
+      // Add text search
+      if (filters.search) {
+        // Search in name and address
+        apiFilters.or = `name.ilike.%${filters.search}%,address.ilike.%${filters.search}%`;
+      }
+      
+      // Add status filter
+      if (filters.status) {
+        apiFilters.status = filters.status;
+      }
+      
+      // Add price range
+      if (filters.min_price) {
+        apiFilters.price_gte = filters.min_price;
+      }
+      if (filters.max_price) {
+        apiFilters.price_lte = filters.max_price;
+      }
+      
+      // Add units range
+      if (filters.min_units) {
+        apiFilters.or = `${apiFilters.or ? apiFilters.or + ',' : ''}units.gte.${filters.min_units},num_units.gte.${filters.min_units}`;
+      }
+      if (filters.max_units) {
+        apiFilters.or = `${apiFilters.or ? apiFilters.or + ',' : ''}units.lte.${filters.max_units},num_units.lte.${filters.max_units}`;
+      }
+      
+      // Add year built range
+      if (filters.year_built_min) {
+        apiFilters.year_built_gte = filters.year_built_min;
+      }
+      if (filters.year_built_max) {
+        apiFilters.year_built_lte = filters.year_built_max;
+      }
+      
+      // Add location filters
+      if (filters.city) {
+        apiFilters.city = filters.city;
+      }
+      if (filters.state) {
+        apiFilters.state = filters.state;
+      }
+      
+      // First try to load properties with valid coordinates only
+      const fetchOptions = {
+        filters: apiFilters,
+        page: filters.page || 1,
+        pageSize: filters.limit || 500,
+        sortBy: filters.sort_by || 'created_at',
+        sortAsc: filters.sort_dir === 'asc',
+        includeResearch: true, // Always include research data to get better coordinates
+        includeIncomplete: false // Initially, only fetch properties with coordinates
+      };
+      
+      console.log('Fetching properties with valid coordinates:', fetchOptions);
+      
+      const propertiesWithCoordinates = await fetchProperties(fetchOptions);
+      
+      // If we got properties with coordinates, use them
+      if (propertiesWithCoordinates && propertiesWithCoordinates.length > 0) {
+        console.log(`Found ${propertiesWithCoordinates.length} properties with valid coordinates`);
+        setProperties(propertiesWithCoordinates);
+        setTotalProperties(propertiesWithCoordinates.length);
+        setLoading(false);
+        return;
+      }
+      
+      // If no properties with coordinates were found, try without the coordinate filter
+      console.log('No properties with coordinates found, fetching all properties');
+      
+      const allFetchOptions = {
+        ...fetchOptions,
+        includeIncomplete: true
+      };
+      
+      const allProperties = await fetchProperties(allFetchOptions);
+      
+      if (allProperties && allProperties.length > 0) {
+        console.log(`Found ${allProperties.length} total properties, but many may lack coordinates`);
+        setProperties(allProperties);
+        setTotalProperties(allProperties.length);
+      } else {
+        console.log('No properties found at all');
+        setProperties([]);
+        setTotalProperties(0);
+      }
+    } catch (err) {
+      console.error('Error loading properties:', err);
+      setError('Failed to load properties. Please try again.');
+      setProperties([]);
+    } finally {
+      setLoading(false);
+    }
+  };
   
   // Handle property selection
   const handlePropertySelect = (property: Property | null) => {
@@ -299,6 +355,24 @@ const MapPageContent = () => {
   // Get Google Maps API key from environment
   const googleMapsApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
+  // Add a new function to handle triggering the geocoding
+  const handleTriggerGeocode = async () => {
+    try {
+      const batchSize = 100; // Process a reasonable batch
+      
+      // Show confirmation dialog
+      if (window.confirm(`Start batch geocoding for up to ${batchSize} properties?`)) {
+        const result = await triggerBatchGeocode(batchSize);
+        
+        alert(`Batch geocoding started. Task ID: ${result.task_id}`);
+        console.log('Batch geocoding triggered:', result);
+      }
+    } catch (error) {
+      console.error('Failed to trigger batch geocoding:', error);
+      alert('Failed to trigger batch geocoding. See console for details.');
+    }
+  };
+
   return (
     <Layout title="Interactive Map | Austin Multifamily Property Map">
       {/* Load Google Maps API for geocoding */}
@@ -311,6 +385,9 @@ const MapPageContent = () => {
       <div className="container mx-auto relative">
         {/* Admin link for developers */}
         <div className="absolute top-4 left-4 z-10 flex flex-col space-y-1">
+          <a href="/admin/geocoding" className="text-xs text-gray-500 dark:text-gray-400 hover:underline">
+            Admin: Geocoding Dashboard
+          </a>
           <a href="/admin/sync-coordinates" className="text-xs text-gray-500 dark:text-gray-400 hover:underline">
             Admin: Fix Map Coordinates
           </a>
@@ -717,6 +794,45 @@ const MapPageContent = () => {
           
           {/* Map container */}
           <div className={`${showDetails ? 'hidden lg:block' : ''} lg:flex-1`}>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold">Interactive Map</h2>
+              <button
+                onClick={handleToggleDarkMode}
+                className="p-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200"
+                title="Toggle dark mode"
+              >
+                {isDarkMode ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                  </svg>
+                )}
+              </button>
+            </div>
+            
+            {/* Display error message if any */}
+            {error && (
+              <div className="mb-4 p-3 border-l-4 border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400">
+                <div className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>{error}</span>
+                </div>
+              </div>
+            )}
+            
+            {/* Property count info */}
+            {!loading && properties.length > 0 && (
+              <div className="mb-4 text-sm text-gray-600 dark:text-gray-400">
+                Showing {properties.length} {properties.length === 1 ? 'property' : 'properties'}
+                {totalProperties > properties.length && ` with coordinates (${totalProperties} total)`}
+              </div>
+            )}
+
             <MapComponent 
               properties={properties} 
               selectedProperty={selectedProperty}
@@ -747,6 +863,9 @@ const MapPageContent = () => {
         onPropertyUpdate={handlePropertyUpdate}
         onPropertyCreate={handlePropertyCreate}
       />
+      
+      {/* Add the AdminControls component here, before the filters */}
+      <AdminControls onTriggerGeocode={handleTriggerGeocode} />
     </Layout>
   );
 };

@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 27.7963379,
+    "longitude": -97.4030406,
+    "formatted_address": "Corpus Christi, TX, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJs9KSYYBfaIYRj5AOiZNQ0a4",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:31:06.256735",
+  "data_type": "default"
+}

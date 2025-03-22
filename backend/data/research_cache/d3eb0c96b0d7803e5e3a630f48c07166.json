@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 32.2040437,
+    "longitude": -95.34856350000001,
+    "formatted_address": "Flint, TX 75762, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJn55pJPw0SIYRtrYoeU7XrvU",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:26:43.410236",
+  "data_type": "default"
+}

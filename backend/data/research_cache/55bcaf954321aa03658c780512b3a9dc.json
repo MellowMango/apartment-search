@@ -1,0 +1,19 @@
+{
+  "data": {
+    "latitude": 33.1333686,
+    "longitude": -96.82910799999999,
+    "formatted_address": "6735 Salt Cedar Wy, Frisco, TX 75034, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJfyCpDvk7TIYR7lrLMmPj5b4",
+      "types": [
+        "establishment",
+        "general_contractor",
+        "point_of_interest"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:24:59.237236",
+  "data_type": "default"
+}

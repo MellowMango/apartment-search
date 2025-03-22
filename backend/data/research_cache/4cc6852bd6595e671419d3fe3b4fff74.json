@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 35.5067215,
+    "longitude": -97.76254410000001,
+    "formatted_address": "Yukon, OK, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJgUjkf5MHsocRdEua7qXS5NM",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:26:43.674807",
+  "data_type": "default"
+}

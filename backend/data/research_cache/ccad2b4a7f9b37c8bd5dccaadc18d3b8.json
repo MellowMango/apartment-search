@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 32.5723956,
+    "longitude": -97.08966559999999,
+    "formatted_address": "3020 E Broad St, Mansfield, TX 76063, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJ48Aer3mKToYRlxQ1K8D-qB0",
+      "types": [
+        "establishment",
+        "point_of_interest"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:25:31.537384",
+  "data_type": "default"
+}

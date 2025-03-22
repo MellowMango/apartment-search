@@ -228,9 +228,9 @@ class GeocodingService:
                 zip_code = property_data.get("zip_code", "")
                 
                 # Skip if no address information
-                if not address:
+                if not address and not city:
                     return property_id, {
-                        "error": "No address provided",
+                        "error": "No address or city provided",
                         "property_data": property_data
                     }
                 
@@ -244,6 +244,9 @@ class GeocodingService:
                         provider=provider,
                         use_cache=use_cache
                     )
+                    
+                    # Add verification check for geocode results
+                    geocode_result = self._verify_geocode_result(geocode_result, city, state)
                     
                     # Attach property ID for identification
                     geocode_result["property_id"] = property_id
@@ -494,7 +497,21 @@ class GeocodingService:
         Returns:
             Formatted address string
         """
-        components = [c for c in [address, city, state, zip_code] if c]
+        # Clean up address components
+        # Remove "Location:" prefix from city or address
+        if city and city.startswith("Location:"):
+            city = city.replace("Location:", "").strip()
+            
+        if address and address.startswith("Location:"):
+            address = address.replace("Location:", "").strip()
+            
+        # If address doesn't have street info but has city info, don't duplicate
+        if address and city and address.lower() == city.lower():
+            # Use address only since it duplicates city
+            components = [c for c in [address, state, zip_code] if c]
+        else:
+            components = [c for c in [address, city, state, zip_code] if c]
+            
         return ", ".join(components)
     
     def _generate_approximate_coordinates(self, city: str = "", state: str = "") -> Dict[str, Any]:
@@ -508,51 +525,115 @@ class GeocodingService:
         Returns:
             Dictionary with approximate coordinates
         """
-        # Default to Austin, TX
-        base_lat = float(os.getenv("DEFAULT_MAP_CENTER_LAT", 30.2672))
-        base_lng = float(os.getenv("DEFAULT_MAP_CENTER_LNG", -97.7431))
-        
-        # Common US city coordinates (very limited set for fallback)
+        # Clean city name if it has "Location:" prefix
+        if city and city.startswith("Location:"):
+            city = city.replace("Location:", "").strip()
+            
+        # Common US city coordinates (expanded set for better coverage)
         us_cities = {
             "austin": {"lat": 30.2672, "lng": -97.7431, "state": "TX"},
             "dallas": {"lat": 32.7767, "lng": -96.7970, "state": "TX"},
             "houston": {"lat": 29.7604, "lng": -95.3698, "state": "TX"},
+            "san antonio": {"lat": 29.4241, "lng": -98.4936, "state": "TX"},
+            "fort worth": {"lat": 32.7555, "lng": -97.3308, "state": "TX"},
+            "el paso": {"lat": 31.7619, "lng": -106.4850, "state": "TX"},
+            "arlington": {"lat": 32.7357, "lng": -97.1081, "state": "TX"},
+            "corpus christi": {"lat": 27.8006, "lng": -97.3964, "state": "TX"},
+            "plano": {"lat": 33.0198, "lng": -96.6989, "state": "TX"},
+            "lubbock": {"lat": 33.5779, "lng": -101.8552, "state": "TX"},
+            "irving": {"lat": 32.8140, "lng": -96.9489, "state": "TX"},
+            "killeen": {"lat": 31.1171, "lng": -97.6789, "state": "TX"},
+            "amarillo": {"lat": 35.2220, "lng": -101.8313, "state": "TX"},
+            "longview": {"lat": 32.5007, "lng": -94.7405, "state": "TX"},
+            "waco": {"lat": 31.5493, "lng": -97.1467, "state": "TX"},
+            "temple": {"lat": 31.0982, "lng": -97.3428, "state": "TX"},
+            "san marcos": {"lat": 29.8833, "lng": -97.9414, "state": "TX"},
+            "oklahoma city": {"lat": 35.4676, "lng": -97.5164, "state": "OK"},
+            "tulsa": {"lat": 36.1540, "lng": -95.9928, "state": "OK"},
+            "norman": {"lat": 35.2226, "lng": -97.4395, "state": "OK"},
+            "shawnee": {"lat": 35.3272, "lng": -96.9253, "state": "OK"},
+            "del city": {"lat": 35.4489, "lng": -97.4406, "state": "OK"},
+            "north little rock": {"lat": 34.7695, "lng": -92.2671, "state": "AR"},
+            "little rock": {"lat": 34.7465, "lng": -92.2896, "state": "AR"},
             "new york": {"lat": 40.7128, "lng": -74.0060, "state": "NY"},
             "los angeles": {"lat": 34.0522, "lng": -118.2437, "state": "CA"},
             "chicago": {"lat": 41.8781, "lng": -87.6298, "state": "IL"},
             "san francisco": {"lat": 37.7749, "lng": -122.4194, "state": "CA"}
         }
         
-        # Try to find city in our limited database
+        # Try to find city in our expanded database
         if city:
             city_lower = city.lower()
             for known_city, coords in us_cities.items():
+                # Check for exact match with state
                 if city_lower == known_city and (not state or state == coords["state"]):
                     lat = coords["lat"]
                     lng = coords["lng"]
                     
-                    # Add small random offset to avoid all properties stacking
-                    random_lat_offset = random.uniform(-0.01, 0.01)
-                    random_lng_offset = random.uniform(-0.01, 0.01)
+                    # Add very small random offset to avoid all properties stacking
+                    random_lat_offset = random.uniform(-0.005, 0.005)
+                    random_lng_offset = random.uniform(-0.005, 0.005)
                     
                     return {
                         "latitude": lat + random_lat_offset,
                         "longitude": lng + random_lng_offset,
                         "formatted_address": f"{city}, {state if state else coords['state']}",
-                        "confidence": "low",
-                        "approximate": True
+                        "confidence": "medium", # Upgraded from low because it's a known city
+                        "approximate": True,
+                        "city_match": True
                     }
+                # Check for partial match
+                elif known_city in city_lower or city_lower in known_city:
+                    if not state or state == coords["state"]:
+                        lat = coords["lat"]
+                        lng = coords["lng"]
+                        
+                        # Add small random offset
+                        random_lat_offset = random.uniform(-0.008, 0.008)
+                        random_lng_offset = random.uniform(-0.008, 0.008)
+                        
+                        return {
+                            "latitude": lat + random_lat_offset,
+                            "longitude": lng + random_lng_offset,
+                            "formatted_address": f"{city}, {state if state else coords['state']}",
+                            "confidence": "low",
+                            "approximate": True,
+                            "city_partial_match": True
+                        }
         
-        # If city not found, use default coordinates with random offset
-        random_lat_offset = random.uniform(-0.1, 0.1)
-        random_lng_offset = random.uniform(-0.1, 0.1)
+        # If state is provided but city matching failed, use a major city in that state
+        if state:
+            state_upper = state.upper()
+            state_cities = [c for c_name, c in us_cities.items() if c["state"] == state_upper]
+            
+            if state_cities:
+                # Pick the first city in the state
+                city_data = list(state_cities)[0]
+                lat = city_data["lat"]
+                lng = city_data["lng"]
+                
+                # Add larger random offset for state-level approximation
+                random_lat_offset = random.uniform(-0.03, 0.03)
+                random_lng_offset = random.uniform(-0.03, 0.03)
+                
+                return {
+                    "latitude": lat + random_lat_offset,
+                    "longitude": lng + random_lng_offset,
+                    "formatted_address": f"Unknown location in {state}",
+                    "confidence": "very_low",
+                    "approximate": True,
+                    "state_approximation": True
+                }
         
+        # We couldn't match city or state - this is a fallback case
+        # Instead of defaulting to Austin coordinates, mark as unknown
         return {
-            "latitude": base_lat + random_lat_offset,
-            "longitude": base_lng + random_lng_offset,
+            "latitude": None,
+            "longitude": None,
             "formatted_address": f"{city + ', ' if city else ''}{state if state else 'Unknown Location'}",
-            "confidence": "very_low",
-            "approximate": True
+            "confidence": "none",
+            "approximate": False,
+            "geocoding_failed": True
         }
     
     async def _respect_rate_limit(self, provider: str) -> None:
@@ -599,6 +680,109 @@ class GeocodingService:
             "request_count": self.request_count,
             "available_providers": self.available_providers
         }
+
+    def _verify_geocode_result(self, geocode_result: Dict[str, Any], city: str = "", state: str = "") -> Dict[str, Any]:
+        """
+        Verify that the geocoded result makes sense for the given city and state.
+        
+        Args:
+            geocode_result: The geocoding result to verify
+            city: City name from the property data
+            state: State code from the property data
+            
+        Returns:
+            Verified geocoding result, potentially with updated confidence
+        """
+        # Clean up city name if it has "Location:" prefix
+        if city and city.startswith("Location:"):
+            city = city.replace("Location:", "").strip()
+            
+        # Get coordinates
+        lat = geocode_result.get("latitude")
+        lng = geocode_result.get("longitude")
+        
+        # If no coordinates, return as is
+        if lat is None or lng is None:
+            geocode_result["geocode_verified"] = False
+            return geocode_result
+        
+        # Convert to float for comparison if they're not already
+        try:
+            lat = float(lat)
+            lng = float(lng)
+        except (ValueError, TypeError):
+            geocode_result["geocode_verified"] = False
+            geocode_result["invalid_coordinate_format"] = True
+            return geocode_result
+            
+        # Check for zero coordinates (often default values)
+        if lat == 0 and lng == 0:
+            geocode_result["geocode_verified"] = False
+            geocode_result["zero_coordinates"] = True
+            geocode_result["confidence"] = "none"
+            return geocode_result
+            
+        # Check coordinate ranges
+        if lat < -90 or lat > 90 or lng < -180 or lng > 180:
+            geocode_result["geocode_verified"] = False
+            geocode_result["out_of_range_coordinates"] = True
+            geocode_result["confidence"] = "none"
+            return geocode_result
+            
+        # Check if coordinates are in the Austin area and property isn't in Austin
+        is_austin_area = (30.1 <= lat <= 30.5) and (-97.9 <= lng <= -97.6)
+        is_austin_property = False
+        
+        if city:
+            city_lower = city.lower()
+            austin_keywords = ["austin", "round rock", "cedar park", "pflugerville", "georgetown"]
+            is_austin_property = any(keyword in city_lower for keyword in austin_keywords)
+        
+        # If it's in Austin area but not an Austin property, flag it
+        if is_austin_area and not is_austin_property and state and state.upper() != "TX":
+            # This is likely a default coordinate - mark it as suspicious
+            geocode_result["geocode_verified"] = False
+            geocode_result["suspicious_coordinates"] = True
+            geocode_result["confidence"] = "very_low"
+            
+            # If we have city and state, try to get approximate known coordinates
+            if city and state:
+                approx_result = self._generate_approximate_coordinates(city, state)
+                
+                # Only use the approximation if it found a match
+                if approx_result.get("city_match") or approx_result.get("city_partial_match"):
+                    geocode_result["latitude"] = approx_result["latitude"]
+                    geocode_result["longitude"] = approx_result["longitude"]
+                    geocode_result["confidence"] = approx_result["confidence"]
+                    geocode_result["approximate"] = True
+                    geocode_result["geocode_verified"] = True
+        else:
+            # Check if the confidence is already set
+            current_confidence = geocode_result.get("confidence", "")
+            
+            # If approximate coordinates were used, mark accordingly
+            if geocode_result.get("approximate"):
+                if current_confidence not in ["high", "medium"]:
+                    geocode_result["geocode_verified"] = False
+                else:
+                    geocode_result["geocode_verified"] = True
+            elif geocode_result.get("confidence") in ["high", "medium"]:
+                # High or medium confidence results are verified
+                geocode_result["geocode_verified"] = True
+            elif geocode_result.get("confidence") == "low":
+                # Low confidence results are conditionally verified
+                # Check if the formatted address contains the city name
+                formatted_address = geocode_result.get("formatted_address", "").lower()
+                if city and city.lower() in formatted_address:
+                    geocode_result["geocode_verified"] = True
+                else:
+                    geocode_result["geocode_verified"] = False
+                    geocode_result["city_mismatch"] = True
+            else:
+                # Unknown or very low confidence results are not verified
+                geocode_result["geocode_verified"] = False
+            
+        return geocode_result
 
 # CLI for testing the geocoding service
 if __name__ == "__main__":

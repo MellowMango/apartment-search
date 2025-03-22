@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 29.8832749,
+    "longitude": -97.9413941,
+    "formatted_address": "San Marcos, TX, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJWUZBNCqnXIYRJzGOU2wzOi8",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:25:31.940600",
+  "data_type": "default"
+}

@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 30.907544,
+    "longitude": -93.990285,
+    "formatted_address": "State Street, Jasper, Texas 75951, United States",
+    "confidence": "medium",
+    "provider_response": {
+      "id": "address.2097437342681776",
+      "place_type": [
+        "address"
+      ],
+      "relevance": 0.592593
+    },
+    "geocoding_provider": "mapbox"
+  },
+  "timestamp": "2025-03-20T21:26:43.119443",
+  "data_type": "default"
+}

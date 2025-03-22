@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 33.7556593,
+    "longitude": -96.53665799999999,
+    "formatted_address": "Denison, TX, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJv6c0xamFTIYRJbB27EaSAS8",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:29:48.863684",
+  "data_type": "default"
+}

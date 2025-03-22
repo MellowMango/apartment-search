@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 30.2368292,
+    "longitude": -93.01363990000002,
+    "formatted_address": "Iowa, LA 70647, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJUdM3weB7O4YRbaRf7f_aRp0",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:26:43.582210",
+  "data_type": "default"
+}

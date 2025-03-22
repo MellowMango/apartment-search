@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 31.9391746,
+    "longitude": -102.2522487,
+    "formatted_address": "Midland-Odessa, TX 79706, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJ06C2HVPF-4YRaTbvsmlUIqI",
+      "types": [
+        "neighborhood",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:25:31.322202",
+  "data_type": "default"
+}

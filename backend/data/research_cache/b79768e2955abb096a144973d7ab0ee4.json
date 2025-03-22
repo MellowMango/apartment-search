@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 31.5575916,
+    "longitude": -97.12899220000001,
+    "formatted_address": "Waco, TX, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJ01EBI_GCT4YREKrR1gNL1_s",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:25:32.323870",
+  "data_type": "default"
+}

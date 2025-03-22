@@ -1,0 +1,18 @@
+{
+  "data": {
+    "latitude": 35.2069816,
+    "longitude": -101.8320065,
+    "formatted_address": "Amarillo, TX, USA",
+    "confidence": "high",
+    "provider_response": {
+      "place_id": "ChIJA89FstRIAYcRr9I2aBzR89A",
+      "types": [
+        "locality",
+        "political"
+      ]
+    },
+    "geocoding_provider": "google"
+  },
+  "timestamp": "2025-03-20T21:29:49.497957",
+  "data_type": "default"
+}

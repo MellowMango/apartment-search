@@ -14,6 +14,7 @@ CREATE TABLE IF NOT EXISTS properties (
   zip_code TEXT,
   latitude NUMERIC,
   longitude NUMERIC,
+  geocode_verified BOOLEAN DEFAULT FALSE,
   price NUMERIC,
   units INTEGER,
   year_built INTEGER,
