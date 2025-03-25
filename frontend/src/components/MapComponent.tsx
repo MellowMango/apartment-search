@@ -3,7 +3,78 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl } from 'rea
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Property } from '../types/property';
-import { geocodeProperties } from '../../lib/geocoding';
+import { geocodeProperties, enhancedGeocodeProperties } from '../../lib/geocoding';
+import CustomMarkerClusterGroup from './map/CustomMarkerCluster';
+// MarkerCluster CSS is loaded in _app.js/tsx instead of here to avoid Next.js CSS import restrictions
+// Original import: import 'react-leaflet-cluster/lib/assets/MarkerCluster.Default.css';
+
+// Map Legend component to show what the different marker colors mean
+const MapLegend: FC = () => {
+  const [expanded, setExpanded] = useState(false);
+  
+  return (
+    <div className="absolute bottom-4 left-4 z-10 bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+      <div 
+        className="px-3 py-2 font-semibold text-sm flex items-center justify-between cursor-pointer"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <div className="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+          </svg>
+          Map Legend
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 transform transition-transform ${expanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+      
+      {expanded && (
+        <div className="px-3 py-2 border-t border-gray-200 dark:border-gray-700">
+          <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Property Price Range</div>
+          <div className="grid grid-cols-1 gap-1">
+            <div className="flex items-center text-xs">
+              <div className="w-4 h-4 rounded-full bg-purple-500 mr-2"></div>
+              <span>Premium ($20M+)</span>
+            </div>
+            <div className="flex items-center text-xs">
+              <div className="w-4 h-4 rounded-full bg-blue-800 mr-2"></div>
+              <span>High Value ($10M-$20M)</span>
+            </div>
+            <div className="flex items-center text-xs">
+              <div className="w-4 h-4 rounded-full bg-blue-500 mr-2"></div>
+              <span>Mid-High ($5M-$10M)</span>
+            </div>
+            <div className="flex items-center text-xs">
+              <div className="w-4 h-4 rounded-full bg-green-500 mr-2"></div>
+              <span>Medium ($1M-$5M)</span>
+            </div>
+            <div className="flex items-center text-xs">
+              <div className="w-4 h-4 rounded-full bg-yellow-500 mr-2"></div>
+              <span>Affordable (Under $1M)</span>
+            </div>
+          </div>
+          
+          <div className="text-xs font-medium text-gray-500 dark:text-gray-400 mt-3 mb-1">Property Status</div>
+          <div className="grid grid-cols-1 gap-1">
+            <div className="flex items-center text-xs">
+              <div className="w-4 h-4 rounded-full bg-green-500 mr-2"></div>
+              <span>Available / Listed</span>
+            </div>
+            <div className="flex items-center text-xs">
+              <div className="w-4 h-4 rounded-full bg-yellow-500 mr-2"></div>
+              <span>Under Contract</span>
+            </div>
+            <div className="flex items-center text-xs">
+              <div className="w-4 h-4 rounded-full bg-red-500 mr-2"></div>
+              <span>Sold</span>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
 
 // Component to handle map initialization effects
 const MapInitializer: FC = () => {
@@ -90,15 +161,49 @@ interface MapBoundsUpdaterProps {
 // Component to track map bounds for filtering
 const MapBoundsUpdater: FC<MapBoundsUpdaterProps> = ({ onBoundsChange }) => {
   const map = useMap();
+  const [lastBounds, setLastBounds] = useState<any>(null);
+  
+  // Check if bounds have changed significantly to avoid too many reloads
+  const hasBoundsChangedSignificantly = (newBounds: any, oldBounds: any) => {
+    if (!oldBounds) return true;
+    
+    // Calculate area change ratio
+    const oldArea = (oldBounds.north - oldBounds.south) * (oldBounds.east - oldBounds.west);
+    const newArea = (newBounds.north - newBounds.south) * (newBounds.east - newBounds.west);
+    
+    // Calculate center shift distance
+    const oldCenterLat = (oldBounds.north + oldBounds.south) / 2;
+    const oldCenterLng = (oldBounds.east + oldBounds.west) / 2;
+    const newCenterLat = (newBounds.north + newBounds.south) / 2;
+    const newCenterLng = (newBounds.east + newBounds.west) / 2;
+    
+    const centerShift = Math.sqrt(
+      Math.pow(newCenterLat - oldCenterLat, 2) + 
+      Math.pow(newCenterLng - oldCenterLng, 2)
+    );
+    
+    // Determine if bounds have changed enough to trigger a reload
+    // Either the area has changed by 50% or more, or the center has shifted significantly
+    const areaRatio = Math.max(newArea / oldArea, oldArea / newArea);
+    return areaRatio > 1.5 || centerShift > 0.1;
+  };
+  
   const updateBoundsRef = useCallback(() => {
     const bounds = map.getBounds();
-    onBoundsChange({
+    const newBounds = {
       north: bounds.getNorth(),
       south: bounds.getSouth(),
       east: bounds.getEast(),
       west: bounds.getWest(),
-    });
-  }, [map, onBoundsChange]);
+    };
+    
+    // Check if bounds have changed significantly
+    if (hasBoundsChangedSignificantly(newBounds, lastBounds)) {
+      console.log('Map bounds changed significantly, triggering update');
+      setLastBounds(newBounds);
+      onBoundsChange(newBounds);
+    }
+  }, [map, onBoundsChange, lastBounds]);
   
   useEffect(() => {
     // Only run the initial update after a slight delay to ensure the map is fully loaded
@@ -119,6 +224,164 @@ const MapBoundsUpdater: FC<MapBoundsUpdaterProps> = ({ onBoundsChange }) => {
   }, [map, updateBoundsRef]);
   
   return null;
+};
+
+interface MapFilterProps {
+  onFilterChange: (filters: { showPremium: boolean; showAvailable: boolean; showUnderContract: boolean; showSold: boolean }) => void
+}
+
+// Add a simple filter component for the map
+const MapFilter: FC<MapFilterProps> = ({ onFilterChange }) => {
+  const [expanded, setExpanded] = useState(false);
+  const [filters, setFilters] = useState({
+    showPremium: true,
+    showAvailable: true,
+    showUnderContract: true,
+    showSold: true
+  });
+  
+  const handleFilterChange = (key: string, value: boolean) => {
+    const newFilters = { ...filters, [key]: value };
+    setFilters(newFilters);
+    onFilterChange(newFilters);
+  };
+  
+  return (
+    <div className="absolute top-20 right-4 z-10 bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden">
+      <div 
+        className="px-3 py-2 font-semibold text-sm flex items-center justify-between cursor-pointer"
+        onClick={() => setExpanded(!expanded)}
+      >
+        <div className="flex items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+          </svg>
+          Quick Filter
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" className={`h-5 w-5 transform transition-transform ${expanded ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </div>
+      
+      {expanded && (
+        <div className="px-3 py-2 border-t border-gray-200 dark:border-gray-700">
+          <div className="grid grid-cols-1 gap-1">
+            <label className="flex items-center text-sm">
+              <input 
+                type="checkbox" 
+                className="form-checkbox h-4 w-4 mr-2 text-blue-600" 
+                checked={filters.showPremium}
+                onChange={(e) => handleFilterChange('showPremium', e.target.checked)}
+              />
+              Premium Properties
+            </label>
+            <label className="flex items-center text-sm">
+              <input 
+                type="checkbox" 
+                className="form-checkbox h-4 w-4 mr-2 text-green-600" 
+                checked={filters.showAvailable}
+                onChange={(e) => handleFilterChange('showAvailable', e.target.checked)}
+              />
+              Available Properties
+            </label>
+            <label className="flex items-center text-sm">
+              <input 
+                type="checkbox" 
+                className="form-checkbox h-4 w-4 mr-2 text-yellow-600" 
+                checked={filters.showUnderContract}
+                onChange={(e) => handleFilterChange('showUnderContract', e.target.checked)}
+              />
+              Under Contract
+            </label>
+            <label className="flex items-center text-sm">
+              <input 
+                type="checkbox" 
+                className="form-checkbox h-4 w-4 mr-2 text-red-600" 
+                checked={filters.showSold}
+                onChange={(e) => handleFilterChange('showSold', e.target.checked)}
+              />
+              Sold Properties
+            </label>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// Add a search component
+const MapSearch: FC<{
+  properties: Property[];
+  onPropertySelect: (property: Property) => void;
+}> = ({ properties, onPropertySelect }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState<Property[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  
+  // Handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const term = e.target.value;
+    setSearchTerm(term);
+    
+    if (term.length >= 2) {
+      setIsSearching(true);
+      
+      // Filter properties by name and address
+      const results = properties.filter(property => {
+        const nameMatch = property.name?.toLowerCase().includes(term.toLowerCase());
+        const addressMatch = property.address?.toLowerCase().includes(term.toLowerCase());
+        return nameMatch || addressMatch;
+      }).slice(0, 5); // Limit to 5 results
+      
+      setSearchResults(results);
+    } else {
+      setIsSearching(false);
+      setSearchResults([]);
+    }
+  };
+  
+  // Handle property selection
+  const handleSelect = (property: Property) => {
+    onPropertySelect(property);
+    setSearchTerm('');
+    setSearchResults([]);
+    setIsSearching(false);
+  };
+  
+  return (
+    <div className="absolute top-4 left-4 z-10 w-64">
+      <div className="relative">
+        <input
+          type="text"
+          className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Search properties..."
+          value={searchTerm}
+          onChange={handleSearchChange}
+        />
+        
+        {isSearching && (
+          <div className="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden z-20">
+            {searchResults.length > 0 ? (
+              <ul>
+                {searchResults.map(property => (
+                  <li 
+                    key={property.id}
+                    className="px-3 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b border-gray-200 dark:border-gray-700 last:border-b-0"
+                    onClick={() => handleSelect(property)}
+                  >
+                    <div className="font-medium text-sm truncate">{property.name}</div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 truncate">{property.address}</div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="px-3 py-2 text-sm text-gray-500 dark:text-gray-400">No properties found</div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 };
 
 interface MapComponentProps {
@@ -144,56 +407,54 @@ const MapComponent: FC<MapComponentProps> = ({
     total: 0
   });
   
-  // Default center coordinates for Austin, TX
-  const defaultCenter: [number, number] = [30.2672, -97.7431];
-  const defaultZoom = 12;
+  // Filter state
+  const [mapFilters, setMapFilters] = useState({
+    showPremium: true,
+    showAvailable: true,
+    showUnderContract: true,
+    showSold: true
+  });
   
-  // Debug properties
+  // Default center coordinates for the continental United States
+  const defaultCenter: [number, number] = [39.8283, -98.5795];
+  const defaultZoom = 4; // Zoom level to show the entire country
+  
+  // Debug variables
   useEffect(() => {
     if (!properties || !Array.isArray(properties)) {
       console.log('No properties available');
       return;
     }
     
-    console.log('Properties passed to MapComponent:', properties.length);
+    console.log(`===== MAP COMPONENT DEBUG =====`);
+    console.log(`Received ${properties.length} properties from parent`);
     
-    // Log all property statuses
-    const statuses = new Set(properties.map(p => p.status));
-    console.log('Property statuses:', Array.from(statuses));
-    
-    // Detailed analysis of properties
-    const analysis = {
-      total: properties.length,
-      hasLatLng: properties.filter(p => p.latitude && p.longitude).length,
-      latLngTypeNumber: properties.filter(p => typeof p.latitude === 'number' && typeof p.longitude === 'number').length,
-      zeroCoordinates: properties.filter(p => p.latitude === 0 || p.longitude === 0).length,
-      fromResearch: properties.filter(p => p._coordinates_from_research).length,
-      missingCoordinates: properties.filter(p => p._coordinates_missing).length,
-      gridPattern: properties.filter(p => p._is_grid_pattern).length,
-      testProperties: properties.filter(p => p._is_test_property).length,
-    };
-    console.log('Properties analysis:', analysis);
-    
-    // Based on filtering criteria
-    const withCoordinates = properties.filter(p => 
-      p.latitude && 
-      p.longitude && 
-      (p._coordinates_from_research || (!p._coordinates_missing && !p._is_grid_pattern)) &&
+    // Analyze properties before filtering
+    const withLat = properties.filter(p => p.latitude).length;
+    const withLng = properties.filter(p => p.longitude).length;
+    const withBoth = properties.filter(p => p.latitude && p.longitude).length;
+    const validNumbers = properties.filter(p => 
       typeof p.latitude === 'number' && 
       typeof p.longitude === 'number'
-    );
-    console.log('Properties with valid coordinates:', withCoordinates.length);
+    ).length;
+    const nonZero = properties.filter(p => 
+      p.latitude !== 0 && 
+      p.longitude !== 0
+    ).length;
     
-    if (withCoordinates.length > 0) {
-      const sampleProperty = withCoordinates[0];
-      console.log('Sample property with coordinates:', {
-        id: sampleProperty.id,
-        name: sampleProperty.name,
-        lat: sampleProperty.latitude,
-        lng: sampleProperty.longitude,
-        fromResearch: sampleProperty._coordinates_from_research || false
-      });
-    }
+    console.log(`Properties with lat: ${withLat}, with lng: ${withLng}, with both: ${withBoth}`);
+    console.log(`Properties with numeric coordinates: ${validNumbers}`);
+    console.log(`Properties with non-zero coordinates: ${nonZero}`);
+    
+    // Check validity using our internal function
+    const passesValidation = properties.filter(p => hasValidCoordinates(p)).length;
+    console.log(`Properties that pass hasValidCoordinates(): ${passesValidation}`);
+    
+    // Check final filtered result
+    setTimeout(() => {
+      console.log(`RESULT: Displaying ${propertiesWithCoordinates.length} properties on map`);
+      console.log(`===== END MAP COMPONENT DEBUG =====`);
+    }, 100); // Small delay to ensure propertiesWithCoordinates has been calculated
   }, [properties]);
 
   // Geocode properties with missing coordinates
@@ -217,7 +478,7 @@ const MapComponent: FC<MapComponentProps> = ({
     // Always set the processed properties first to show what we have
     setProcessedProperties(properties);
     
-    // MODIFIED: Enable geocoding for properties with missing coordinates
+    // MODIFIED: Use enhanced geocoding for properties with missing coordinates
     // even if some properties already have valid coordinates
     const propertiesToGeocode = properties.filter(p => 
       ((p._needs_geocoding || !p.latitude || !p.longitude || p._coordinates_missing || p._is_grid_pattern) && 
@@ -240,7 +501,8 @@ const MapComponent: FC<MapComponentProps> = ({
       
       console.log(`MapComponent: Geocoding batch of ${batchToGeocode.length} properties`);
       
-      geocodeProperties(batchToGeocode)
+      // Use enhanced geocoding with multiple methods
+      enhancedGeocodeProperties(batchToGeocode)
         .then(geocodedProperties => {
           // Count how many were successfully geocoded
           const newlyGeocodedCount = geocodedProperties.filter(p => p._geocoded).length;
@@ -283,7 +545,7 @@ const MapComponent: FC<MapComponentProps> = ({
     shadowSize: [41, 41]
   });
 
-  // Add helper function to get the right marker icon based on property status
+  // Add helper function to get the right marker icon based on property status and price
   const getMarkerIcon = (property: Property) => {
     // If the property has verified coordinates, use a verified icon
     if (property.verified_address) {
@@ -330,17 +592,55 @@ const MapComponent: FC<MapComponentProps> = ({
       });
     }
     
-    // Default marker icons based on status
-    const status = property.status?.toLowerCase() || '';
-    if (status === 'active' || status === 'listed') {
-      return L.icon({
-        iconUrl: '/icons/marker-green.png',
-        iconSize: [25, 41],
-        iconAnchor: [12, 41],
-        popupAnchor: [1, -34],
-        shadowSize: [41, 41]
-      });
-    } else if (status === 'contract' || status === 'under contract') {
+    // Color code by price range if price is available
+    if (property.price) {
+      const price = property.price;
+      
+      // Premium properties (>$20M)
+      if (price >= 20000000) {
+        return L.icon({
+          iconUrl: '/icons/marker-purple.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        });
+      }
+      
+      // High-value properties ($10M-$20M)
+      if (price >= 10000000) {
+        return L.icon({
+          iconUrl: '/icons/marker-dark-blue.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        });
+      }
+      
+      // Mid-high properties ($5M-$10M)
+      if (price >= 5000000) {
+        return L.icon({
+          iconUrl: '/icons/marker-blue.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        });
+      }
+      
+      // Medium properties ($1M-$5M)
+      if (price >= 1000000) {
+        return L.icon({
+          iconUrl: '/icons/marker-green.png',
+          iconSize: [25, 41],
+          iconAnchor: [12, 41],
+          popupAnchor: [1, -34],
+          shadowSize: [41, 41]
+        });
+      }
+      
+      // Affordable properties (<$1M)
       return L.icon({
         iconUrl: '/icons/marker-yellow.png',
         iconSize: [25, 41],
@@ -348,7 +648,27 @@ const MapComponent: FC<MapComponentProps> = ({
         popupAnchor: [1, -34],
         shadowSize: [41, 41]
       });
-    } else if (status === 'sold') {
+    }
+    
+    // Default marker icons based on status if no price
+    const status = property.status?.toLowerCase() || '';
+    if (status === 'active' || status === 'listed' || status === 'available' || status === 'actively marketed') {
+      return L.icon({
+        iconUrl: '/icons/marker-green.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+    } else if (status.includes('contract') || status.includes('pending')) {
+      return L.icon({
+        iconUrl: '/icons/marker-yellow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41]
+      });
+    } else if (status.includes('sold')) {
       return L.icon({
         iconUrl: '/icons/marker-red.png',
         iconSize: [25, 41],
@@ -389,84 +709,214 @@ const MapComponent: FC<MapComponentProps> = ({
       return [];
     }
     
+    // MODIFIED: Use much less strict filtering to show more properties
     return properties.filter(property => {
-      // We need both latitude and longitude to be defined and valid numbers
-      if (!property || typeof property.latitude !== 'number' || typeof property.longitude !== 'number') {
+      // We need latitude and longitude to be defined
+      if (!property || property.latitude === undefined || property.longitude === undefined) {
         return false;
       }
 
-      // Check if coordinates are zero (often a sign of placeholder data)
-      if (property.latitude === 0 || property.longitude === 0) {
+      // Convert string coordinates to numbers if needed
+      const lat = typeof property.latitude === 'number' ? property.latitude : parseFloat(String(property.latitude));
+      const lng = typeof property.longitude === 'number' ? property.longitude : parseFloat(String(property.longitude));
+
+      // Check if coordinates are valid numbers
+      if (isNaN(lat) || isNaN(lng)) {
         return false;
       }
 
-      // Check if coordinates are within valid ranges
-      if (property.latitude < -90 || property.latitude > 90 || 
-          property.longitude < -180 || property.longitude > 180) {
+      // Only exclude coordinates that are exactly zero (as these are likely placeholder data)
+      // This allows for coordinates near zero but not exactly zero
+      if (lat === 0 && lng === 0) {
         return false;
       }
 
-      // Either show properties from research or valid coordinates in Austin area
-      if (property._coordinates_from_research) {
-        return true;
-      }
-
-      // Filter out properties with coordinates in a grid pattern
-      if (property._is_grid_pattern) {
+      // Check if coordinates are within reasonable global ranges
+      if (lat < -90 || lat > 90 || lng < -180 || lng > 180) {
         return false;
       }
 
+      // Include all valid properties regardless of whether they're in Austin
+      // Include properties even if they have grid patterns or are from research
       return true;
     });
   }, [properties]);
   
-  // Check if property has valid coordinates
+  // Check if property has valid coordinates - MODIFIED to be much less strict
   const hasValidCoordinates = (property: Property): boolean => {
     if (!property) return false;
-
-    // If the property has a verified address, it has valid coordinates
-    if (property.verified_address) {
-      return true;
-    }
     
-    // Basic type checks
-    const lat = typeof property.latitude === 'number' ? property.latitude : parseFloat(property.latitude as string);
-    const lng = typeof property.longitude === 'number' ? property.longitude : parseFloat(property.longitude as string);
+    // Basic existence checks
+    if (property.latitude === undefined || property.longitude === undefined) return false;
     
-    // Check for NaN, null, undefined
-    if (isNaN(lat) || isNaN(lng) || lat === null || lng === null) return false;
+    // Convert to numbers if needed
+    const lat = typeof property.latitude === 'number' ? property.latitude : parseFloat(String(property.latitude));
+    const lng = typeof property.longitude === 'number' ? property.longitude : parseFloat(String(property.longitude));
+    
+    // Check for NaN
+    if (isNaN(lat) || isNaN(lng)) return false;
     
     // Check for zero values (often default)
-    if (lat === 0 || lng === 0) return false;
+    if (lat === 0 && lng === 0) return false;
     
     // Check for reasonable coordinate ranges
     if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return false;
     
-    // Check for Austin default (if property state is not Texas)
-    const isAustinArea = lat > 30.0 && lat < 30.5 && lng > -97.9 && lng < -97.5;
-    const isTexas = property.state?.toLowerCase() === 'tx' || property.state?.toLowerCase() === 'texas';
-    
-    if (isAustinArea && !isTexas) {
-      console.warn(`Property ${property.id} has coordinates in Austin but state is ${property.state}`);
-      return false;
-    }
-    
+    // Don't filter out properties based on location or data source
+    // Include properties with _is_grid_pattern and _coordinates_from_research
     return true;
   };
   
-  // Get properties with valid coordinates
-  const propertiesWithCoordinates = useMemo(() => {
-    if (!processedProperties || !Array.isArray(processedProperties)) {
+  // Get properties with valid coordinates - MODIFIED to directly use validProperties
+  const propertiesWithCoordinates = validProperties;
+
+  // Add filter logic for properties
+  const filteredProperties = useMemo(() => {
+    // Log the number of valid properties
+    console.log(`Valid properties before filtering: ${validProperties.length} of ${properties?.length || 0}`);
+    
+    // Count properties by some key attributes
+    const propertiesWithResearchCoords = validProperties.filter(p => p._coordinates_from_research).length;
+    const propertiesWithGridPattern = validProperties.filter(p => p._is_grid_pattern).length;
+    console.log(`Properties with research coordinates: ${propertiesWithResearchCoords}`);
+    console.log(`Properties with grid pattern: ${propertiesWithGridPattern}`);
+    
+    // Apply less strict filtering to show more properties on the map
+    return validProperties.filter(property => {
+      // Filter by price for premium properties (over $10M)
+      if (property.price && property.price >= 10000000) {
+        if (!mapFilters.showPremium) return false;
+      }
+      
+      // Filter by status
+      const status = (property.status || '').toLowerCase();
+      
+      if (status.includes('contract') || status.includes('pending')) {
+        return mapFilters.showUnderContract;
+      } else if (status.includes('sold')) {
+        return mapFilters.showSold;
+      } else {
+        // Available, listed, etc.
+        return mapFilters.showAvailable;
+      }
+    });
+  }, [validProperties, mapFilters, properties?.length]);
+  
+  // New function to check if there are multiple properties at the same location
+  const findPropertiesAtSameLocation = (targetProperty: Property) => {
+    if (!targetProperty || !targetProperty.latitude || !targetProperty.longitude) {
       return [];
     }
-    return processedProperties.filter(property => hasValidCoordinates(property));
-  }, [processedProperties]);
-  
+    
+    const lat = targetProperty.latitude;
+    const lng = targetProperty.longitude;
+    
+    // Find properties that have the exact same coordinates (using exact match)
+    // This is important for properties that have exactly the same coordinates
+    return filteredProperties.filter(p => 
+      p.id !== targetProperty.id && 
+      p.latitude === lat && 
+      p.longitude === lng
+    );
+  };
+
+  // Debug the number of properties at the same locations - useful for understanding clustering issues
+  useEffect(() => {
+    if (filteredProperties.length === 0) return;
+    
+    // Count how many properties are at the same coordinates as others
+    let sameLocationCount = 0;
+    const checkedIds = new Set<string | number>();
+    
+    filteredProperties.forEach(property => {
+      if (checkedIds.has(property.id)) return;
+      
+      const sameLocationProps = findPropertiesAtSameLocation(property);
+      if (sameLocationProps.length > 0) {
+        sameLocationCount += sameLocationProps.length + 1; // Include the current property
+        
+        // Mark all these properties as checked
+        checkedIds.add(property.id);
+        sameLocationProps.forEach(p => checkedIds.add(p.id));
+        
+        // Log the first few instances of exact-coordinate properties for debugging
+        if (checkedIds.size < 20) {
+          console.log(`Found ${sameLocationProps.length + 1} properties at the same location: ${property.latitude}, ${property.longitude}`);
+          console.log(`  First property: ${property.name || property.id}`);
+          sameLocationProps.slice(0, 3).forEach(p => {
+            console.log(`  Other property: ${p.name || p.id}`);
+          });
+          if (sameLocationProps.length > 3) {
+            console.log(`  ...and ${sameLocationProps.length - 3} more`);
+          }
+        }
+      }
+    });
+    
+    console.log(`Total properties at the same locations: ${sameLocationCount} (${Math.round(sameLocationCount/filteredProperties.length*100)}% of all displayed properties)`);
+    
+  }, [filteredProperties]);
+
   return (
     <div className="h-[80vh] lg:h-[85vh] rounded-lg shadow overflow-hidden relative">
+      {/* Property count information - ENHANCED */}
+      <div className="absolute top-4 right-4 z-10 bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 px-3 text-sm">
+        <div className="font-semibold">
+          Showing {filteredProperties.length} of {properties?.length || 0} properties
+        </div>
+        {filteredProperties.length < (properties?.length || 0) && (
+          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            {properties?.length - filteredProperties.length} properties filtered out or lacking valid coordinates
+            
+            {validProperties.length < (properties?.length || 0) && (
+              <button 
+                className="ml-1 text-blue-500 hover:text-blue-700 focus:outline-none underline"
+                onClick={() => {
+                  // Count issues with coordinates
+                  const missingCoords = properties?.filter(p => !p.latitude || !p.longitude).length || 0;
+                  const zeroCoords = properties?.filter(p => p.latitude === 0 && p.longitude === 0).length || 0;
+                  const invalidRange = properties?.filter(p => {
+                    if (!p.latitude || !p.longitude) return false;
+                    const lat = typeof p.latitude === 'number' ? p.latitude : parseFloat(String(p.latitude));
+                    const lng = typeof p.longitude === 'number' ? p.longitude : parseFloat(String(p.longitude));
+                    return (lat < -90 || lat > 90 || lng < -180 || lng > 180);
+                  }).length || 0;
+                  
+                  // Display an alert with the breakdown
+                  alert(
+                    `Properties not shown on map:\n\n` +
+                    `- Missing coordinates: ${missingCoords}\n` +
+                    `- Zero coordinates: ${zeroCoords}\n` +
+                    `- Invalid coordinate range: ${invalidRange}\n` +
+                    `- Filtered by status or price: ${(properties?.length || 0) - validProperties.length - missingCoords - zeroCoords - invalidRange}\n\n` +
+                    `To improve map coverage, try geocoding properties with missing coordinates.`
+                  );
+                }}
+              >
+                (details)
+              </button>
+            )}
+          </div>
+        )}
+        
+        {/* Add a note about property clusters */}
+        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+          <span className="font-medium">Tip:</span> Click on clustered markers to expand them. Many properties share the exact same coordinates.
+        </div>
+      </div>
+      
+      {/* Search box */}
+      <MapSearch properties={properties} onPropertySelect={setSelectedProperty} />
+      
+      {/* Quick filter */}
+      <MapFilter onFilterChange={setMapFilters} />
+      
+      {/* Map Legend */}
+      <MapLegend />
+      
       {/* Geocoding status indicator */}
       {geocodingStatus.isGeocoding && (
-        <div className="absolute top-4 left-4 z-10 bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 px-3 flex items-center text-sm">
+        <div className="absolute top-16 left-4 z-10 bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 px-3 flex items-center text-sm">
           <svg className="animate-spin h-4 w-4 mr-2 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
@@ -476,14 +926,14 @@ const MapComponent: FC<MapComponentProps> = ({
       )}
       
       {/* No properties with valid coordinates message */}
-      {propertiesWithCoordinates.length === 0 && (
+      {filteredProperties.length === 0 && (
         <div className="absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md text-center">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mx-auto mb-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          <h3 className="font-semibold text-lg">No Properties with Location Data</h3>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Try adjusting your filters to find properties with valid coordinates.</p>
+          <h3 className="font-semibold text-lg">No Properties Match Filters</h3>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Try adjusting your filters to see more properties.</p>
         </div>
       )}
 
@@ -512,9 +962,19 @@ const MapComponent: FC<MapComponentProps> = ({
         <ZoomControl position="topright" />
         
         {/* Map markers for properties */}
-        {propertiesWithCoordinates.length > 0 && (
-          <>
-            {propertiesWithCoordinates.map((property) => (
+        {filteredProperties.length > 0 && (
+          <CustomMarkerClusterGroup
+            // These props will be merged with the enhanced props in CustomMarkerClusterGroup
+            chunkedLoading={true}
+            showCoverageOnHover={false}  // Disable coverage display which can be distracting
+            disableClusteringAtZoom={18} // Disable clustering at maximum zoom
+          >
+            {filteredProperties.map((property) => {
+              // Find properties at same location
+              const sameLocationProperties = findPropertiesAtSameLocation(property);
+              const hasMultipleProperties = sameLocationProperties.length > 0;
+              
+              return (
               <Marker
                 key={property.id}
                 position={[property.latitude, property.longitude]}
@@ -545,7 +1005,21 @@ const MapComponent: FC<MapComponentProps> = ({
                         Verified with Google Maps
                       </p>
                     )}
-                    {!property.verified_address && property.geocoded_at && (
+
+                    {/* Show geocoding source information */}
+                    {property._geocoding_source && !property.verified_address && (
+                      <p className="text-xs text-blue-600 flex items-center mt-1">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                          <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                        </svg>
+                        {property._geocoding_source === 'existing' && 'Coordinates from database'}
+                        {property._geocoding_source === 'verified_address' && 'Geocoded from verified address'}
+                        {property._geocoding_source === 'full_address' && 'Geocoded from full address'}
+                        {property._geocoding_source === 'property_name' && 'Approximated from property name'}
+                      </p>
+                    )}
+                    
+                    {!property.verified_address && !property._geocoding_source && property.geocoded_at && (
                       <p className="text-xs text-blue-600 flex items-center mt-1">
                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
                           <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
@@ -583,6 +1057,127 @@ const MapComponent: FC<MapComponentProps> = ({
                         {property.status}
                       </span>
                     </div>
+                    
+                    {/* Show indicator for multiple properties at same location */}
+                    {hasMultipleProperties && (
+                      <div className="mt-2 text-xs">
+                        <p className="font-semibold text-blue-600">Multiple properties at this location ({sameLocationProperties.length + 1})</p>
+                        <div className="max-h-32 overflow-y-auto mt-1 border border-gray-200 rounded">
+                          <div className="bg-gray-100 p-1 px-2 border-b border-gray-200 text-gray-600 font-medium">
+                            Current property
+                          </div>
+                          <div className="p-1 px-2 border-b border-gray-200">
+                            <div className="font-medium text-xs text-black">{property.name}</div>
+                            <div className="text-xs text-gray-500">{formatPrice(property.price)} • {property.num_units || property.units} units</div>
+                          </div>
+                          
+                          <div className="bg-gray-100 p-1 px-2 border-b border-gray-200 text-gray-600 font-medium">
+                            Other properties at this location
+                          </div>
+                          {sameLocationProperties.map((relatedProperty) => (
+                            <div 
+                              key={relatedProperty.id} 
+                              className="p-1 px-2 border-b border-gray-100 last:border-b-0 cursor-pointer hover:bg-blue-50"
+                              onClick={() => {
+                                const originalRelatedProperty = properties.find(p => p.id === relatedProperty.id) || relatedProperty;
+                                setSelectedProperty(originalRelatedProperty);
+                              }}
+                            >
+                              <div className="font-medium text-xs">{relatedProperty.name}</div>
+                              <div className="text-xs text-gray-500">{formatPrice(relatedProperty.price)} • {relatedProperty.num_units || relatedProperty.units} units • {relatedProperty.status}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Add a data quality section to the popup */}
+                    <div className="mt-2 pt-2 border-t border-gray-100">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-medium text-gray-500">Data Quality</span>
+                        <button 
+                          className="text-xs text-blue-500 hover:text-blue-700"
+                          onClick={() => {
+                            // Toggle showing full details
+                            const detailsEl = document.getElementById(`data-details-${property.id}`);
+                            if (detailsEl) {
+                              detailsEl.classList.toggle('hidden');
+                            }
+                          }}
+                        >
+                          Show details
+                        </button>
+                      </div>
+                      
+                      <div id={`data-details-${property.id}`} className="hidden mt-1 text-xs">
+                        <div className="grid grid-cols-2 gap-x-2 gap-y-1 bg-gray-50 p-1 rounded text-gray-600">
+                          <div>Coordinates</div>
+                          <div>
+                            {property.latitude?.toFixed(6)}, {property.longitude?.toFixed(6)}
+                          </div>
+                          
+                          <div>Geocoding Source</div>
+                          <div>
+                            {property._geocoding_source || 'Unknown'}
+                          </div>
+                          
+                          <div>Address Verified</div>
+                          <div>
+                            {property.verified_address ? 'Yes' : 'No'}
+                          </div>
+                          
+                          <div>Geocoded At</div>
+                          <div>
+                            {property.geocoded_at ? new Date(property.geocoded_at).toLocaleDateString() : 'Never'}
+                          </div>
+                          
+                          <div>Data Flags</div>
+                          <div>
+                            {property._coordinates_missing && 'Missing coords, '}
+                            {property._needs_geocoding && 'Needs geocoding, '}
+                            {property._is_grid_pattern && 'Grid pattern, '}
+                            {property._coordinates_from_research && 'Research data'}
+                            {property._is_test_property && (property._coordinates_missing || property._needs_geocoding || 
+                             property._is_grid_pattern || property._coordinates_from_research) && ', '}
+                            {property._is_test_property && 'Test property'}
+                            {!property._coordinates_missing && !property._needs_geocoding && 
+                             !property._is_grid_pattern && !property._coordinates_from_research && 
+                             !property._is_test_property && 'None'}
+                          </div>
+                          
+                          {/* Display data cleaning information when available */}
+                          {property._data_cleaned && (
+                            <>
+                              <div>Data Cleaned</div>
+                              <div className="text-green-600">
+                                Yes
+                              </div>
+                              
+                              <div>Cleaning Notes</div>
+                              <div>
+                                {property._cleaning_notes || 'No details available'}
+                              </div>
+                            </>
+                          )}
+                          
+                          {/* Display data enrichment information when available */}
+                          {property._data_enriched && (
+                            <>
+                              <div>Data Enriched</div>
+                              <div className="text-blue-600">
+                                Yes
+                              </div>
+                              
+                              <div>Enrichment Notes</div>
+                              <div>
+                                {property._enrichment_notes || 'No details available'}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                    
                     <button 
                       className="mt-3 w-full py-1 px-2 bg-blue-600 hover:bg-blue-700 text-white rounded text-sm transition"
                       onClick={() => {
@@ -595,8 +1190,8 @@ const MapComponent: FC<MapComponentProps> = ({
                   </div>
                 </Popup>
               </Marker>
-            ))}
-          </>
+            )})}
+          </CustomMarkerClusterGroup>
         )}
         
         {/* Map controllers */}

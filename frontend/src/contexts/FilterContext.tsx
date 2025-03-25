@@ -50,7 +50,7 @@ const defaultFilters: PropertySearchParams = {
   sort_by: 'created_at',
   sort_dir: 'desc',
   page: 1,
-  limit: 200, // Increased from 50 to show more properties on the map
+  limit: 1000, // Increased to 1000 to show more properties on the map
 };
 
 const FilterContext = createContext<FilterContextType | undefined>(undefined);

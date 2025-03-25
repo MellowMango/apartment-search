@@ -76,9 +76,13 @@ export const signOut = async () => {
  * @param {boolean} options.sortAsc - Sort in ascending order if true
  * @param {boolean} options.includeIncomplete - Whether to include properties with missing coordinates
  * @param {boolean} options.includeResearch - Whether to include enriched research data
+ * @param {boolean} options.noLimit - Whether to bypass pagination limits and get all properties
+ * @param {Object} options.bounds - Geographical bounds to filter properties (north, south, east, west)
  * @returns {Promise<Array>} Array of normalized properties
  */
 export const fetchProperties = async (options = {}) => {
+  console.log('Fetching properties with options:', JSON.stringify(options, null, 2));
+  
   // Check if we should join with research data
   if (options.includeResearch !== false) {
     // Include research data in our query - we'll join with property_research table
@@ -120,6 +124,22 @@ export const fetchProperties = async (options = {}) => {
         });
       }
       
+      // Apply geographical bounds if provided to limit to visible area
+      if (options.bounds) {
+        const { north, south, east, west } = options.bounds;
+        
+        if (north && south && east && west) {
+          // Only get properties within the current map bounds
+          query = query
+            .gte('latitude', south)
+            .lte('latitude', north)
+            .gte('longitude', west)
+            .lte('longitude', east);
+          
+          console.log(`Applying geographical bounds filter: lat ${south}-${north}, lng ${west}-${east}`);
+        }
+      }
+      
       // If we need complete properties with coordinates for the map
       if (!options.includeIncomplete) {
         // Use a more precise filter to avoid empty/zero coordinates
@@ -136,11 +156,17 @@ export const fetchProperties = async (options = {}) => {
         console.log('Including all properties regardless of coordinates');
       }
       
-      // Apply pagination
-      if (options.page && options.pageSize) {
+      // Apply pagination unless noLimit is set to true
+      if (!options.noLimit && options.page && options.pageSize) {
         const start = (options.page - 1) * options.pageSize;
         const end = start + options.pageSize - 1;
         query = query.range(start, end);
+        console.log(`Applying pagination: range ${start}-${end}`);
+      } else if (options.noLimit) {
+        // When loading all properties, we'll limit to 2500 max for performance
+        // This should be enough for the entire dataset
+        query = query.limit(2500);
+        console.log('Loading up to 2500 properties (bypassing pagination)');
       }
       
       // Apply sorting
@@ -149,6 +175,7 @@ export const fetchProperties = async (options = {}) => {
       }
       
       // Execute query
+      console.log('Executing Supabase query...');
       const { data, error } = await query;
       
       if (error) {
@@ -266,6 +293,22 @@ export const fetchProperties = async (options = {}) => {
     });
   }
   
+  // Apply geographical bounds if provided
+  if (options.bounds) {
+    const { north, south, east, west } = options.bounds;
+    
+    if (north && south && east && west) {
+      // Only get properties within the current map bounds
+      query = query
+        .gte('latitude', south)
+        .lte('latitude', north)
+        .gte('longitude', west)
+        .lte('longitude', east);
+      
+      console.log(`Applying geographical bounds filter: lat ${south}-${north}, lng ${west}-${east}`);
+    }
+  }
+  
   // If we need complete properties with coordinates for the map
   if (!options.includeIncomplete) {
     // Use a more precise filter to avoid empty/zero coordinates
@@ -282,11 +325,17 @@ export const fetchProperties = async (options = {}) => {
     console.log('Including all properties regardless of coordinates');
   }
   
-  // Apply pagination
-  if (options.page && options.pageSize) {
+  // Apply pagination unless noLimit is set to true
+  if (!options.noLimit && options.page && options.pageSize) {
     const start = (options.page - 1) * options.pageSize;
     const end = start + options.pageSize - 1;
     query = query.range(start, end);
+    console.log(`Applying pagination: range ${start}-${end}`);
+  } else if (options.noLimit) {
+    // When loading all properties, we'll limit to 2500 max for performance
+    // This should be enough for the entire dataset
+    query = query.limit(2500);
+    console.log('Loading up to 2500 properties (bypassing pagination)');
   }
   
   // Apply sorting
@@ -295,6 +344,7 @@ export const fetchProperties = async (options = {}) => {
   }
   
   // Execute query
+  console.log('Executing Supabase query...');
   const { data, error } = await query;
   
   if (error) {
@@ -306,6 +356,8 @@ export const fetchProperties = async (options = {}) => {
     console.warn('No properties found with the given criteria');
     return [];
   }
+  
+  console.log(`Fetched ${data.length} properties successfully`);
   
   // Normalize property data to handle inconsistencies
   return data.map(property => normalizeProperty(property));

@@ -11,49 +11,53 @@ export interface Broker {
 }
 
 export interface Property {
-  id: string;
-  name: string;
-  address: string;
-  city: string;
-  state: string;
-  zip_code?: string;
-  latitude: number;
-  longitude: number;
+  id: string | number;
+  name?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zip?: string;
+  units?: number;
+  num_units?: number;
   price?: number;
-  num_units?: number; // Some properties use num_units
-  units?: number;     // Some might use units
+  price_per_unit?: number;
   year_built?: number;
-  year_renovated?: number;
-  status: string;
-  description?: string;
-  cap_rate?: number;
-  noi?: number;
-  occupancy?: number;
-  avg_rent?: number;
-  lot_size?: number;
-  building_size?: number;
-  property_type?: string;
-  image_url?: string;
-  images?: string[];
-  broker?: Broker;
-  broker_id?: string;
-  brokerage_id?: string;
+  latitude?: number;
+  longitude?: number;
+  status?: string;
+  property_status?: string;
   created_at?: string;
   updated_at?: string;
-  geocoded_at?: string;
-  verified_address?: string;  // Field for Google Maps verified address
-  amenities?: string[];
   
-  // Flags for coordinate status
-  _coordinates_missing?: boolean;  // Flag for properties without valid coordinates
-  _needs_geocoding?: boolean;      // Flag for properties that need geocoding
-  _geocoded?: boolean;             // Flag for properties that were geocoded
-  _is_grid_pattern?: boolean;      // Flag for properties with coordinates in a grid pattern
-  _is_invalid_range?: boolean;     // Flag for properties with coordinates outside valid ranges
-  _outside_austin?: boolean;       // Flag for properties with coordinates outside Austin area
-  _coordinates_from_research?: boolean; // Flag for coordinates that came from research
-  _is_test_property?: boolean;     // Flag for test properties
-  _highlight?: boolean;            // Flag for highlighting properties in the UI
+  // Geocoding-related fields
+  verified_address?: string;
+  geocoded_at?: string;
+  
+  // Coordinate status flags
+  _coordinates_missing?: boolean;
+  _needs_geocoding?: boolean;
+  _geocoded?: boolean;
+  _is_grid_pattern?: boolean;
+  _is_invalid_range?: boolean;
+  _outside_austin?: boolean;
+  _coordinates_from_research?: boolean;
+  _is_test_property?: boolean;
+  
+  // Enhanced geocoding fields
+  _geocoding_source?: 'existing' | 'verified_address' | 'full_address' | 'property_name';
+  _geocoding_failed?: boolean;
+  
+  // Data cleaning fields
+  _data_cleaned?: boolean;
+  _cleaning_notes?: string;
+  _data_quality_issues?: string[];
+  
+  // Data enrichment fields
+  _data_enriched?: boolean;
+  _enrichment_notes?: string;
+  
+  // Research data
+  _research?: any;
 }
 
 export interface PropertySearchParams {

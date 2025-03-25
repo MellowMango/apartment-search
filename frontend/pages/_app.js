@@ -1,6 +1,7 @@
 import { AuthProvider } from '../src/contexts/AuthContext';
 import { ThemeProvider } from '../src/contexts/ThemeContext';
 import '../src/styles/globals.css';
+import '../public/styles/MarkerCluster.Default.css';
 
 function MyApp({ Component, pageProps }) {
   return (

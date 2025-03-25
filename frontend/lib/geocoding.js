@@ -419,3 +419,223 @@ export async function syncResearchCoordinates(limit = 100) {
     };
   }
 }
+
+/**
+ * Enhanced batch geocoding function that attempts multiple methods of geocoding
+ * @param {Array} properties Array of properties to geocode
+ * @param {Function} progressCallback Optional callback function (property, status, details) => {}
+ * @returns {Array} Updated properties with geocoding results
+ */
+export async function enhancedGeocodeProperties(properties, progressCallback = null) {
+  if (!Array.isArray(properties) || properties.length === 0) {
+    return [];
+  }
+
+  // Create a deep copy of the properties to avoid mutating the originals
+  const propertiesCopy = JSON.parse(JSON.stringify(properties));
+
+  // Process each property
+  for (let i = 0; i < propertiesCopy.length; i++) {
+    const property = propertiesCopy[i];
+    
+    try {
+      // Skip properties that already have valid coordinates
+      if (property.latitude && 
+          property.longitude && 
+          property.latitude !== 0 && 
+          property.longitude !== 0 && 
+          !property._needs_geocoding && 
+          !property._coordinates_missing &&
+          !property._is_grid_pattern) {
+        
+        // Mark as having existing valid coordinates
+        property._geocoding_source = 'existing';
+        property._geocoded = true;
+        
+        if (progressCallback) {
+          progressCallback(property, 'skipped', 'already has valid coordinates');
+        }
+        continue;
+      }
+      
+      if (progressCallback) {
+        progressCallback(property, 'processing', 'starting geocoding process');
+      }
+      
+      // First, try geocoding with verified address if available
+      if (property.verified_address) {
+        if (progressCallback) {
+          progressCallback(property, 'attempt', 'using verified address');
+        }
+        
+        const geocodeResult = await geocodeAddress(property.verified_address);
+        
+        if (geocodeResult.success) {
+          property.latitude = geocodeResult.lat;
+          property.longitude = geocodeResult.lng;
+          property._geocoding_source = 'verified_address';
+          property._geocoded = true;
+          property._needs_geocoding = false;
+          property._is_grid_pattern = false;
+          property._coordinates_missing = false;
+          property.geocoded_at = new Date().toISOString();
+          
+          if (progressCallback) {
+            progressCallback(property, 'success', 'verified address geocoded');
+          }
+          continue;
+        }
+      }
+      
+      // Next, try with the full address
+      if (property.address) {
+        let fullAddress = property.address;
+        
+        // Add city, state if they exist and aren't already in the address
+        if (property.city && !fullAddress.includes(property.city)) {
+          fullAddress += `, ${property.city}`;
+        }
+        
+        if (property.state && !fullAddress.includes(property.state)) {
+          fullAddress += `, ${property.state}`;
+        }
+        
+        // Add zip code if available and not already in the address
+        if (property.zip && !fullAddress.includes(property.zip)) {
+          fullAddress += ` ${property.zip}`;
+        }
+        
+        if (progressCallback) {
+          progressCallback(property, 'attempt', 'using full address');
+        }
+        
+        const geocodeResult = await geocodeAddress(fullAddress);
+        
+        if (geocodeResult.success) {
+          property.latitude = geocodeResult.lat;
+          property.longitude = geocodeResult.lng;
+          property._geocoding_source = 'full_address';
+          property._geocoded = true;
+          property._needs_geocoding = false;
+          property._is_grid_pattern = false;
+          property._coordinates_missing = false;
+          property.geocoded_at = new Date().toISOString();
+          
+          if (progressCallback) {
+            progressCallback(property, 'success', 'full address geocoded');
+          }
+          continue;
+        }
+      }
+      
+      // If all else fails, try geocoding based on the property name
+      // This is a last resort and might not be accurate
+      if (property.name) {
+        // Format the name for geocoding
+        // Add "Austin, TX" since most properties are in Austin
+        const searchTerm = `${property.name}, ${property.city || 'Austin'}, ${property.state || 'TX'}`;
+        
+        if (progressCallback) {
+          progressCallback(property, 'attempt', 'using property name as last resort');
+        }
+        
+        const geocodeResult = await geocodeAddress(searchTerm);
+        
+        if (geocodeResult.success) {
+          property.latitude = geocodeResult.lat;
+          property.longitude = geocodeResult.lng;
+          property._geocoding_source = 'property_name';
+          property._geocoded = true;
+          property._needs_geocoding = false;
+          // Still mark these as potentially grid pattern since they're less reliable
+          property._is_grid_pattern = false;
+          property._coordinates_missing = false;
+          property.geocoded_at = new Date().toISOString();
+          
+          if (progressCallback) {
+            progressCallback(property, 'success', 'property name geocoded (less accurate)');
+          }
+          continue;
+        }
+      }
+      
+      // If we get here, all geocoding attempts failed
+      property._geocoding_failed = true;
+      if (progressCallback) {
+        progressCallback(property, 'error', 'all geocoding methods failed');
+      }
+      
+    } catch (error) {
+      console.error(`Error geocoding property ${property.id}:`, error);
+      property._geocoding_failed = true;
+      
+      if (progressCallback) {
+        progressCallback(property, 'error', error.message);
+      }
+    }
+  }
+
+  return propertiesCopy;
+}
+
+/**
+ * Helper function to check if a property has valid coordinates
+ */
+const hasValidCoordinates = (property) => {
+  if (!property) return false;
+  
+  if (!property.latitude || !property.longitude) return false;
+  
+  // Convert to numbers if needed
+  const lat = typeof property.latitude === 'number' ? property.latitude : parseFloat(String(property.latitude));
+  const lng = typeof property.longitude === 'number' ? property.longitude : parseFloat(String(property.longitude));
+  
+  // Check for NaN
+  if (isNaN(lat) || isNaN(lng)) return false;
+  
+  // Check for zero values (often default)
+  if (lat === 0 && lng === 0) return false;
+  
+  // Check for reasonable coordinate ranges
+  if (lat < -90 || lat > 90 || lng < -180 || lng > 180) return false;
+  
+  return true;
+};
+
+/**
+ * Geocode an address using Google Maps API
+ * @param {string} address The address to geocode
+ * @returns {Promise<Object>} Object with success flag and lat/lng if successful
+ */
+export async function geocodeAddress(address) {
+  if (!address) {
+    return { success: false, error: 'No address provided' };
+  }
+
+  try {
+    // First try to use the geocoding API endpoint
+    const encodedAddress = encodeURIComponent(address);
+    const response = await fetch(`/api/geocode?address=${encodedAddress}`);
+    
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data && data.results && data.results.length > 0) {
+      const location = data.results[0].geometry.location;
+      return {
+        success: true,
+        lat: location.lat,
+        lng: location.lng,
+        formattedAddress: data.results[0].formatted_address
+      };
+    }
+    
+    return { success: false, error: 'No results found' };
+  } catch (error) {
+    console.error('Error geocoding address:', error);
+    return { success: false, error: error.message };
+  }
+}

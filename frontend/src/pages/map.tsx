@@ -177,7 +177,9 @@ const MapPageContent = () => {
             pageSize: 10,
             sortBy: 'created_at',
             sortAsc: false,
-            includeIncomplete: true
+            includeIncomplete: true,
+            noLimit: false, // Use a limit for this call as we're only looking for 1 property
+            bounds: null // Make bounds parameter optional in interface
           });
           
           if (data && data.length > 0) {
@@ -253,11 +255,13 @@ const MapPageContent = () => {
       const fetchOptions = {
         filters: apiFilters,
         page: filters.page || 1,
-        pageSize: filters.limit || 500,
+        pageSize: filters.limit || 1000,
         sortBy: filters.sort_by || 'created_at',
         sortAsc: filters.sort_dir === 'asc',
         includeResearch: true, // Always include research data to get better coordinates
-        includeIncomplete: false // Initially, only fetch properties with coordinates
+        includeIncomplete: false, // Initially, only fetch properties with coordinates
+        noLimit: true, // Bypass pagination to get all properties
+        bounds: null // Make bounds parameter optional by setting to null
       };
       
       console.log('Fetching properties with valid coordinates:', fetchOptions);
@@ -278,7 +282,8 @@ const MapPageContent = () => {
       
       const allFetchOptions = {
         ...fetchOptions,
-        includeIncomplete: true
+        includeIncomplete: true,
+        noLimit: true // Make sure we're getting all properties
       };
       
       const allProperties = await fetchProperties(allFetchOptions);
@@ -321,6 +326,118 @@ const MapPageContent = () => {
   // Handle map bounds change
   const handleBoundsChange = (bounds: any) => {
     setMapBounds(bounds);
+    // Load properties based on new bounds
+    if (bounds) {
+      loadPropertiesWithBounds(bounds);
+    }
+  };
+
+  // Load properties with bounds
+  const loadPropertiesWithBounds = async (bounds: any) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Convert filter state to API parameters
+      const apiFilters: Record<string, any> = {};
+      
+      // Add text search
+      if (filters.search) {
+        // Search in name and address
+        apiFilters.or = `name.ilike.%${filters.search}%,address.ilike.%${filters.search}%`;
+      }
+      
+      // Add status filter
+      if (filters.status) {
+        apiFilters.status = filters.status;
+      }
+      
+      // Add price range
+      if (filters.min_price) {
+        apiFilters.price_gte = filters.min_price;
+      }
+      if (filters.max_price) {
+        apiFilters.price_lte = filters.max_price;
+      }
+      
+      // Add units range
+      if (filters.min_units) {
+        apiFilters.or = `${apiFilters.or ? apiFilters.or + ',' : ''}units.gte.${filters.min_units},num_units.gte.${filters.min_units}`;
+      }
+      if (filters.max_units) {
+        apiFilters.or = `${apiFilters.or ? apiFilters.or + ',' : ''}units.lte.${filters.max_units},num_units.lte.${filters.max_units}`;
+      }
+      
+      // Add year built range
+      if (filters.year_built_min) {
+        apiFilters.year_built_gte = filters.year_built_min;
+      }
+      if (filters.year_built_max) {
+        apiFilters.year_built_lte = filters.year_built_max;
+      }
+      
+      // Add location filters
+      if (filters.city) {
+        apiFilters.city = filters.city;
+      }
+      if (filters.state) {
+        apiFilters.state = filters.state;
+      }
+      
+      // First try to load properties with valid coordinates only
+      const fetchOptions = {
+        filters: apiFilters,
+        page: filters.page || 1,
+        pageSize: filters.limit || 1000,
+        sortBy: filters.sort_by || 'created_at',
+        sortAsc: filters.sort_dir === 'asc',
+        includeResearch: true, // Always include research data to get better coordinates
+        includeIncomplete: false, // Initially, only fetch properties with coordinates
+        noLimit: true, // Bypass pagination to get all properties
+        bounds: bounds // Apply geographic bounds
+      };
+      
+      console.log('Fetching properties with map bounds and valid coordinates:', fetchOptions);
+      
+      const propertiesWithCoordinates = await fetchProperties(fetchOptions);
+      
+      // If we got properties with coordinates, use them
+      if (propertiesWithCoordinates && propertiesWithCoordinates.length > 0) {
+        console.log(`Found ${propertiesWithCoordinates.length} properties with valid coordinates in the current map view`);
+        setProperties(propertiesWithCoordinates);
+        setTotalProperties(propertiesWithCoordinates.length);
+        setLoading(false);
+        return;
+      }
+      
+      // If no properties with coordinates were found, try without the coordinate filter
+      console.log('No properties with coordinates found in current view, fetching all properties in bounds');
+      
+      const allFetchOptions = {
+        ...fetchOptions,
+        includeIncomplete: true,
+        noLimit: true // Make sure we're getting all properties
+      };
+      
+      const allProperties = await fetchProperties(allFetchOptions);
+      
+      if (allProperties && allProperties.length > 0) {
+        console.log(`Found ${allProperties.length} total properties in bounds, but many may lack coordinates`);
+        setProperties(allProperties);
+        setTotalProperties(allProperties.length);
+      } else {
+        console.log('No properties found in the current map view');
+        // Keep the existing properties instead of clearing them
+        // This provides a better UX than showing an empty map
+        // setProperties([]);
+        // setTotalProperties(0);
+      }
+    } catch (err) {
+      console.error('Error loading properties with bounds:', err);
+      setError('Failed to load properties for the current map view. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
   
   // Handle real-time property updates
