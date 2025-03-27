@@ -16,6 +16,7 @@ from pathlib import Path
 from backend.data_cleaning.deduplication.property_matcher import PropertyMatcher
 from backend.data_cleaning.standardization.property_standardizer import PropertyStandardizer
 from backend.data_cleaning.validation.property_validator import PropertyValidator
+from backend.data_cleaning.non_multifamily_detector import NonMultifamilyDetector
 
 logger = logging.getLogger(__name__)
 
@@ -24,17 +25,20 @@ class DataCleaner:
     Main class for cleaning property data.
     """
     
-    def __init__(self, similarity_threshold: float = 0.85):
+    def __init__(self, similarity_threshold: float = 0.85, filter_non_multifamily: bool = False):
         """
         Initialize the DataCleaner.
         
         Args:
             similarity_threshold: Threshold for considering properties as duplicates (0.0 to 1.0)
+            filter_non_multifamily: Whether to filter out non-multifamily properties
         """
         self.logger = logger
         self.property_matcher = PropertyMatcher(similarity_threshold=similarity_threshold)
         self.property_standardizer = PropertyStandardizer()
         self.property_validator = PropertyValidator()
+        self.non_multifamily_detector = NonMultifamilyDetector()
+        self.filter_non_multifamily = filter_non_multifamily
         
         # Create data directories if they don't exist
         self.data_dir = Path("data/cleaned")
@@ -90,6 +94,28 @@ class DataCleaner:
                 cleaned_properties.append(prop)
         
         self.logger.info(f"Removed {test_property_count} test properties")
+        
+        # Step 6: Remove non-multifamily properties if enabled
+        non_multifamily_properties = []
+        if self.filter_non_multifamily:
+            multifamily_properties = []
+            non_multifamily_count = 0
+            
+            for prop in cleaned_properties:
+                is_non_mf, reason = self.non_multifamily_detector.is_definitive_non_multifamily(prop)
+                if is_non_mf:
+                    non_multifamily_count += 1
+                    non_multifamily_properties.append({
+                        'property': prop,
+                        'reason': reason
+                    })
+                    self.logger.info(f"Removed non-multifamily property: {prop.get('name', 'Unknown')} - {reason}")
+                else:
+                    multifamily_properties.append(prop)
+            
+            cleaned_properties = multifamily_properties
+            self.logger.info(f"Removed {non_multifamily_count} non-multifamily properties")
+        
         self.logger.info(f"Final cleaned property count: {len(cleaned_properties)}")
         
         # Compile cleaning statistics
@@ -100,6 +126,8 @@ class DataCleaner:
             'duplicate_groups_count': len(duplicate_groups),
             'duplicate_properties_count': sum(len(group) for group in duplicate_groups),
             'test_properties_count': test_property_count,
+            'non_multifamily_count': len(non_multifamily_properties) if self.filter_non_multifamily else 0,
+            'non_multifamily_properties': non_multifamily_properties if self.filter_non_multifamily else [],
             'final_count': len(cleaned_properties),
             'cleaning_timestamp': datetime.datetime.now().isoformat()
         }

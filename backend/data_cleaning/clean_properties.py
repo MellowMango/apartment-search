@@ -49,6 +49,8 @@ def setup_argparse() -> argparse.ArgumentParser:
                         help='Remove test/example properties')
     parser.add_argument('--merge-duplicates', action='store_true', 
                         help='Merge duplicate properties')
+    parser.add_argument('--filter-non-multifamily', action='store_true',
+                        help='Filter out properties that are clearly not multifamily')
     
     return parser
 
@@ -167,7 +169,10 @@ def main():
         return 1
     
     # Initialize data cleaner
-    data_cleaner = DataCleaner(similarity_threshold=args.similarity_threshold)
+    data_cleaner = DataCleaner(
+        similarity_threshold=args.similarity_threshold,
+        filter_non_multifamily=args.filter_non_multifamily
+    )
     
     # Clean the properties
     cleaned_properties, cleaning_stats = data_cleaner.clean_properties(properties)
@@ -192,7 +197,19 @@ def main():
     print(f"Duplicate groups: {cleaning_stats['duplicate_groups_count']}")
     print(f"Duplicate properties: {cleaning_stats['duplicate_properties_count']}")
     print(f"Test properties removed: {cleaning_stats['test_properties_count']}")
+    
+    if args.filter_non_multifamily:
+        print(f"Non-multifamily properties removed: {cleaning_stats['non_multifamily_count']}")
+    
     print(f"Final cleaned properties: {cleaning_stats['final_count']}")
+    
+    # If any non-multifamily properties were removed, show a sample
+    if args.filter_non_multifamily and cleaning_stats['non_multifamily_count'] > 0:
+        print("\nSample of removed non-multifamily properties:")
+        sample_size = min(5, cleaning_stats['non_multifamily_count'])
+        for i in range(sample_size):
+            prop_info = cleaning_stats['non_multifamily_properties'][i]
+            print(f"  - {prop_info['property'].get('name', 'Unknown')}: {prop_info['reason']}")
     
     logger.info("Property data cleaning process completed successfully")
     return 0

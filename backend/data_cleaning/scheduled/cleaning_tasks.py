@@ -57,7 +57,7 @@ def clean_all_properties() -> Dict[str, Any]:
     Returns:
         Dictionary with cleaning statistics
     """
-    logger.info("Starting scheduled task to clean all properties")
+    logger.info("Starting scheduled task to clean all properties (with non-multifamily filtering enabled)")
     
     # Initialize database operations
     db_ops = DatabaseOperations()
@@ -69,8 +69,8 @@ def clean_all_properties() -> Dict[str, Any]:
         logger.warning("No properties found in database")
         return {'error': 'No properties found in database'}
     
-    # Initialize data cleaner
-    data_cleaner = DataCleaner()
+    # Initialize data cleaner with non-multifamily filtering enabled
+    data_cleaner = DataCleaner(filter_non_multifamily=True)
     
     # Clean the properties
     cleaned_properties, cleaning_stats = data_cleaner.clean_properties(properties)
@@ -81,7 +81,7 @@ def clean_all_properties() -> Dict[str, Any]:
     # Update database with cleaned properties
     update_database_with_cleaned_properties(db_ops, properties, cleaned_properties)
     
-    logger.info(f"Completed scheduled task to clean all properties: {cleaning_stats['final_count']} properties cleaned")
+    logger.info(f"Completed scheduled task to clean all properties: {cleaning_stats['final_count']} properties cleaned, {cleaning_stats.get('non_multifamily_count', 0)} non-multifamily properties identified")
     
     return cleaning_stats
 
@@ -93,7 +93,7 @@ def clean_new_properties() -> Dict[str, Any]:
     Returns:
         Dictionary with cleaning statistics
     """
-    logger.info("Starting scheduled task to clean new properties")
+    logger.info("Starting scheduled task to clean new properties (with non-multifamily filtering enabled)")
     
     # Initialize database operations
     db_ops = DatabaseOperations()
@@ -116,8 +116,8 @@ def clean_new_properties() -> Dict[str, Any]:
         logger.info("No new properties found")
         return {'message': 'No new properties found'}
     
-    # Initialize data cleaner
-    data_cleaner = DataCleaner()
+    # Initialize data cleaner with non-multifamily filtering enabled
+    data_cleaner = DataCleaner(filter_non_multifamily=True)
     
     # Clean the properties
     cleaned_properties, cleaning_stats = data_cleaner.clean_properties(properties)
@@ -128,7 +128,7 @@ def clean_new_properties() -> Dict[str, Any]:
     # Update database with cleaned properties
     update_database_with_cleaned_properties(db_ops, properties, cleaned_properties)
     
-    logger.info(f"Completed scheduled task to clean new properties: {cleaning_stats['final_count']} properties cleaned")
+    logger.info(f"Completed scheduled task to clean new properties: {cleaning_stats['final_count']} properties cleaned, {cleaning_stats.get('non_multifamily_count', 0)} non-multifamily properties identified")
     
     return cleaning_stats
 
@@ -158,6 +158,24 @@ def update_database_with_cleaned_properties(db_ops: DatabaseOperations,
         # Track statistics
         updated_count = 0
         error_count = 0
+        removed_count = 0
+        
+        # Identify removed properties (in original but not in cleaned)
+        removed_properties = []
+        for prop_id in original_map:
+            if prop_id not in cleaned_map:
+                removed_properties.append(original_map[prop_id])
+                removed_count += 1
+        
+        # Log information about removed properties
+        if removed_count > 0:
+            logger.info(f"Found {removed_count} properties removed during cleaning (likely non-multifamily properties)")
+            # Log a sample of removed properties to aid in debugging
+            sample_size = min(5, removed_count)
+            for i in range(sample_size):
+                if i < len(removed_properties):
+                    prop = removed_properties[i]
+                    logger.info(f"Removed property sample {i+1}: {prop.get('name', 'Unknown')} - {prop.get('property_type', 'Unknown')}")
         
         # Update each property in the database
         for prop_id, cleaned_prop in cleaned_map.items():
@@ -173,7 +191,23 @@ def update_database_with_cleaned_properties(db_ops: DatabaseOperations,
             else:
                 error_count += 1
         
-        logger.info(f"Database update complete: {updated_count} properties updated, {error_count} errors")
+        # Flag for removal or mark removed properties
+        for prop in removed_properties:
+            prop_id = prop.get('id')
+            if prop_id:
+                # Either update a flag in the database to mark as non-multifamily
+                try:
+                    # Update with a non_multifamily flag instead of completely removing
+                    prop['is_multifamily'] = False
+                    prop['non_multifamily_detected'] = True
+                    prop['cleaning_note'] = "Identified as non-multifamily property during automated cleaning"
+                    db_ops.update_property(prop_id, prop)
+                    logger.info(f"Marked property {prop_id} as non-multifamily")
+                except Exception as e:
+                    logger.error(f"Error marking property {prop_id} as non-multifamily: {e}")
+                    error_count += 1
+        
+        logger.info(f"Database update complete: {updated_count} properties updated, {removed_count} marked as non-multifamily, {error_count} errors")
         return updated_count > 0
     except Exception as e:
         logger.error(f"Error updating database with cleaned properties: {e}")

@@ -50,6 +50,9 @@ CREATE TABLE properties (
   amenities JSONB,
   images JSONB,
   broker_id UUID,
+  is_multifamily BOOLEAN DEFAULT TRUE,
+  non_multifamily_detected BOOLEAN DEFAULT FALSE,
+  cleaning_note TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -66,6 +69,15 @@ CREATE POLICY "Properties are editable by authenticated users"
 
 CREATE POLICY "Properties are insertable by authenticated users" 
   ON properties FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+
+-- Create an index for multifamily filtering
+CREATE INDEX idx_properties_multifamily ON properties (is_multifamily, non_multifamily_detected);
+
+-- Create a view that only shows multifamily properties
+CREATE VIEW multifamily_properties AS
+SELECT * FROM properties 
+WHERE (non_multifamily_detected IS NOT TRUE OR non_multifamily_detected IS NULL)
+AND (is_multifamily IS NOT FALSE OR is_multifamily IS NULL);
 ```
 
 #### Brokers Table
@@ -174,6 +186,11 @@ import os
 supabase_url = os.environ.get("SUPABASE_URL")
 supabase_key = os.environ.get("SUPABASE_SERVICE_ROLE_KEY")
 supabase = create_client(supabase_url, supabase_key)
+
+# Example: Use the multifamily_properties view to only get multifamily properties
+def get_multifamily_properties():
+    response = supabase.table("multifamily_properties").select("*").execute()
+    return response.data
 ```
 
 ## 8. Integration with Next.js
@@ -193,4 +210,45 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+
+// Example: Use the multifamily_properties view to only get multifamily properties
+export async function getMultifamilyProperties() {
+  const { data, error } = await supabase
+    .from('multifamily_properties')
+    .select('*')
+  
+  if (error) {
+    console.error('Error fetching multifamily properties:', error)
+    return []
+  }
+  
+  return data
+}
+```
+
+## 9. Multifamily Property Filtering
+
+The database includes specialized columns and a view for filtering out non-multifamily properties:
+
+### Multifamily-Related Columns
+
+- `is_multifamily`: Boolean flag indicating if the property is a multifamily property (default TRUE)
+- `non_multifamily_detected`: Boolean flag set to TRUE when automated cleaning detects a non-multifamily property
+- `cleaning_note`: Text field containing the reason why a property was identified as non-multifamily
+
+### Multifamily Properties View
+
+A dedicated view `multifamily_properties` is available that automatically filters out non-multifamily properties. This view should be used instead of the main `properties` table when displaying properties to users or clients.
+
+```sql
+-- Example: Query to count properties by multifamily status
+SELECT 
+  CASE 
+    WHEN non_multifamily_detected = TRUE THEN 'Non-Multifamily'
+    WHEN is_multifamily = FALSE THEN 'Not Multifamily' 
+    ELSE 'Multifamily'
+  END as property_type,
+  COUNT(*) as count
+FROM properties
+GROUP BY property_type;
 ``` 

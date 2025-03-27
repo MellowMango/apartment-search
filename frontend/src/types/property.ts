@@ -28,6 +28,10 @@ export interface Property {
   property_status?: string;
   created_at?: string;
   updated_at?: string;
+  broker?: string;
+  image_url?: string;
+  description?: string;
+  _highlight?: boolean;
   
   // Geocoding-related fields
   verified_address?: string;

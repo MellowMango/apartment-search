@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import Layout from '../src/components/Layout';
 import { fetchProperties } from '../lib/supabase';
@@ -34,6 +34,11 @@ export default function MapPage() {
     invalidRange: 0,
     duplicatedLocations: 0
   });
+  const [lastBounds, setLastBounds] = useState(null);
+  const [sidebarWidth, setSidebarWidth] = useState(400); // Default width in pixels
+  const [isResizing, setIsResizing] = useState(false);
+  const sidebarRef = useRef(null);
+  const resizerRef = useRef(null);
 
   // Initial property load on page load
   useEffect(() => {
@@ -101,16 +106,23 @@ export default function MapPage() {
         sortBy: 'created_at', 
         sortAsc: false,
         page: 1,
-        pageSize: 1000,
+        pageSize: 100, // Reduced initial load size
         filters: {},
         includeIncomplete: true,
         includeResearch: true,
-        noLimit: true // Bypass pagination to get all properties
+        noLimit: false // Enable pagination
       };
 
       // Apply bounds filter if provided
       if (bounds) {
         options.bounds = bounds;
+        // Only load more properties if the bounds have changed significantly
+        const boundsChanged = hasSignificantBoundsChange(bounds, lastBounds);
+        if (!boundsChanged) {
+          setLoading(false);
+          return;
+        }
+        setLastBounds(bounds);
       }
 
       const data = await fetchProperties(options);
@@ -119,49 +131,47 @@ export default function MapPage() {
       calculateStats(data);
       
       // Enhanced logging for debugging
-      console.log(`===== MAP DEBUG =====`);
       console.log(`Loaded ${data.length} properties for map`);
       
-      // Check coordinate validity
-      const validCoords = data.filter(p => 
+      // Filter out properties with invalid coordinates
+      const validProperties = data.filter(p => 
         p.latitude && 
         p.longitude && 
         typeof p.latitude === 'number' && 
         typeof p.longitude === 'number' &&
-        !(p.latitude === 0 && p.longitude === 0)
-      );
-      console.log(`Properties with valid coordinates: ${validCoords.length}`);
-      
-      // Check Austin area coordinates
-      const austinCoords = validCoords.filter(p => 
+        !(p.latitude === 0 && p.longitude === 0) &&
         p.latitude >= 29.5 && p.latitude <= 31.0 && 
         p.longitude >= -98.0 && p.longitude <= -97.0
       );
-      console.log(`Properties with coordinates in Austin area: ${austinCoords.length}`);
       
-      // Look for suspicious patterns
-      const suspiciousCoords = validCoords.filter(p => {
-        const latStr = String(p.latitude);
-        const lngStr = String(p.longitude);
-        const hasLowPrecision = 
-          (latStr.includes('.') && latStr.split('.')[1].length <= 1) ||
-          (lngStr.includes('.') && lngStr.split('.')[1].length <= 1);
-        const hasSuspiciousPattern = 
-          latStr === lngStr || 
-          latStr.endsWith('00000') || 
-          lngStr.endsWith('00000');
-        return hasLowPrecision || hasSuspiciousPattern;
-      });
-      console.log(`Properties with suspicious coordinates: ${suspiciousCoords.length}`);
-      console.log(`===== END DEBUG =====`);
-      
-      setProperties(data);
-      setTotalFetched(data.length);
+      setProperties(validProperties);
+      setTotalFetched(validProperties.length);
     } catch (error) {
       console.error('Error fetching properties:', error);
     } finally {
       setLoading(false);
     }
+  }
+
+  // Helper function to check if map bounds have changed significantly
+  function hasSignificantBoundsChange(newBounds, oldBounds) {
+    if (!oldBounds) return true;
+    
+    const oldArea = (oldBounds.north - oldBounds.south) * (oldBounds.east - oldBounds.west);
+    const newArea = (newBounds.north - newBounds.south) * (newBounds.east - newBounds.west);
+    
+    const oldCenterLat = (oldBounds.north + oldBounds.south) / 2;
+    const oldCenterLng = (oldBounds.east + oldBounds.west) / 2;
+    const newCenterLat = (newBounds.north + newBounds.south) / 2;
+    const newCenterLng = (newBounds.east + newBounds.west) / 2;
+    
+    const centerShift = Math.sqrt(
+      Math.pow(newCenterLat - oldCenterLat, 2) + 
+      Math.pow(newCenterLng - oldCenterLng, 2)
+    );
+    
+    const areaRatio = Math.max(newArea / oldArea, oldArea / newArea);
+    return areaRatio > 1.5 || centerShift > 0.1;
   }
 
   // Function to handle sidebar state change
@@ -886,68 +896,192 @@ export default function MapPage() {
     setEnrichingLogs([]);
   }, []);
 
+  // Handle mouse down on resizer
+  const handleMouseDown = (e) => {
+    setIsResizing(true);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  // Handle mouse move while resizing
+  const handleMouseMove = useCallback((e) => {
+    if (!isResizing) return;
+    
+    const newWidth = e.clientX;
+    const minWidth = 300; // Minimum sidebar width
+    const maxWidth = window.innerWidth * 0.6; // Maximum sidebar width (60% of window)
+    
+    if (newWidth >= minWidth && newWidth <= maxWidth) {
+      setSidebarWidth(newWidth);
+    }
+  }, [isResizing]);
+
+  // Handle mouse up after resizing
+  const handleMouseUp = useCallback(() => {
+    setIsResizing(false);
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  }, [handleMouseMove]);
+
+  // Clean up event listeners
+  useEffect(() => {
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [handleMouseMove, handleMouseUp]);
+
   return (
     <Layout title="Property Map | Acquire Apartments">
-      <div className="relative bg-white min-h-screen">
-        <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden">
-          <div className="container mx-auto px-4 py-4 flex-shrink-0">
-            <h1 className="text-2xl font-bold text-gray-800">Map View</h1>
-            <p className="text-gray-600">Browse properties on the map or use filters to refine your search</p>
-          </div>
-          
-          <div className="flex-grow flex">
-            {/* Property Sidebar */}
-            <div className={`flex-shrink-0 transition-all duration-300 ${
-              sidebarState === 'collapsed' ? 'w-12' : 
-              sidebarState === 'fullscreen' ? 'w-full' : 
-              'w-full md:w-1/3 lg:w-1/4'
-            }`}>
-              <div className="p-4">
-                {React.createElement(dynamic(() => import('../src/components/PropertySidebar')), {
-                  properties,
-                  selectedProperty,
-                  setSelectedProperty,
-                  loading,
-                  sidebarState,
-                  onSidebarStateChange: handleSidebarStateChange
-                })}
+      <div className="relative bg-gray-50 dark:bg-gray-900 min-h-screen">
+        {/* Top Navigation Bar */}
+        <div className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+          <div className="container mx-auto px-4 py-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white">Austin Multifamily Map</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {loading ? 'Loading properties...' : `${totalFetched} properties available`}
+                </p>
+              </div>
+              
+              {/* Action Buttons */}
+              <div className="flex items-center space-x-3">
+                <button
+                  onClick={runPropertyAnalysis}
+                  className="px-3 py-1.5 text-sm bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 rounded-md border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors flex items-center"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                  </svg>
+                  Analysis
+                </button>
+                
+                <button
+                  onClick={batchGeocodeProperties}
+                  disabled={geocoding}
+                  className={`px-3 py-1.5 text-sm rounded-md border transition-colors flex items-center ${
+                    geocoding 
+                      ? 'bg-blue-50 border-blue-200 text-blue-400 cursor-not-allowed'
+                      : 'bg-blue-50 border-blue-200 text-blue-600 hover:bg-blue-100'
+                  }`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className={`h-4 w-4 mr-1.5 ${geocoding ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  {geocoding ? 'Geocoding...' : 'Geocode Missing'}
+                </button>
+                
+                <button
+                  onClick={cleanPropertyData}
+                  disabled={cleaning}
+                  className={`px-3 py-1.5 text-sm rounded-md border transition-colors flex items-center ${
+                    cleaning 
+                      ? 'bg-green-50 border-green-200 text-green-400 cursor-not-allowed'
+                      : 'bg-green-50 border-green-200 text-green-600 hover:bg-green-100'
+                  }`}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  {cleaning ? 'Cleaning...' : 'Clean Data'}
+                </button>
               </div>
             </div>
-            
-            {/* Map Container */}
-            <div className={`flex-grow transition-all duration-300 ${
-              sidebarState === 'fullscreen' ? 'hidden' : 'block'
-            }`}>
-              <div className="h-full rounded-lg shadow overflow-hidden">
-                <MapComponent
-                  properties={properties}
-                  selectedProperty={selectedProperty}
-                  setSelectedProperty={setSelectedProperty}
-                  onBoundsChange={handleBoundsChange}
-                />
-              </div>
+          </div>
+        </div>
+
+        {/* Main Content Area */}
+        <div className="flex h-[calc(100vh-4rem-57px)] overflow-hidden relative">
+          {/* Property Sidebar */}
+          <div
+            ref={sidebarRef}
+            style={{ 
+              width: sidebarState === 'collapsed' ? '3rem' : 
+                     sidebarState === 'fullscreen' ? '100%' : 
+                     `${sidebarWidth}px`,
+              minWidth: sidebarState === 'collapsed' ? '3rem' : '300px',
+              maxWidth: sidebarState === 'fullscreen' ? '100%' : '60%'
+            }}
+            className={`flex-shrink-0 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-all duration-300 ${
+              isResizing ? 'select-none' : ''
+            }`}
+          >
+            <div className="h-full overflow-hidden">
+              {React.createElement(dynamic(() => import('../src/components/PropertySidebar')), {
+                properties,
+                selectedProperty,
+                setSelectedProperty,
+                loading,
+                sidebarState,
+                onSidebarStateChange: handleSidebarStateChange,
+                dataStats
+              })}
             </div>
           </div>
 
+          {/* Resizer Handle */}
+          {sidebarState !== 'collapsed' && sidebarState !== 'fullscreen' && (
+            <div
+              ref={resizerRef}
+              onMouseDown={handleMouseDown}
+              className={`absolute w-1 h-full cursor-col-resize group hover:bg-primary/10 active:bg-primary/20 ${
+                isResizing ? 'bg-primary/20' : 'bg-transparent'
+              }`}
+              style={{ 
+                left: `${sidebarWidth}px`,
+                transform: 'translateX(-50%)'
+              }}
+            >
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-24 rounded-full flex items-center justify-center group-hover:bg-primary/5">
+                <div className="w-0.5 h-12 bg-gray-300 dark:bg-gray-600 rounded-full group-hover:bg-primary/20 group-active:bg-primary/40" />
+              </div>
+            </div>
+          )}
+          
+          {/* Map Container */}
+          <div className={`flex-grow transition-all duration-300 ${
+            sidebarState === 'fullscreen' ? 'hidden' : 'block'
+          }`}>
+            <div className="h-full">
+              <MapComponent
+                properties={properties}
+                selectedProperty={selectedProperty}
+                setSelectedProperty={setSelectedProperty}
+                onBoundsChange={handleBoundsChange}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Status Logs */}
+        <div className="fixed bottom-4 right-4 flex flex-col space-y-2 z-50">
           {/* Geocoding Logs */}
           {showGeocodingLogs && geocodingLogs.length > 0 && (
-            <div className="absolute bottom-4 right-4 w-96 max-h-64 bg-white rounded-lg shadow-lg overflow-auto p-4 z-50">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="font-semibold">Geocoding Logs</h3>
-                <button onClick={() => setShowGeocodingLogs(false)} className="text-gray-500 hover:text-gray-700">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <div className="w-96 max-h-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-auto">
+              <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-2 flex justify-between items-center">
+                <div className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-blue-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  </svg>
+                  <h3 className="font-medium text-sm">Geocoding Progress</h3>
+                </div>
+                <button onClick={() => setShowGeocodingLogs(false)} className="text-gray-400 hover:text-gray-600">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
-              <div className="space-y-1">
+              <div className="p-2 space-y-1">
                 {geocodingLogs.map((log, index) => (
-                  <div key={index} className={`text-sm p-1 ${
-                    log.type === 'error' ? 'text-red-600' :
-                    log.type === 'warning' ? 'text-amber-600' :
-                    log.type === 'success' ? 'text-green-600' :
-                    'text-gray-600'
+                  <div key={index} className={`text-sm p-1 rounded ${
+                    log.type === 'error' ? 'text-red-600 bg-red-50' :
+                    log.type === 'warning' ? 'text-amber-600 bg-amber-50' :
+                    log.type === 'success' ? 'text-green-600 bg-green-50' :
+                    'text-gray-600 bg-gray-50'
                   }`}>
+                    <span className="text-xs text-gray-400 mr-2">{log.timestamp}</span>
                     {log.message}
                   </div>
                 ))}
@@ -955,7 +1089,37 @@ export default function MapPage() {
             </div>
           )}
 
-          {/* Similar blocks for other logs - cleaning and enriching logs remain unchanged */}
+          {/* Cleaning Logs */}
+          {showCleaningLogs && cleaningLogs.length > 0 && (
+            <div className="w-96 max-h-64 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-auto">
+              <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-2 flex justify-between items-center">
+                <div className="flex items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green-500 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <h3 className="font-medium text-sm">Data Cleaning Progress</h3>
+                </div>
+                <button onClick={() => setShowCleaningLogs(false)} className="text-gray-400 hover:text-gray-600">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="p-2 space-y-1">
+                {cleaningLogs.map((log, index) => (
+                  <div key={index} className={`text-sm p-1 rounded ${
+                    log.type === 'error' ? 'text-red-600 bg-red-50' :
+                    log.type === 'warning' ? 'text-amber-600 bg-amber-50' :
+                    log.type === 'success' ? 'text-green-600 bg-green-50' :
+                    'text-gray-600 bg-gray-50'
+                  }`}>
+                    <span className="text-xs text-gray-400 mr-2">{log.timestamp}</span>
+                    {log.message}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </Layout>
