@@ -28,7 +28,6 @@ export interface Property {
   property_status?: string;
   created_at?: string;
   updated_at?: string;
-  image_url?: string;
   
   // Geocoding-related fields
   verified_address?: string;
@@ -59,10 +58,6 @@ export interface Property {
   
   // Research data
   _research?: any;
-  
-  // Optional fields potentially added by our code
-  _highlight?: boolean;
-  _isSample?: boolean; // For sample data in the login gate
 }
 
 export interface PropertySearchParams {
