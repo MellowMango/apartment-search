@@ -118,7 +118,8 @@ class PropertyValidator:
         
         # Check for unrealistic values
         if property_dict.get('price') == 0:
-            reasons.append("Property has 0 price")
+            # Zero price is a valid value, don't flag as test property
+            pass
             
         if property_dict.get('bedrooms') == 0 and property_dict.get('property_type') in ['apartment', 'house', 'condo']:
             reasons.append("Property has 0 bedrooms")

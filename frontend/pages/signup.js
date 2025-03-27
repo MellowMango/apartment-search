@@ -3,6 +3,10 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Layout from '../src/components/Layout';
 import { useAuth } from '../src/contexts/AuthContext';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
+import { Label } from '../components/ui/label';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 
 export default function Signup() {
   const [email, setEmail] = useState('');
@@ -74,89 +78,88 @@ export default function Signup() {
   };
   
   return (
-    <Layout title="Sign Up | Austin Multifamily Map">
-      <div className="max-w-md mx-auto my-12 p-6 bg-white shadow-md rounded-lg">
-        <h1 className="text-2xl font-bold text-center mb-6">Create an Account</h1>
-        
-        {error && (
-          <div className="bg-red-100 text-red-700 p-3 rounded mb-4">
-            {error}
-          </div>
-        )}
-        
-        {message && (
-          <div className="bg-green-100 text-green-700 p-3 rounded mb-4">
-            {message}
-          </div>
-        )}
-        
-        <form onSubmit={handleSignup} className="space-y-4">
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
+    <Layout title="Sign Up | Acquire Apartments">
+      <div className="container max-w-md mx-auto my-12 px-4">
+        <Card>
+          <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
+            <CardDescription className="text-center">
+              Sign up for access to our property listings and interactive map
+            </CardDescription>
+          </CardHeader>
           
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          
-          <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
-              Confirm Password
-            </label>
-            <input
-              id="confirmPassword"
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          
-          <button
-            type="submit"
-            disabled={loading || message}
-            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
-          >
-            {loading ? 'Loading...' : 'Sign Up'}
-          </button>
-        </form>
-        
-        <div className="mt-6">
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-300"></div>
+          <CardContent>
+            {error && (
+              <div className="bg-destructive/15 text-destructive p-3 rounded-md mb-4 text-sm">
+                {error}
+              </div>
+            )}
+            
+            {message && (
+              <div className="bg-green-100 text-green-700 p-3 rounded-md mb-4 text-sm">
+                {message}
+              </div>
+            )}
+            
+            <form onSubmit={handleSignup} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="your@email.com"
+                  required
+                />
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="password">Password</Label>
+                <Input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+                <p className="text-muted-foreground text-xs">Password must be at least 6 characters</p>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  required
+                />
+              </div>
+              
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={loading || message}
+              >
+                {loading ? 'Creating account...' : 'Sign Up'}
+              </Button>
+            </form>
+            
+            <div className="relative my-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-muted"></div>
+              </div>
+              <div className="relative flex justify-center text-sm">
+                <span className="px-2 bg-card text-muted-foreground">Or continue with</span>
+              </div>
             </div>
-            <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">Or continue with</span>
-            </div>
-          </div>
-          
-          <div className="mt-6">
-            <button
+            
+            <Button
+              variant="outline"
               onClick={handleGoogleSignup}
               disabled={loading}
-              className="w-full flex items-center justify-center py-2 px-4 border border-gray-300 rounded-md shadow-sm bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50"
+              className="w-full"
             >
               <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24" width="24" height="24">
                 <g transform="matrix(1, 0, 0, 1, 27.009001, -39.238998)">
@@ -167,16 +170,18 @@ export default function Signup() {
                 </g>
               </svg>
               Sign up with Google
-            </button>
-          </div>
-        </div>
-        
-        <p className="mt-8 text-center">
-          Already have an account?{' '}
-          <Link href="/login" className="text-blue-600 hover:underline">
-            Sign in
-          </Link>
-        </p>
+            </Button>
+          </CardContent>
+          
+          <CardFooter className="flex justify-center">
+            <p className="text-center text-sm text-muted-foreground">
+              Already have an account?{' '}
+              <Link href="/login" className="text-primary font-medium hover:underline">
+                Sign in
+              </Link>
+            </p>
+          </CardFooter>
+        </Card>
       </div>
     </Layout>
   );

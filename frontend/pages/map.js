@@ -3,6 +3,8 @@ import dynamic from 'next/dynamic';
 import Layout from '../src/components/Layout';
 import { fetchProperties } from '../lib/supabase';
 import { enhancedGeocodeProperties } from '../lib/geocoding';
+import { useAuth } from '../src/contexts/AuthContext';
+import Link from 'next/link';
 
 // Import the map component dynamically to avoid SSR issues with Leaflet
 const MapComponent = dynamic(
@@ -10,8 +12,110 @@ const MapComponent = dynamic(
   { ssr: false }
 );
 
+// Login gate component that blurs the content and shows a login prompt
+const LoginGate = ({ children }) => {
+  const { user, loading } = useAuth();
+  
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="relative w-full h-full min-h-[80vh]">
+        <div className="absolute inset-0 flex items-center justify-center bg-cream-100 dark:bg-gray-800 z-20">
+          <div className="text-center">
+            <svg
+              className="animate-spin h-10 w-10 text-blue-500 mx-auto mb-4"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                className="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                strokeWidth="4"
+              ></circle>
+              <path
+                className="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            <p className="dark:text-gray-300">Checking authentication...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+  
+  // If user is authenticated, show the content
+  if (user) {
+    return <>{children}</>;
+  }
+  
+  // If not authenticated, show blurred content with login prompt
+  return (
+    <div className="relative w-full h-full min-h-[80vh]">
+      {/* Blurred content in background */}
+      <div className="absolute inset-0 filter blur-md opacity-40 pointer-events-none overflow-hidden">
+        {children}
+      </div>
+      
+      {/* Login/signup overlay with semi-transparent backdrop */}
+      <div className="absolute inset-0 bg-black/20 dark:bg-black/40 flex items-center justify-center z-20">
+        <div className="bg-cream-50 dark:bg-gray-800 p-8 rounded-lg shadow-xl max-w-md w-full text-center backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95 border border-cream-200 dark:border-gray-700">
+          <div className="mb-6">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-16 w-16 text-blue-500 mx-auto mb-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              />
+            </svg>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Access Restricted</h2>
+            <p className="mt-2 text-gray-600 dark:text-gray-300">
+              You need to log in or create an account to access the full property map and details.
+            </p>
+          </div>
+          
+          <div className="space-y-4">
+            <Link href="/login">
+              <a className="block w-full py-3 px-4 text-center bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md shadow transition duration-150">
+                Log In
+              </a>
+            </Link>
+            <Link href="/signup">
+              <a className="block w-full py-3 px-4 text-center border border-blue-600 text-blue-600 hover:bg-cream-100 dark:hover:bg-blue-900 dark:text-blue-400 dark:border-blue-400 font-medium rounded-md transition duration-150">
+                Sign Up
+              </a>
+            </Link>
+            <div className="text-sm text-gray-500 dark:text-gray-400 mt-4">
+              <p>By signing up, you'll get access to:</p>
+              <ul className="mt-2 space-y-1 text-left list-disc list-inside">
+                <li>Full property details and insights</li>
+                <li>Save favorite properties</li>
+                <li>Get notifications on new listings</li>
+                <li>Access advanced filtering options</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export default function MapPage() {
   const [properties, setProperties] = useState([]);
+  const [sampleProperties, setSampleProperties] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [loading, setLoading] = useState(true);
   const [geocoding, setGeocoding] = useState(false);
@@ -25,6 +129,7 @@ export default function MapPage() {
   const [showEnrichingLogs, setShowEnrichingLogs] = useState(false);
   const [mapBounds, setMapBounds] = useState(null);
   const [totalFetched, setTotalFetched] = useState(0);
+  const [sidebarState, setSidebarState] = useState('open'); // 'open', 'collapsed', or 'fullscreen'
   const [dataStats, setDataStats] = useState({
     totalProperties: 0,
     invalidCoordinates: 0,
@@ -34,10 +139,49 @@ export default function MapPage() {
     duplicatedLocations: 0
   });
 
+  const { user } = useAuth();
+
+  // Load sample properties for non-authenticated users
+  useEffect(() => {
+    const loadSampleProperties = async () => {
+      if (!user) {
+        try {
+          // Fetch just a few sample properties to show on the map
+          const data = await fetchProperties({
+            page: 1,
+            pageSize: 5, // Just a few samples
+            sortBy: 'created_at',
+            sortAsc: false,
+            includeIncomplete: false,
+            includeResearch: true,
+            filters: {},
+            noLimit: false,
+            bounds: null
+          });
+          
+          // Mark them as sample properties
+          const samplesWithLabel = data.map(property => ({
+            ...property,
+            name: property.name ? `${property.name} (Sample)` : 'Sample Property',
+            _isSample: true
+          }));
+          
+          setSampleProperties(samplesWithLabel);
+        } catch (error) {
+          console.error('Error loading sample properties:', error);
+        }
+      }
+    };
+    
+    loadSampleProperties();
+  }, [user]);
+
   // Initial property load on page load
   useEffect(() => {
-    loadProperties();
-  }, []);
+    if (user) {
+      loadProperties();
+    }
+  }, [user]);
 
   // Reload properties when map bounds change
   useEffect(() => {
@@ -162,6 +306,11 @@ export default function MapPage() {
       setLoading(false);
     }
   }
+
+  // Function to handle sidebar state change
+  const handleSidebarStateChange = (state) => {
+    setSidebarState(state);
+  };
 
   // Function to batch geocode properties with missing coordinates
   async function batchGeocodeProperties() {
@@ -355,7 +504,7 @@ export default function MapPage() {
         missingNames: properties.filter(p => !p.name || p.name.trim() === '').length,
         incompleteAddresses: properties.filter(p => p.address && (!p.city || !p.state)).length,
         suspiciousZeros: properties.filter(p => 
-          (p.price === 0 || p.units === 0 || p.num_units === 0)
+          (p.units === 0 || p.num_units === 0)
         ).length,
         suspiciousCoordinates: properties.filter(p => {
           // Check for suspicious patterns in coordinates
@@ -535,25 +684,16 @@ export default function MapPage() {
         }
         
         // Flag suspicious zeros for advanced cleaning
-        if (advancedOptions && (property.price === 0 || property.units === 0 || property.num_units === 0)) {
+        if (advancedOptions && (property.units === 0 || property.num_units === 0)) {
           // We'll just flag these for now, manual review is needed
           if (!cleanedProperties[index]._data_quality_issues) {
             cleanedProperties[index]._data_quality_issues = [];
           }
           
-          if (property.price === 0) {
-            cleanedProperties[index]._data_quality_issues.push('zero_price');
-            addCleaningLog(`Flagged zero price for property #${property.id}`, "warning");
-            propertyCleaned = true;
-            cleaningNotes.push('Flagged zero price');
-          }
-          
-          if (property.units === 0 || property.num_units === 0) {
-            cleanedProperties[index]._data_quality_issues.push('zero_units');
-            addCleaningLog(`Flagged zero units for property #${property.id}`, "warning");
-            propertyCleaned = true;
-            cleaningNotes.push('Flagged zero units');
-          }
+          cleanedProperties[index]._data_quality_issues.push('zero_units');
+          addCleaningLog(`Flagged zero units for property #${property.id}`, "warning");
+          propertyCleaned = true;
+          cleaningNotes.push('Flagged zero units');
         }
         
         // Update property with cleaning information
@@ -636,7 +776,7 @@ export default function MapPage() {
       addEnrichingLog("Analyzing properties for suspicious zero values...", "info");
       
       const suspiciousProperties = properties.filter(p => 
-        (p.price === 0 || p.units === 0 || p.num_units === 0)
+        (p.units === 0 || p.num_units === 0)
       );
       
       if (suspiciousProperties.length === 0) {
@@ -648,14 +788,14 @@ export default function MapPage() {
       }
       
       addEnrichingLog(`Found ${suspiciousProperties.length} properties with suspicious zero values:`, "info");
-      addEnrichingLog(`- ${suspiciousProperties.filter(p => p.price === 0).length} properties with zero price`, "detail");
-      addEnrichingLog(`- ${suspiciousProperties.filter(p => p.units === 0 || p.num_units === 0).length} properties with zero units`, "detail");
+      addEnrichingLog(`- ${suspiciousProperties.filter(p => p.units === 0).length} properties with zero units`, "detail");
+      addEnrichingLog(`- ${suspiciousProperties.filter(p => p.num_units === 0).length} properties with zero units`, "detail");
       
       // Confirm with user
       const confirmation = confirm(
         `Found ${suspiciousProperties.length} properties with suspicious zero values:\n\n` +
-        `- ${suspiciousProperties.filter(p => p.price === 0).length} properties with zero price\n` +
-        `- ${suspiciousProperties.filter(p => p.units === 0 || p.num_units === 0).length} properties with zero units\n\n` +
+        `- ${suspiciousProperties.filter(p => p.units === 0).length} properties with zero units\n` +
+        `- ${suspiciousProperties.filter(p => p.num_units === 0).length} properties with zero units\n\n` +
         `Would you like to attempt to enrich these properties?`
       );
       
@@ -775,16 +915,6 @@ export default function MapPage() {
         
         // Calculate missing values
         if (referenceGroup) {
-          // Fix zero price if units are available
-          if (property.price === 0 && (property.units > 0 || property.num_units > 0)) {
-            const units = property.units || property.num_units;
-            const newPrice = Math.round(referenceGroup.medianPricePerUnit * units);
-            enrichedProperties[index].price = newPrice;
-            addEnrichingLog(`Property #${property.id}: Estimated price $${newPrice.toLocaleString()} based on ${units} units`, "success");
-            isEnriched = true;
-            enrichmentNotes.push(`Estimated price based on ${referenceKey} median ($${Math.round(referenceGroup.medianPricePerUnit).toLocaleString()}/unit)`);
-          }
-          
           // Fix zero units if price is available
           if ((property.units === 0 || !property.units) && 
               (property.num_units === 0 || !property.num_units) && 
@@ -840,8 +970,8 @@ export default function MapPage() {
       alert(
         `Data enrichment complete!\n\n` +
         `- ${enrichedCount} properties were enriched or marked for review\n` +
-        `- ${suspiciousProperties.filter(p => p.price === 0).length} properties with zero price processed\n` +
-        `- ${suspiciousProperties.filter(p => p.units === 0 || p.num_units === 0).length} properties with zero units processed\n\n` +
+        `- ${suspiciousProperties.filter(p => p.units === 0).length} properties with zero units processed\n` +
+        `- ${suspiciousProperties.filter(p => p.num_units === 0).length} properties with zero units processed\n\n` +
         `Next steps:\n` +
         `1. Review the enriched data for accuracy\n` +
         `2. Properties marked for manual review need human attention\n` +
@@ -899,275 +1029,145 @@ export default function MapPage() {
     setEnrichingLogs([]);
   }, []);
 
+  // Handle property selection
+  const handlePropertySelect = (property) => {
+    // For non-authenticated users, show login prompt when selecting a property
+    if (!user && property) {
+      setSelectedProperty(null);
+      return;
+    }
+    
+    setSelectedProperty(property);
+    if (property) {
+      setShowDetails(true);
+      
+      // Update URL with property ID for sharing
+      // ... existing code ...
+    }
+  };
+
   return (
-    <Layout title="Property Map | Austin Multifamily">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center mb-4">
-          <h1 className="text-2xl font-bold">
-            Property Map {loading ? '(Loading...)' : `(${properties.length} properties shown)`}
-          </h1>
+    <Layout title="Property Map | Acquire Apartments">
+      <div className="relative bg-cream-50 min-h-screen">
+        <div className="flex flex-col h-[calc(100vh-4rem)] overflow-hidden">
+          <div className="container mx-auto px-4 py-4 flex-shrink-0">
+            <h1 className="text-2xl font-bold text-gray-800">Map View</h1>
+            <p className="text-gray-600">Browse properties on the map or use filters to refine your search</p>
+          </div>
           
-          <div className="flex items-center space-x-2">
-            {loading ? (
-              <div className="text-sm text-gray-500">Loading properties...</div>
-            ) : (
-              <>
-                <div className="text-sm bg-white shadow-sm border border-gray-200 rounded px-3 py-1">
-                  <span className="font-medium">{totalFetched}</span> properties fetched
-                  {properties.length !== totalFetched && (
-                    <span className="text-gray-500 ml-1">
-                      ({totalFetched - properties.length} filtered)
-                    </span>
-                  )}
-                </div>
-                
-                <button 
-                  className="text-sm bg-blue-100 hover:bg-blue-200 text-blue-700 rounded px-3 py-1 transition"
-                  onClick={runPropertyAnalysis}
-                >
-                  Properties Analysis
-                </button>
-                
-                <button 
-                  className={`text-sm rounded px-3 py-1 transition ${
-                    geocoding 
-                      ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
-                      : 'bg-indigo-100 hover:bg-indigo-200 text-indigo-700'
-                  }`}
-                  onClick={batchGeocodeProperties}
-                  disabled={geocoding}
-                >
-                  {geocoding ? 'Geocoding...' : 'Batch Geocode'}
-                  {!geocoding && geocodingLogs.length > 0 && (
-                    <span 
-                      className="ml-1 text-xs bg-indigo-200 text-indigo-800 px-1 rounded-full cursor-pointer" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowGeocodingLogs(!showGeocodingLogs);
-                      }}
-                    >
-                      {showGeocodingLogs ? 'hide logs' : 'show logs'}
-                    </span>
-                  )}
-                </button>
-                
-                <button 
-                  className={`text-sm rounded px-3 py-1 transition ${
-                    loading 
-                      ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
-                      : 'bg-amber-100 hover:bg-amber-200 text-amber-700'
-                  }`}
-                  onClick={cleanPropertyData}
-                  disabled={loading}
-                >
-                  {cleaning ? 'Cleaning...' : 'Clean Data'}
-                  {!cleaning && cleaningLogs.length > 0 && (
-                    <span 
-                      className="ml-1 text-xs bg-amber-200 text-amber-800 px-1 rounded-full cursor-pointer" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowCleaningLogs(!showCleaningLogs);
-                      }}
-                    >
-                      {showCleaningLogs ? 'hide logs' : 'show logs'}
-                    </span>
-                  )}
-                </button>
-                
-                <button 
-                  className={`text-sm rounded px-3 py-1 transition ${
-                    loading 
-                      ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
-                      : 'bg-purple-100 hover:bg-purple-200 text-purple-700'
-                  }`}
-                  onClick={enrichPropertyData}
-                  disabled={loading}
-                >
-                  {enriching ? 'Enriching...' : 'Enrich Data'}
-                  {!enriching && enrichingLogs.length > 0 && (
-                    <span 
-                      className="ml-1 text-xs bg-purple-200 text-purple-800 px-1 rounded-full cursor-pointer" 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setShowEnrichingLogs(!showEnrichingLogs);
-                      }}
-                    >
-                      {showEnrichingLogs ? 'hide logs' : 'show logs'}
-                    </span>
-                  )}
-                </button>
-                
-                <button 
-                  className="text-sm bg-green-100 hover:bg-green-200 text-green-700 rounded px-3 py-1 transition"
-                  onClick={() => loadProperties()}
-                >
-                  Refresh Map
-                </button>
-              </>
-            )}
-          </div>
-        </div>
-        
-        {/* Geocoding Logs Panel */}
-        {showGeocodingLogs && (
-          <div className="mb-4 bg-white border border-gray-200 rounded-lg shadow">
-            <div className="p-2 border-b border-gray-200 flex justify-between items-center bg-gray-50">
-              <div className="font-medium flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 text-indigo-600" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M10 2a8 8 0 100 16 8 8 0 000-16zM5.94 5.5c.944-.945 2.56-.276 2.56 1.06V8h3v-1.44c0-1.336 1.616-2.005 2.56-1.06A4.002 4.002 0 0110 14a4.002 4.002 0 01-4.06-4.5V6.31c-.554.099-1.034.532-1.292 1.16-.212.509-.78.717-1.156.417a.953.953 0 01-.192-1.307c.66-1.256 1.97-2.052 3.6-2.073v-.517c0-.53.43-.96.96-.96s.96.43.96.96v.517a4.07 4.07 0 013.6 2.073.954.954 0 01-.192 1.307c-.376.3-.944.092-1.156-.417-.258-.628-.738-1.061-1.292-1.16V9.5c0 .53-.43.96-.96.96-.53 0-.96-.43-.96v-3.44z" clipRule="evenodd" />
-                </svg>
-                Geocoding Logs {geocoding && <span className="ml-2 text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">Running</span>}
-              </div>
-              <div className="flex">
-                <button 
-                  className="text-xs mr-2 text-gray-500 hover:text-gray-700"
-                  onClick={clearGeocodingLogs}
-                >
-                  Clear
-                </button>
-                <button 
-                  className="text-xs text-gray-500 hover:text-gray-700"
-                  onClick={() => setShowGeocodingLogs(false)}
-                >
-                  Close
-                </button>
+          <div className="flex-grow flex">
+            {/* Property Sidebar */}
+            <div className={`flex-shrink-0 transition-all duration-300 ${
+              sidebarState === 'collapsed' ? 'w-12' : 
+              sidebarState === 'fullscreen' ? 'w-full' : 
+              'w-full md:w-1/3 lg:w-1/4'
+            }`}>
+              <div className="p-4 bg-cream-100 h-full rounded-lg">
+                {React.createElement(dynamic(() => import('../src/components/PropertySidebar')), {
+                  properties,
+                  selectedProperty,
+                  setSelectedProperty,
+                  loading,
+                  sidebarState,
+                  onSidebarStateChange: handleSidebarStateChange
+                })}
               </div>
             </div>
-            <div className="p-2 max-h-64 overflow-y-auto text-xs font-mono">
-              {geocodingLogs.length === 0 ? (
-                <div className="text-gray-500 py-2 text-center">No logs available</div>
-              ) : (
-                <div className="space-y-1">
-                  {geocodingLogs.map((log, index) => (
-                    <div 
-                      key={index} 
-                      className={`p-1 rounded ${
-                        log.type === 'error' ? 'bg-red-50 text-red-700' : 
-                        log.type === 'warning' ? 'bg-yellow-50 text-yellow-700' :
-                        log.type === 'success' ? 'bg-green-50 text-green-700' :
-                        log.type === 'detail' ? 'bg-gray-50 text-gray-600' :
-                        'bg-gray-50 text-gray-800'
-                      }`}
-                    >
-                      <span className="text-gray-500 mr-2">[{log.timestamp}]</span>
-                      {log.message}
-                    </div>
-                  ))}
-                </div>
-              )}
+            
+            {/* Map Container */}
+            <div className={`flex-grow transition-all duration-300 ${
+              sidebarState === 'fullscreen' ? 'hidden' : 'block'
+            }`}>
+              <div className="h-full rounded-lg shadow-md overflow-hidden border border-cream-200">
+                <MapComponent
+                  properties={user ? properties : sampleProperties}
+                  selectedProperty={selectedProperty}
+                  onPropertySelect={handlePropertySelect}
+                  onBoundsChange={handleBoundsChange}
+                />
+              </div>
             </div>
           </div>
-        )}
-        
-        {/* Data Cleaning Logs Panel */}
-        {showCleaningLogs && (
-          <div className="mb-4 bg-white border border-gray-200 rounded-lg shadow">
-            <div className="p-2 border-b border-gray-200 flex justify-between items-center bg-gray-50">
-              <div className="font-medium flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 text-amber-600" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clipRule="evenodd" />
-                </svg>
-                Data Cleaning Logs {cleaning && <span className="ml-2 text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Running</span>}
-              </div>
-              <div className="flex">
-                <button 
-                  className="text-xs mr-2 text-gray-500 hover:text-gray-700"
-                  onClick={clearCleaningLogs}
-                >
-                  Clear
-                </button>
-                <button 
-                  className="text-xs text-gray-500 hover:text-gray-700"
-                  onClick={() => setShowCleaningLogs(false)}
-                >
-                  Close
+
+          {/* Geocoding Logs */}
+          {showGeocodingLogs && geocodingLogs.length > 0 && (
+            <div className="absolute bottom-4 right-4 w-96 max-h-64 bg-cream-50 rounded-lg shadow-lg overflow-auto p-4 z-50 border border-cream-200">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-semibold">Geocoding Logs</h3>
+                <button onClick={() => setShowGeocodingLogs(false)} className="text-gray-500 hover:text-gray-700">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
                 </button>
               </div>
-            </div>
-            <div className="p-2 max-h-64 overflow-y-auto text-xs font-mono">
-              {cleaningLogs.length === 0 ? (
-                <div className="text-gray-500 py-2 text-center">No logs available</div>
-              ) : (
-                <div className="space-y-1">
-                  {cleaningLogs.map((log, index) => (
-                    <div 
-                      key={index} 
-                      className={`p-1 rounded ${
-                        log.type === 'error' ? 'bg-red-50 text-red-700' : 
-                        log.type === 'warning' ? 'bg-yellow-50 text-yellow-700' :
-                        log.type === 'success' ? 'bg-green-50 text-green-700' :
-                        log.type === 'detail' ? 'bg-gray-50 text-gray-600' :
-                        'bg-gray-50 text-gray-800'
-                      }`}
-                    >
-                      <span className="text-gray-500 mr-2">[{log.timestamp}]</span>
-                      {log.message}
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-        
-        {/* Data Enrichment Logs Panel */}
-        {showEnrichingLogs && (
-          <div className="mb-4 bg-white border border-gray-200 rounded-lg shadow">
-            <div className="p-2 border-b border-gray-200 flex justify-between items-center bg-gray-50">
-              <div className="font-medium flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 text-purple-600" viewBox="0 0 20 20" fill="currentColor">
-                  <path d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z" />
-                </svg>
-                Data Enrichment Logs {enriching && <span className="ml-2 text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full">Running</span>}
-              </div>
-              <div className="flex">
-                <button 
-                  className="text-xs mr-2 text-gray-500 hover:text-gray-700"
-                  onClick={clearEnrichingLogs}
-                >
-                  Clear
-                </button>
-                <button 
-                  className="text-xs text-gray-500 hover:text-gray-700"
-                  onClick={() => setShowEnrichingLogs(false)}
-                >
-                  Close
-                </button>
+              <div className="space-y-1">
+                {geocodingLogs.map((log, index) => (
+                  <div key={index} className={`text-sm p-1 ${
+                    log.type === 'error' ? 'text-red-600' :
+                    log.type === 'warning' ? 'text-amber-600' :
+                    log.type === 'success' ? 'text-green-600' :
+                    'text-gray-600'
+                  }`}>
+                    {log.message}
+                  </div>
+                ))}
               </div>
             </div>
-            <div className="p-2 max-h-64 overflow-y-auto text-xs font-mono">
-              {enrichingLogs.length === 0 ? (
-                <div className="text-gray-500 py-2 text-center">No logs available</div>
-              ) : (
-                <div className="space-y-1">
-                  {enrichingLogs.map((log, index) => (
-                    <div 
-                      key={index} 
-                      className={`p-1 rounded ${
-                        log.type === 'error' ? 'bg-red-50 text-red-700' : 
-                        log.type === 'warning' ? 'bg-yellow-50 text-yellow-700' :
-                        log.type === 'success' ? 'bg-green-50 text-green-700' :
-                        log.type === 'detail' ? 'bg-gray-50 text-gray-600' :
-                        'bg-gray-50 text-gray-800'
-                      }`}
-                    >
-                      <span className="text-gray-500 mr-2">[{log.timestamp}]</span>
-                      {log.message}
-                    </div>
-                  ))}
-                </div>
-              )}
+          )}
+
+          {/* Cleaning Logs */}
+          {showCleaningLogs && cleaningLogs.length > 0 && (
+            <div className="absolute bottom-4 right-4 w-96 max-h-64 bg-cream-50 rounded-lg shadow-lg overflow-auto p-4 z-50 border border-cream-200">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-semibold">Cleaning Logs</h3>
+                <button onClick={() => setShowCleaningLogs(false)} className="text-gray-500 hover:text-gray-700">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="space-y-1">
+                {cleaningLogs.map((log, index) => (
+                  <div key={index} className={`text-sm p-1 ${
+                    log.type === 'error' ? 'text-red-600' :
+                    log.type === 'warning' ? 'text-amber-600' :
+                    log.type === 'success' ? 'text-green-600' :
+                    log.type === 'detail' ? 'text-blue-600' :
+                    'text-gray-600'
+                  }`}>
+                    {log.message}
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
-        
-        <div className="h-[80vh]">
-          <MapComponent 
-            properties={properties} 
-            selectedProperty={selectedProperty}
-            setSelectedProperty={setSelectedProperty}
-            onBoundsChange={handleBoundsChange}
-          />
+          )}
+          
+          {/* Enrichment Logs */}
+          {showEnrichingLogs && enrichingLogs.length > 0 && (
+            <div className="absolute bottom-4 right-4 w-96 max-h-64 bg-cream-50 rounded-lg shadow-lg overflow-auto p-4 z-50 border border-cream-200">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="font-semibold">Enrichment Logs</h3>
+                <button onClick={() => setShowEnrichingLogs(false)} className="text-gray-500 hover:text-gray-700">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="space-y-1">
+                {enrichingLogs.map((log, index) => (
+                  <div key={index} className={`text-sm p-1 ${
+                    log.type === 'error' ? 'text-red-600' :
+                    log.type === 'warning' ? 'text-amber-600' :
+                    log.type === 'success' ? 'text-green-600' :
+                    log.type === 'detail' ? 'text-blue-600' :
+                    'text-gray-600'
+                  }`}>
+                    {log.message}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </Layout>

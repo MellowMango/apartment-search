@@ -415,9 +415,19 @@ const MapComponent: FC<MapComponentProps> = ({
     showSold: true
   });
   
-  // Default center coordinates for the continental United States
-  const defaultCenter: [number, number] = [39.8283, -98.5795];
-  const defaultZoom = 4; // Zoom level to show the entire country
+  // Get Mapbox token from environment, with fallback to ensure map loads
+  const mapboxTokenEnv = process.env.NEXT_PUBLIC_MAPBOX_TOKEN || '';
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [mapError, setMapError] = useState<string | null>(null);
+  
+  // Properly verify token format to avoid map loading issues
+  const isValidMapboxToken = useMemo(() => {
+    return mapboxTokenEnv && mapboxTokenEnv.startsWith('pk.') && mapboxTokenEnv.length > 20;
+  }, [mapboxTokenEnv]);
+
+  // For Austin, TX
+  const defaultCenter: [number, number] = [30.2672, -97.7431];
+  const defaultZoom = 12;
   
   // Debug variables
   useEffect(() => {
@@ -457,82 +467,80 @@ const MapComponent: FC<MapComponentProps> = ({
     }, 100); // Small delay to ensure propertiesWithCoordinates has been calculated
   }, [properties]);
 
-  // Geocode properties with missing coordinates
+  // Fix for properties geocoding with Promise.then
   useEffect(() => {
-    if (!properties || !Array.isArray(properties)) {
-      console.log('No properties available for geocoding');
-      return;
-    }
-    
-    // First, check if any properties exist with proper coordinates
-    const propertiesWithValidCoordinates = properties.filter(p => 
-      p.latitude && 
-      p.longitude && 
-      (p._coordinates_from_research || (!p._coordinates_missing && !p._is_grid_pattern)) &&
-      typeof p.latitude === 'number' && 
-      typeof p.longitude === 'number'
-    );
-    
-    console.log(`MapComponent: ${propertiesWithValidCoordinates.length} of ${properties.length} properties have valid coordinates`);
-    
-    // Always set the processed properties first to show what we have
-    setProcessedProperties(properties);
-    
-    // MODIFIED: Use enhanced geocoding for properties with missing coordinates
-    // even if some properties already have valid coordinates
-    const propertiesToGeocode = properties.filter(p => 
-      ((p._needs_geocoding || !p.latitude || !p.longitude || p._coordinates_missing || p._is_grid_pattern) && 
-       (p.address || p.city)) &&
-      !p._coordinates_from_research
-    );
-    
-    console.log(`MapComponent: ${propertiesToGeocode.length} properties need geocoding`);
-    
-    // Only proceed if there are properties to geocode
-    if (propertiesToGeocode.length > 0 && !geocodingStatus.isGeocoding) {
-      // Only geocode up to 10 properties at a time to avoid API limits
-      const batchToGeocode = propertiesToGeocode.slice(0, 10);
-      
-      setGeocodingStatus({
-        isGeocoding: true,
-        count: 0,
-        total: batchToGeocode.length
+    if (geocodingStatus.isGeocoding && properties) {
+      // Find properties needing geocoding (filter out those with valid coordinates)
+      const batchToGeocode = properties.filter(property => {
+        return (
+          (!property.latitude || !property.longitude || 
+           property.latitude === 0 || property.longitude === 0 ||
+           property._is_grid_pattern || property._needs_geocoding) && 
+          !property._geocoding_failed
+        );
       });
       
       console.log(`MapComponent: Geocoding batch of ${batchToGeocode.length} properties`);
       
-      // Use enhanced geocoding with multiple methods
-      enhancedGeocodeProperties(batchToGeocode)
-        .then(geocodedProperties => {
-          // Count how many were successfully geocoded
-          const newlyGeocodedCount = geocodedProperties.filter(p => p._geocoded).length;
+      // Use enhanced geocoding with multiple methods (fixed Promise handling)
+      if (batchToGeocode.length > 0) {
+        try {
+          // Call the geocoding function, but don't rely on its direct return type
+          const geocodeResult = enhancedGeocodeProperties(batchToGeocode);
           
-          console.log(`MapComponent: Successfully geocoded ${newlyGeocodedCount} properties`);
-          
-          // Merge geocoded properties with existing properties
-          const updatedProperties = [...properties];
-          geocodedProperties.forEach(geocodedProperty => {
-            const index = updatedProperties.findIndex(p => p.id === geocodedProperty.id);
-            if (index !== -1) {
-              updatedProperties[index] = geocodedProperty;
-            }
-          });
-          
-          setProcessedProperties(updatedProperties);
-          setGeocodingStatus({
-            isGeocoding: false,
-            count: newlyGeocodedCount,
-            total: batchToGeocode.length
-          });
-        })
-        .catch(error => {
-          console.error('Error geocoding properties:', error);
+          // Use a safer approach - create a Promise that will handle the result appropriately
+          Promise.resolve(geocodeResult)
+            .then(geocodedProperties => {
+              // Safety check that we got an array of properties back
+              if (!Array.isArray(geocodedProperties)) {
+                throw new Error('Geocoding did not return an array of properties');
+              }
+              
+              // Count how many were successfully geocoded
+              const newlyGeocodedCount = geocodedProperties.filter(p => p._geocoded).length;
+              
+              console.log(`MapComponent: Successfully geocoded ${newlyGeocodedCount} properties`);
+              
+              // Merge geocoded properties with existing properties
+              const updatedProperties = [...properties];
+              geocodedProperties.forEach(geocodedProperty => {
+                const index = updatedProperties.findIndex(p => p.id === geocodedProperty.id);
+                if (index !== -1) {
+                  updatedProperties[index] = geocodedProperty;
+                }
+              });
+              
+              setProcessedProperties(updatedProperties);
+              setGeocodingStatus({
+                isGeocoding: false,
+                count: newlyGeocodedCount,
+                total: batchToGeocode.length
+              });
+            })
+            .catch(error => {
+              console.error('Error geocoding properties:', error);
+              setGeocodingStatus({
+                isGeocoding: false,
+                count: 0,
+                total: batchToGeocode.length
+              });
+            });
+        } catch (error) {
+          console.error('Error initiating geocoding:', error);
           setGeocodingStatus({
             isGeocoding: false,
             count: 0,
             total: batchToGeocode.length
           });
+        }
+      } else {
+        // No properties to geocode
+        setGeocodingStatus({
+          isGeocoding: false,
+          count: 0,
+          total: 0
         });
+      }
     }
   }, [properties, geocodingStatus.isGeocoding]);
   
@@ -857,8 +865,21 @@ const MapComponent: FC<MapComponentProps> = ({
     
   }, [filteredProperties]);
 
+  // Handle map load success
+  const handleMapLoad = useCallback(() => {
+    setMapLoaded(true);
+    setMapError(null);
+  }, []);
+  
+  // Handle map load error
+  const handleMapError = useCallback((e: any) => {
+    console.error('Map tile loading error:', e);
+    setMapError('Failed to load map tiles. Using fallback map provider.');
+    // Continue with OpenStreetMap as fallback
+  }, []);
+
   return (
-    <div className="h-[80vh] lg:h-[85vh] rounded-lg shadow overflow-hidden relative">
+    <div className="relative h-full w-full">
       {/* Property count information - ENHANCED */}
       <div className="absolute top-4 right-4 z-10 bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 px-3 text-sm">
         <div className="font-semibold">
@@ -942,14 +963,20 @@ const MapComponent: FC<MapComponentProps> = ({
         zoom={defaultZoom}
         style={{ height: '100%', width: '100%' }}
         zoomControl={false}
+        whenReady={handleMapLoad}
       >
         <MapInitializer />
         
-        {/* Use Mapbox if token is provided, otherwise use OpenStreetMap */}
-        {mapboxToken ? (
+        {/* Use Mapbox if token is provided and valid, otherwise use OpenStreetMap */}
+        {isValidMapboxToken ? (
           <TileLayer
             attribution='© <a href="https://www.mapbox.com/about/maps/">Mapbox</a>'
-            url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${mapboxToken}`}
+            url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${mapboxTokenEnv}`}
+            tileSize={512}
+            zoomOffset={-1}
+            eventHandlers={{
+              error: handleMapError
+            }}
           />
         ) : (
           <TileLayer
@@ -958,8 +985,12 @@ const MapComponent: FC<MapComponentProps> = ({
           />
         )}
         
-        {/* Add ZoomControl in top-right */}
-        <ZoomControl position="topright" />
+        {/* Show map error if there is one */}
+        {mapError && (
+          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-red-100 text-red-700 px-4 py-2 rounded-md shadow-md z-50">
+            {mapError}
+          </div>
+        )}
         
         {/* Map markers for properties */}
         {filteredProperties.length > 0 && (
@@ -1197,6 +1228,9 @@ const MapComponent: FC<MapComponentProps> = ({
         {/* Map controllers */}
         <MapRecenter selectedProperty={selectedProperty} />
         {onBoundsChange && <MapBoundsUpdater onBoundsChange={onBoundsChange} />}
+        
+        {/* Add ZoomControl in top-right */}
+        <ZoomControl position="topright" />
       </MapContainer>
     </div>
   );

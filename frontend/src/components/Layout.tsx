@@ -10,13 +10,13 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ 
   children, 
-  title = 'Austin Multifamily Property Map' 
+  title = 'Acquire Apartments' 
 }) => {
   return (
     <div className="flex flex-col min-h-screen">
       <Head>
         <title>{title}</title>
-        <meta name="description" content="Explore multifamily properties in Austin" />
+        <meta name="description" content="Discover multifamily properties in Austin with Acquire Apartments" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>

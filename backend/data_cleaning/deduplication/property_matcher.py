@@ -330,7 +330,7 @@ class PropertyMatcher:
                 return True
         
         # Check for unrealistic values
-        if property_data.get('price') == 0 or property_data.get('price') == 1:
+        if property_data.get('price') == 1:
             return True
             
         if property_data.get('units') == 0 or property_data.get('units') == 999:
@@ -421,7 +421,8 @@ class PropertyMatcher:
         
         # Check for unrealistic values
         if property_data.get('price') == 0:
-            return "Property has price of 0"
+            # Zero price is a valid value, don't flag as test property
+            pass
             
         if property_data.get('price') == 1:
             return "Property has price of 1 (likely a placeholder)"

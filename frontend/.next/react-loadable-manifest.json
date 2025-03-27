@@ -26,5 +26,11 @@
     "files": [
       "static/chunks/src_components_MapComponent_tsx.js"
     ]
+  },
+  "map.js -> ../src/components/PropertySidebar": {
+    "id": "map.js -> ../src/components/PropertySidebar",
+    "files": [
+      "static/chunks/src_components_PropertySidebar_tsx.js"
+    ]
   }
 }

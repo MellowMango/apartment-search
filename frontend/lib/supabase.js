@@ -467,7 +467,7 @@ const isTestProperty = (property) => {
   }
   
   // Check for unrealistic values
-  if (property.price === 0 || property.price === 1) {
+  if (property.price === 1) {
     return true;
   }
   
