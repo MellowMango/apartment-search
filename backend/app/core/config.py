@@ -3,7 +3,7 @@ Core configuration for the application.
 """
 
 import os
-from typing import List, Union
+from typing import List, Union, Dict, Set
 from pydantic_settings import BaseSettings
 from pydantic import AnyHttpUrl, validator
 
@@ -13,9 +13,10 @@ class Settings(BaseSettings):
     API_V1_STR: str = "/api/v1"
     PROJECT_NAME: str = "Austin Property Listing API"
     DEBUG: bool = False
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
     
     # CORS
-    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8080"]
+    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8080", "http://127.0.0.1:*"]
     
     @validator("CORS_ORIGINS", pre=True)
     def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
@@ -24,6 +25,24 @@ class Settings(BaseSettings):
         elif isinstance(v, (list, str)):
             return v
         raise ValueError(v)
+        
+    # API Security
+    SENSITIVE_HEADERS: Set[str] = {
+        "authorization", 
+        "x-api-key", 
+        "cookie", 
+        "session", 
+        "x-csrf-token",
+        "supabase-auth-token",
+        "stripe-signature"
+    }
+    
+    # Rate Limiting
+    DEFAULT_RATE_LIMIT: int = int(os.getenv("DEFAULT_RATE_LIMIT", "100"))  # 100 reqs/min
+    READ_RATE_LIMIT: int = int(os.getenv("READ_RATE_LIMIT", "300"))        # 300 reqs/min
+    WRITE_RATE_LIMIT: int = int(os.getenv("WRITE_RATE_LIMIT", "60"))       # 60 reqs/min
+    PROPERTIES_RATE_LIMIT: int = int(os.getenv("PROPERTIES_RATE_LIMIT", "500"))  # 500 reqs/min
+    ADMIN_RATE_LIMIT: int = int(os.getenv("ADMIN_RATE_LIMIT", "30"))      # 30 reqs/min
     
     # Supabase
     SUPABASE_URL: str
@@ -89,7 +108,7 @@ class Settings(BaseSettings):
     
     # Socket.IO
     SOCKETIO_PATH: str = "/socket.io"
-    SOCKETIO_CORS_ORIGINS: List[str] = ["http://localhost:3000"]
+    SOCKETIO_CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://127.0.0.1:*"]
     
     @validator("SOCKETIO_CORS_ORIGINS", pre=True)
     def assemble_socketio_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:

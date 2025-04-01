@@ -3,26 +3,32 @@
 Data Cleaner Module
 
 This module provides the main interface for cleaning property data,
-integrating deduplication, standardization, and validation components.
+integrating deduplication, standardization, and validation components
+following the layered architecture's pipeline pattern.
 """
 
 import logging
 import os
 import json
 import datetime
+import asyncio
 from typing import List, Dict, Any, Tuple, Optional, Set
 from pathlib import Path
 
 from backend.data_cleaning.deduplication.property_matcher import PropertyMatcher
-from backend.data_cleaning.standardization.property_standardizer import PropertyStandardizer
+from backend.data_cleaning.standardization.data_normalizer import PropertyDataNormalizer
 from backend.data_cleaning.validation.property_validator import PropertyValidator
 from backend.data_cleaning.non_multifamily_detector import NonMultifamilyDetector
+from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from backend.app.interfaces.processing import DataProcessor, ProcessingResult
 
 logger = logging.getLogger(__name__)
 
-class DataCleaner:
+@layer(ArchitectureLayer.PROCESSING)
+class DataCleaner(DataProcessor):
     """
     Main class for cleaning property data.
+    Implements the DataProcessor interface for the processing layer.
     """
     
     def __init__(self, similarity_threshold: float = 0.85, filter_non_multifamily: bool = False):
@@ -35,7 +41,7 @@ class DataCleaner:
         """
         self.logger = logger
         self.property_matcher = PropertyMatcher(similarity_threshold=similarity_threshold)
-        self.property_standardizer = PropertyStandardizer()
+        self.property_normalizer = PropertyDataNormalizer()
         self.property_validator = PropertyValidator()
         self.non_multifamily_detector = NonMultifamilyDetector()
         self.filter_non_multifamily = filter_non_multifamily
@@ -44,9 +50,174 @@ class DataCleaner:
         self.data_dir = Path("data/cleaned")
         self.data_dir.mkdir(parents=True, exist_ok=True)
     
-    def clean_properties(self, properties: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+    @log_cross_layer_call(ArchitectureLayer.PROCESSING, ArchitectureLayer.PROCESSING)
+    async def process_item(self, item: Dict[str, Any]) -> ProcessingResult[Dict[str, Any]]:
         """
-        Clean a list of properties by standardizing, validating, and deduplicating.
+        Process a single property data item.
+        
+        This implements the DataProcessor interface method.
+        
+        Args:
+            item: Property data to process
+            
+        Returns:
+            Processing result containing the cleaned property data
+        """
+        if not item:
+            return ProcessingResult(
+                success=False,
+                data=None,
+                input_data=item,
+                error="No property data to clean",
+                metadata={"empty_input": True}
+            )
+        
+        try:
+            # Extract metadata if present
+            metadata = {}
+            if isinstance(item, dict) and "__metadata__" in item:
+                metadata = item.pop("__metadata__")
+            
+            # Clean the property
+            cleaned_property, cleaning_stats = await self._clean_property(item)
+            
+            # Return processing result
+            return ProcessingResult(
+                success=True,
+                data=cleaned_property,
+                input_data=item,
+                metadata={
+                    "cleaning_stats": cleaning_stats,
+                    "property_id": cleaned_property.get("id", "unknown"),
+                    **metadata
+                }
+            )
+        except Exception as e:
+            # Log and return error
+            logger.error(f"Error cleaning property: {str(e)}")
+            return ProcessingResult(
+                success=False,
+                data=None,
+                input_data=item,
+                error=str(e),
+                metadata={
+                    "exception_type": type(e).__name__,
+                    "property_id": item.get("id", "unknown") if isinstance(item, dict) else "unknown"
+                }
+            )
+    
+    @log_cross_layer_call(ArchitectureLayer.PROCESSING, ArchitectureLayer.PROCESSING)
+    async def process_batch(self, items: List[Dict[str, Any]]) -> List[ProcessingResult[Dict[str, Any]]]:
+        """
+        Process a batch of property data items.
+        
+        This implements the DataProcessor interface method.
+        
+        Args:
+            items: List of property data items to process
+            
+        Returns:
+            List of processing results for each input item
+        """
+        if not items:
+            return []
+        
+        # Process items in parallel with a semaphore to limit concurrency
+        semaphore = asyncio.Semaphore(10)  # Process up to 10 items concurrently
+        
+        async def process_with_semaphore(item):
+            async with semaphore:
+                return await self.process_item(item)
+        
+        # Create tasks for all items
+        tasks = [process_with_semaphore(item) for item in items]
+        
+        # Wait for all tasks to complete
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        # Convert any exceptions to error results
+        processed_results = []
+        for i, result in enumerate(results):
+            if isinstance(result, Exception):
+                processed_results.append(
+                    ProcessingResult(
+                        success=False,
+                        data=None,
+                        input_data=items[i] if i < len(items) else None,
+                        error=f"Error in batch processing: {str(result)}",
+                        metadata={"exception_type": type(result).__name__}
+                    )
+                )
+            else:
+                processed_results.append(result)
+        
+        return processed_results
+    
+    async def _clean_property(self, property_data: Dict[str, Any]) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+        """
+        Clean a single property using the pipeline pattern.
+        
+        Args:
+            property_data: Property data to clean
+            
+        Returns:
+            Tuple of (cleaned_property, cleaning_stats)
+        """
+        # Initialize stats
+        stats = {
+            "original_property": property_data.get("id", "unknown"),
+            "pipeline_start": datetime.datetime.now().isoformat(),
+            "steps": {}
+        }
+        
+        # STEP 1: Normalize the property data
+        start_time = datetime.datetime.now()
+        normalized_property = await self.property_normalizer.normalize(property_data)
+        stats["steps"]["normalization"] = {
+            "duration_ms": (datetime.datetime.now() - start_time).total_seconds() * 1000,
+            "status": "completed"
+        }
+        
+        # STEP 2: Validate the property data
+        start_time = datetime.datetime.now()
+        validation_errors = await self.property_validator.validate(normalized_property)
+        validation_passed = len(validation_errors) == 0
+        stats["steps"]["validation"] = {
+            "duration_ms": (datetime.datetime.now() - start_time).total_seconds() * 1000,
+            "status": "passed" if validation_passed else "failed",
+            "error_count": sum(len(errors) for errors in validation_errors.values()) if validation_errors else 0
+        }
+        
+        # We proceed even if validation fails, but record the errors
+        if not validation_passed:
+            stats["validation_errors"] = validation_errors
+        
+        # STEP 3: Check if property is multifamily (if filtering is enabled)
+        property_is_valid = True
+        if self.filter_non_multifamily:
+            start_time = datetime.datetime.now()
+            is_multifamily = await self.non_multifamily_detector.should_include(normalized_property)
+            stats["steps"]["multifamily_check"] = {
+                "duration_ms": (datetime.datetime.now() - start_time).total_seconds() * 1000,
+                "status": "passed" if is_multifamily else "filtered",
+                "is_multifamily": is_multifamily
+            }
+            
+            if not is_multifamily:
+                property_is_valid = False
+                is_non_mf, reason = self.non_multifamily_detector.is_definitive_non_multifamily(normalized_property)
+                stats["steps"]["multifamily_check"]["reason"] = reason
+        
+        # STEP 4: Return cleaned property with stats
+        stats["pipeline_end"] = datetime.datetime.now().isoformat()
+        stats["total_duration_ms"] = (datetime.datetime.now() - datetime.datetime.fromisoformat(stats["pipeline_start"])).total_seconds() * 1000
+        stats["property_is_valid"] = property_is_valid
+        
+        return normalized_property, stats
+    
+    async def clean_properties(self, properties: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+        """
+        Clean a list of properties by using the process_batch method.
         
         Args:
             properties: List of property dictionaries to clean
@@ -59,80 +230,53 @@ class DataCleaner:
             
         self.logger.info(f"Starting data cleaning process for {len(properties)} properties")
         
-        # Step 1: Standardize properties
-        self.logger.info("Standardizing properties...")
-        standardized_properties = []
-        for prop in properties:
-            standardized_prop = self.property_standardizer.standardize_property(prop)
-            standardized_properties.append(standardized_prop)
+        # Process all properties through the pipeline
+        processing_results = await self.process_batch(properties)
         
-        # Step 2: Validate properties
-        self.logger.info("Validating properties...")
-        validation_results = self.property_validator.validate_properties(standardized_properties)
-        self.logger.info(f"Validation results: {validation_results['valid_count']} valid, {validation_results['invalid_count']} invalid")
+        # Separate successful results
+        cleaned_properties = []
+        failed_properties = []
         
-        # Filter out invalid properties if needed
-        # For now, we'll keep all properties and just log the validation results
+        for result in processing_results:
+            if result.success and result.data:
+                if result.metadata.get("cleaning_stats", {}).get("property_is_valid", True):
+                    cleaned_properties.append(result.data)
+                else:
+                    failed_properties.append({
+                        "property": result.data,
+                        "reason": result.metadata.get("cleaning_stats", {}).get("steps", {}).get("multifamily_check", {}).get("reason", "Unknown")
+                    })
+            else:
+                failed_properties.append({
+                    "property": result.input_data,
+                    "reason": result.error
+                })
         
-        # Step 3: Deduplicate properties
+        # STEP 5: Deduplicate properties
         self.logger.info("Deduplicating properties...")
-        duplicate_groups = self.property_matcher.find_duplicate_properties(standardized_properties)
+        duplicate_groups = self.property_matcher.find_duplicate_properties(cleaned_properties)
         self.logger.info(f"Found {len(duplicate_groups)} groups of duplicate properties")
         
-        # Step 4: Merge duplicate properties
-        merged_properties = self._merge_duplicate_properties(standardized_properties, duplicate_groups)
+        # STEP 6: Merge duplicate properties
+        merged_properties = self._merge_duplicate_properties(cleaned_properties, duplicate_groups)
         self.logger.info(f"After deduplication: {len(merged_properties)} unique properties")
-        
-        # Step 5: Remove test properties
-        cleaned_properties = []
-        test_property_count = 0
-        for prop in merged_properties:
-            if self.property_matcher.is_test_property(prop):
-                test_property_count += 1
-                self.logger.info(f"Removed test property: {prop.get('name', 'Unknown')}")
-            else:
-                cleaned_properties.append(prop)
-        
-        self.logger.info(f"Removed {test_property_count} test properties")
-        
-        # Step 6: Remove non-multifamily properties if enabled
-        non_multifamily_properties = []
-        if self.filter_non_multifamily:
-            multifamily_properties = []
-            non_multifamily_count = 0
-            
-            for prop in cleaned_properties:
-                is_non_mf, reason = self.non_multifamily_detector.is_definitive_non_multifamily(prop)
-                if is_non_mf:
-                    non_multifamily_count += 1
-                    non_multifamily_properties.append({
-                        'property': prop,
-                        'reason': reason
-                    })
-                    self.logger.info(f"Removed non-multifamily property: {prop.get('name', 'Unknown')} - {reason}")
-                else:
-                    multifamily_properties.append(prop)
-            
-            cleaned_properties = multifamily_properties
-            self.logger.info(f"Removed {non_multifamily_count} non-multifamily properties")
-        
-        self.logger.info(f"Final cleaned property count: {len(cleaned_properties)}")
         
         # Compile cleaning statistics
         cleaning_stats = {
             'original_count': len(properties),
-            'standardized_count': len(standardized_properties),
-            'validation_results': validation_results,
+            'processed_count': len(processing_results),
+            'success_count': sum(1 for r in processing_results if r.success),
+            'error_count': sum(1 for r in processing_results if not r.success),
+            'validation_failures': sum(1 for r in processing_results if r.success and r.metadata.get("cleaning_stats", {}).get("steps", {}).get("validation", {}).get("status") == "failed"),
+            'non_multifamily_count': sum(1 for r in processing_results if r.success and not r.metadata.get("cleaning_stats", {}).get("property_is_valid", True)),
             'duplicate_groups_count': len(duplicate_groups),
             'duplicate_properties_count': sum(len(group) for group in duplicate_groups),
-            'test_properties_count': test_property_count,
-            'non_multifamily_count': len(non_multifamily_properties) if self.filter_non_multifamily else 0,
-            'non_multifamily_properties': non_multifamily_properties if self.filter_non_multifamily else [],
-            'final_count': len(cleaned_properties),
-            'cleaning_timestamp': datetime.datetime.now().isoformat()
+            'final_count': len(merged_properties),
+            'cleaning_timestamp': datetime.datetime.now().isoformat(),
+            'failed_properties': failed_properties[:10]  # Include first 10 failed properties
         }
         
-        return cleaned_properties, cleaning_stats
+        return merged_properties, cleaning_stats
     
     def _merge_duplicate_properties(self, properties: List[Dict[str, Any]], duplicate_groups: List[List[Dict[str, Any]]]) -> List[Dict[str, Any]]:
         """
@@ -200,7 +344,7 @@ class DataCleaner:
         
         return merged_properties
     
-    def save_cleaned_data(self, cleaned_properties: List[Dict[str, Any]], cleaning_stats: Dict[str, Any]) -> str:
+    async def save_cleaned_data(self, cleaned_properties: List[Dict[str, Any]], cleaning_stats: Dict[str, Any]) -> str:
         """
         Save cleaned properties and cleaning statistics to files.
         
@@ -233,7 +377,7 @@ class DataCleaner:
         
         return str(properties_filepath)
     
-    def clean_and_save(self, properties: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], Dict[str, Any], str]:
+    async def clean_and_save(self, properties: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], Dict[str, Any], str]:
         """
         Clean properties and save the results.
         
@@ -243,6 +387,6 @@ class DataCleaner:
         Returns:
             Tuple of (cleaned_properties, cleaning_stats, filepath)
         """
-        cleaned_properties, cleaning_stats = self.clean_properties(properties)
-        filepath = self.save_cleaned_data(cleaned_properties, cleaning_stats)
-        return cleaned_properties, cleaning_stats, filepath 
+        cleaned_properties, cleaning_stats = await self.clean_properties(properties)
+        filepath = await self.save_cleaned_data(cleaned_properties, cleaning_stats)
+        return cleaned_properties, cleaning_stats, filepath

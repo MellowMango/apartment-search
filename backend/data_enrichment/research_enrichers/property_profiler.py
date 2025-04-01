@@ -19,6 +19,9 @@ from backend.data_enrichment.cache_manager import ResearchCacheManager
 
 logger = logging.getLogger(__name__)
 
+from backend.app.utils.architecture import layer, ArchitectureLayer
+
+@layer(ArchitectureLayer.PROCESSING)
 class PropertyProfiler:
     """
     Enriches property data with detailed information about the property itself.

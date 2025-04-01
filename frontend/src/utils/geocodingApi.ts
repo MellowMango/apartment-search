@@ -5,7 +5,7 @@
  * to trigger batch geocoding of properties and retrieve statistics.
  */
 
-import { supabase } from '../../lib/supabase';
+import { supabase } from './supabase';
 
 /**
  * Helper function to get the base URL for API requests
@@ -210,7 +210,7 @@ export async function getVerificationTaskResults(taskId: string) {
       errors: 0    // Verification errors
     };
     
-    results.forEach(result => {
+    results.forEach((result: { verified: boolean; distance: number }) => {
       if (!result.verified) {
         distanceRanges.errors++;
       } else if (result.distance < 10) {

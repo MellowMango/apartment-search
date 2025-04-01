@@ -18,6 +18,10 @@ from urllib.parse import quote
 
 logger = logging.getLogger(__name__)
 
+from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from backend.app.interfaces.processing import DataProcessor
+
+@layer(ArchitectureLayer.PROCESSING)
 class GeocodingService:
     """
     Service for geocoding property addresses using various providers.

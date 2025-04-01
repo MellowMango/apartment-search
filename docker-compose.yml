@@ -139,6 +139,8 @@ services:
       - MCP_PLAYWRIGHT_URL=http://mcp-playwright:3001
       - MCP_MAX_CONCURRENT_SESSIONS=5
       - MCP_REQUEST_TIMEOUT=120
+      - CORS_ORIGINS=http://localhost:3000,http://localhost:8080,http://127.0.0.1:*
+      - SOCKETIO_CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:*
     volumes:
       - ./backend:/app
     depends_on:

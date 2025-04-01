@@ -2,14 +2,20 @@
 Main FastAPI application module.
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 import socketio
 import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
+import time
+import asyncio
 
 from app.core.config import settings
 from app.api.api import api_router
+from backend.app.utils.monitoring import record_api_call, start_metrics_monitoring
+from backend.app.middleware.exception_handler import ExceptionHandlerMiddleware
+from backend.app.middleware.request_tracker import RequestTrackerMiddleware
+from backend.app.middleware.rate_limiter import RateLimiterMiddleware
 
 # Import the batch_geocode_api router
 import sys
@@ -47,6 +53,36 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Add middleware components in the correct order
+# Exception handling should be the first (outermost) middleware to catch all exceptions
+app.add_middleware(ExceptionHandlerMiddleware)
+
+# Request tracking middleware for logs and metrics
+app.add_middleware(RequestTrackerMiddleware)
+
+# Rate limiting middleware
+app.add_middleware(
+    RateLimiterMiddleware,
+    rate_limits={
+        # Default limits
+        "*": settings.DEFAULT_RATE_LIMIT,
+        "GET:*": settings.READ_RATE_LIMIT,
+        "POST:*": settings.WRITE_RATE_LIMIT,
+        "PUT:*": settings.WRITE_RATE_LIMIT,
+        "DELETE:*": settings.WRITE_RATE_LIMIT,
+        
+        # Specific endpoint limits
+        "GET:/api/v1/properties": settings.PROPERTIES_RATE_LIMIT,
+        "*:/api/v1/admin/*": settings.ADMIN_RATE_LIMIT
+    },
+    exclude_paths=[
+        "/health",
+        f"{settings.API_V1_STR}/docs",
+        f"{settings.API_V1_STR}/openapi.json",
+        f"{settings.API_V1_STR}/redoc"
+    ]
+)
+
 # Include API router
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
@@ -73,6 +109,18 @@ async def disconnect(sid):
 async def health_check():
     """Health check endpoint."""
     return {"status": "healthy"}
+
+# Start metrics monitoring on startup
+@app.on_event("startup")
+async def startup_event():
+    # Start metrics monitoring in the background
+    asyncio.create_task(
+        start_metrics_monitoring(
+            interval_seconds=3600,  # Save metrics hourly
+            filepath_template="architecture_metrics_{timestamp}.json"
+        )
+    )
+    print("Started architecture metrics monitoring")
 
 # For direct uvicorn execution
 if __name__ == "__main__":

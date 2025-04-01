@@ -5,16 +5,21 @@ import logging
 import time
 import random
 from datetime import datetime
-from typing import Dict, Any, List, Optional, Tuple, Callable
+from typing import Dict, Any, List, Optional, Tuple, Callable, TypeVar, Generic
 
 from backend.data_enrichment.mcp_client import DeepResearchMCPClient
 from backend.data_enrichment.cache_manager import ResearchCacheManager
 from backend.data_enrichment.database_extensions import EnrichmentDatabaseOps
 from backend.data_enrichment.geocoding_service import GeocodingService
+from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from backend.app.interfaces.processing import DataProcessor, ProcessingResult
 
 logger = logging.getLogger(__name__)
 
-class PropertyResearcher:
+T = TypeVar('T')  # Generic type for the processed data
+
+@layer(ArchitectureLayer.PROCESSING)
+class PropertyResearcher(DataProcessor):
     """
     Main orchestrator for deep property research.
     
@@ -49,6 +54,103 @@ class PropertyResearcher:
         self.risk_assessor = RiskAssessor()      # Initialize our new Risk Assessor
         
         logger.info("Property Researcher initialized with all enrichers and geocoding service")
+    
+    @log_cross_layer_call(ArchitectureLayer.PROCESSING, ArchitectureLayer.PROCESSING)
+    async def process_item(self, item: Dict[str, Any]) -> ProcessingResult[Dict[str, Any]]:
+        """
+        Process a single property data item.
+        
+        This implements the DataProcessor interface method.
+        
+        Args:
+            item: Property data to process
+            
+        Returns:
+            Processing result containing the enriched property data
+        """
+        # Extract parameters from optional metadata if present
+        metadata = item.pop("__metadata__", {}) if isinstance(item, dict) else {}
+        research_depth = metadata.get("research_depth", "standard")
+        force_refresh = metadata.get("force_refresh", False)
+        
+        try:
+            # Use the existing research_property implementation
+            result = await self.research_property(
+                property_data=item,
+                research_depth=research_depth,
+                force_refresh=force_refresh
+            )
+            
+            # Create a successful processing result
+            return ProcessingResult(
+                success=True,
+                data=result,
+                input_data=item,
+                metadata={
+                    "research_depth": research_depth,
+                    "research_modules": list(result.get("modules", {}).keys()),
+                    "missing_fields": result.get("missing_fields", [])
+                }
+            )
+        except Exception as e:
+            # Log and return an error result
+            logger.error(f"Error processing property: {str(e)}")
+            return ProcessingResult(
+                success=False,
+                data=None,
+                input_data=item,
+                error=str(e),
+                metadata={
+                    "research_depth": research_depth,
+                    "exception_type": type(e).__name__
+                }
+            )
+    
+    @log_cross_layer_call(ArchitectureLayer.PROCESSING, ArchitectureLayer.PROCESSING)
+    async def process_batch(self, items: List[Dict[str, Any]]) -> List[ProcessingResult[Dict[str, Any]]]:
+        """
+        Process a batch of property data items.
+        
+        This implements the DataProcessor interface method.
+        
+        Args:
+            items: List of property data items to process
+            
+        Returns:
+            List of processing results, one for each input item
+        """
+        # Create a semaphore to limit concurrency
+        semaphore = asyncio.Semaphore(5)  # Limit to 5 concurrent operations
+        
+        async def process_with_semaphore(item):
+            async with semaphore:
+                # Add a small delay to prevent overloading resources
+                await asyncio.sleep(random.uniform(0.1, 0.3))
+                return await self.process_item(item)
+        
+        # Create tasks for all items
+        tasks = [process_with_semaphore(item) for item in items]
+        
+        # Execute tasks and collect results
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        # Handle any exceptions
+        processed_results = []
+        for result in results:
+            if isinstance(result, Exception):
+                # Convert exception to error result
+                processed_results.append(
+                    ProcessingResult(
+                        success=False,
+                        data=None,
+                        error=str(result),
+                        metadata={"exception_type": type(result).__name__}
+                    )
+                )
+            else:
+                processed_results.append(result)
+        
+        return processed_results
     
     async def research_property(self, property_data: Dict[str, Any], 
                                 research_depth: str = "standard",

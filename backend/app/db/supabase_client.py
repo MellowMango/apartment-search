@@ -4,6 +4,7 @@ Supabase client for database operations.
 import os
 from supabase import create_client, Client
 from dotenv import load_dotenv
+from backend.app.utils.architecture import layer, ArchitectureLayer
 
 # Get the path to the backend .env file
 backend_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -26,6 +27,7 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
+@layer(ArchitectureLayer.STORAGE)
 def get_supabase_client() -> Client:
     """
     Returns the Supabase client instance.

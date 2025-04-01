@@ -2,6 +2,12 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  // Prefer TypeScript pages in src/pages, but allow JavaScript as fallback
+  pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
+  // Use src directory to correctly detect pages
+  experimental: {
+    appDir: false,  // Keep using pages directory
+  },
   images: {
     domains: ['images.unsplash.com'],
   },
@@ -14,6 +20,11 @@ const nextConfig = {
   },
   basePath: '',
   trailingSlash: false,
+  // Custom webpack config to conditionally handle TS/JS files
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Add any custom webpack rules here if needed for the migration
+    return config;
+  },
 }
 
 module.exports = nextConfig 

@@ -21,6 +21,18 @@ from .correction import (
     PendingCorrectionsCount,
     PropertyCorrectionsListResponse
 )
+from .architecture import (
+    ArchitectureMetrics,
+    CrossLayerMetrics,
+    LayerComponentCount,
+    ArchitectureInfo,
+    DiagnosticResult,
+    AllDiagnosticsResult,
+    DiagnosticHistory,
+    DiagnosticSummary,
+    HealthIndicator,
+    MetricsSaveResult
+)
 
 # Export schemas
 __all__ = [
@@ -41,5 +53,9 @@ __all__ = [
     "BrokerEmailInfo", "MissingInfoEmailResult",
     # Correction schemas
     "CorrectionBase", "CorrectionCreate", "CorrectionReview", "CorrectionInDB",
-    "PropertyCorrectionResponse", "PendingCorrectionsCount", "PropertyCorrectionsListResponse"
+    "PropertyCorrectionResponse", "PendingCorrectionsCount", "PropertyCorrectionsListResponse",
+    # Architecture schemas
+    "ArchitectureMetrics", "CrossLayerMetrics", "LayerComponentCount", "ArchitectureInfo",
+    "DiagnosticResult", "AllDiagnosticsResult", "DiagnosticHistory", "DiagnosticSummary",
+    "HealthIndicator", "MetricsSaveResult"
 ] 

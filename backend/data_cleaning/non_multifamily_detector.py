@@ -13,7 +13,11 @@ from typing import Dict, Any, List, Tuple, Set
 
 logger = logging.getLogger(__name__)
 
-class NonMultifamilyDetector:
+from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from backend.app.interfaces.processing import DataFilter
+
+@layer(ArchitectureLayer.PROCESSING)
+class NonMultifamilyDetector(DataFilter):
     """
     Class for detecting properties that are clearly not multifamily properties.
     """
@@ -117,6 +121,39 @@ class NonMultifamilyDetector:
         
         # Not definitively non-multifamily
         return False, ""
+    
+    async def should_include(self, data: Dict[str, Any]) -> bool:
+        """
+        Determine if a property should be included in further processing.
+        This implements the DataFilter interface method.
+        
+        Args:
+            data: The property data to evaluate
+            
+        Returns:
+            True if the property should be included (is multifamily), False otherwise
+        """
+        is_non_mf, reason = self.is_definitive_non_multifamily(data)
+        
+        # Include if it's NOT definitely non-multifamily
+        return not is_non_mf
+    
+    async def filter_batch(self, items: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """
+        Filter a batch of items to include only multifamily properties.
+        This implements the DataFilter interface method.
+        
+        Args:
+            items: List of property data dictionaries to filter
+            
+        Returns:
+            Filtered list containing only multifamily properties
+        """
+        result = []
+        for item in items:
+            if await self.should_include(item):
+                result.append(item)
+        return result
     
     def identify_non_multifamily_properties(self, properties: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
         """

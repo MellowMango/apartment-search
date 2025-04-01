@@ -9,6 +9,9 @@ from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
+from backend.app.utils.architecture import layer, ArchitectureLayer
+
+@layer(ArchitectureLayer.PROCESSING)
 class InvestmentMetricsEnricher:
     """
     Enriches property data with investment metrics.

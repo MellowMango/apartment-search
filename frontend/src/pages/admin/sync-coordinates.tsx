@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../../components/Layout';
-import { checkResearchTableExists, syncResearchCoordinates } from '../../../lib/geocoding';
-import { supabase } from '../../../lib/supabase';
+import { checkResearchTableExists, syncResearchCoordinates } from '../../utils/geocoding';
+import { supabase } from '../../utils/supabase';
 
 // Admin dashboard for synchronizing coordinates
 export default function SyncCoordinatesPage() {
@@ -10,6 +10,8 @@ export default function SyncCoordinatesPage() {
   const [result, setResult] = useState<any>(null);
   const [hasResearchTable, setHasResearchTable] = useState<boolean | null>(null);
   const [limit, setLimit] = useState(100);
+  const [databaseReady, setDatabaseReady] = useState(false);
+  const [databaseError, setDatabaseError] = useState<string | null>(null);
   const router = useRouter();
   
   // Check if user is authenticated and has admin role
@@ -23,8 +25,13 @@ export default function SyncCoordinatesPage() {
       }
       
       // Check if research table exists
-      const tableExists = await checkResearchTableExists();
-      setHasResearchTable(tableExists);
+      try {
+        await checkResearchTableExists();
+        setDatabaseReady(true);
+      } catch (error: any) {
+        console.error('Error checking database:', error);
+        setDatabaseError(error.message || 'Unknown error');
+      }
     };
     
     checkAuth();

@@ -1,4 +1,4 @@
-# Aquire Apartments
+# Acquire Apartments
 
 A comprehensive web application for tracking multifamily property listings in Austin, Texas.
 
@@ -15,6 +15,28 @@ Acquire Apartments is a web-based application designed to aggregate and display 
 - Real-time updates for property status changes
 - User accounts and subscription management
 - Admin interface for managing data
+
+## Architecture
+
+This project follows a layered architecture with the following components:
+
+- **API Layer**: Handles HTTP requests, authentication, and routing
+- **Processing Layer**: Contains business logic and data transformation
+- **Storage Layer**: Abstracts database operations using the Repository pattern
+- **Collection Layer**: Handles data collection from external sources
+- **Scheduled Layer**: Contains scheduled tasks and background jobs
+
+See the [Architecture Migration Plan](./docs/architecture/architecture-migration-plan.md) for details on our architectural vision and implementation.
+
+## Data Access Patterns
+
+We use the Repository pattern to standardize database access. Key patterns include:
+
+- **Repository Interfaces**: Define consistent contracts for data access
+- **Repository Implementations**: Concrete implementations for different storage backends
+- **Factory Pattern**: Creates appropriate repository instances
+
+See the [Repository Pattern Guide](./docs/architecture/repository-pattern.md) and [Data Access Patterns Guide](./docs/architecture/data-access-patterns.md) for details.
 
 ## Tech Stack
 
@@ -90,21 +112,23 @@ Acquire Apartments is a web-based application designed to aggregate and display 
 │   ├── app/                # Application code
 │   │   ├── api/            # API endpoints
 │   │   ├── core/           # Core functionality
-│   │   ├── db/             # Database models and connections
+│   │   ├── db/             # Database repositories and connections
+│   │   ├── interfaces/     # Interface definitions
 │   │   ├── models/         # Pydantic models
 │   │   ├── schemas/        # Pydantic schemas
 │   │   ├── services/       # Business logic
+│   │   ├── adapters/       # Adapters for data conversion
+│   │   ├── utils/          # Utilities including architecture helpers
 │   │   └── workers/        # Celery tasks
 │   ├── scrapers/           # Scraper architecture
 │   │   ├── core/           # Shared scraper utilities
-│   │   │   ├── mcp_client.py    # MCP server client
-│   │   │   ├── data_extractors.py  # Data extraction utilities
-│   │   │   └── storage.py      # Data storage utilities
 │   │   ├── brokers/        # Broker-specific scrapers
-│   │   │   ├── acrmultifamily/  # ACR Multifamily scraper
-│   │   │   └── [other brokers]/  # Additional broker scrapers
 │   │   ├── helpers/        # Helper utilities
 │   │   └── run_scraper.py  # Command-line interface
+│   ├── data_cleaning/      # Data cleaning components
+│   ├── data_enrichment/    # Data enrichment components
+│   ├── scripts/            # Utility scripts
+│   │   ├── architecture/   # Architecture test scripts
 │   └── requirements.txt    # Python dependencies
 ├── frontend/               # Next.js frontend
 │   ├── public/             # Static files
@@ -115,10 +139,8 @@ Acquire Apartments is a web-based application designed to aggregate and display 
 │   │   └── styles/         # CSS styles
 │   └── package.json        # Node.js dependencies
 ├── data/                   # Generated data
-│   ├── screenshots/        # Screenshot captures
-│   ├── html/               # HTML source files
-│   └── extracted/          # Extracted property data
 ├── docs/                   # Documentation
+│   ├── architecture/       # Architecture documentation
 ├── .env.example            # Example environment variables
 └── README.md               # Project documentation
 ```
@@ -130,8 +152,59 @@ For more detailed documentation, see the [docs](./docs) directory:
 - [Project Overview](./docs/project-overview.md)
 - [Tech Stack](./docs/tech-stack.md)
 - [Sprint Plan](./docs/sprint.md)
+- [Architecture Migration Plan](./docs/architecture/architecture-migration-plan.md)
+- [Repository Pattern Guide](./docs/architecture/repository-pattern.md)
+- [Data Access Patterns](./docs/architecture/data-access-patterns.md)
 - [Scraper Architecture](./docs/scraper-architecture.md)
 - [Scraper Usage Guide](./docs/scraper-usage-guide.md)
+
+## TypeScript Migration
+
+The codebase is currently in the process of being migrated from JavaScript to TypeScript. Currently, approximately 85% of the codebase has been migrated. The migration uses a feature flag system to allow for graceful transition between JavaScript and TypeScript implementations.
+
+### Development Mode
+
+During development, you can choose which implementation to use:
+
+```bash
+# Run with JavaScript implementation (default)
+npm run dev
+
+# Run with TypeScript implementation
+npm run dev:ts
+```
+
+### Testing Both Implementations
+
+To test both implementations side by side, you can use the provided script:
+
+```bash
+# From the project root
+./scripts/test-ts-migration.sh
+```
+
+This will launch both versions in separate terminals and open your browser to both versions for testing.
+
+### Migration Documentation
+
+For more information about the TypeScript migration, see these documents:
+
+- [TypeScript Migration Progress](./docs/ts-migration-progress.md) - Current status and progress tracking
+- [TypeScript Migration Guide](./docs/typescript-migration-guide.md) - Comprehensive guide for the migration process
+- [TypeScript Migration Tests](./docs/ts-migration-tests.md) - Test cases for verifying TypeScript implementations
+- [TypeScript Cleanup Plan](./docs/typescript-cleanup-plan.md) - Process for removing JavaScript files after migration
+
+### Migration Status
+
+The following components have been migrated to TypeScript:
+- ✅ Authentication workflow (Login, Signup, Reset Password)
+- ✅ All contexts (Auth, Filter, Theme)
+- ✅ Map page and MapComponent
+- ✅ Index page
+- ✅ Property List component
+- ✅ UI Components (Button, Card, etc.)
+- 🚧 Admin pages (partially completed)
+- 🚧 Filter components (in progress)
 
 ## License
 
@@ -142,4 +215,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - [OpenStreetMap](https://www.openstreetmap.org/) for map data
 - [Leaflet](https://leafletjs.com/) for the interactive map library
 - [Supabase](https://supabase.io/) for authentication and database services
-- [Neo4j](https://neo4j.com/) for graph database services 
+- [Neo4j](https://neo4j.com/) for graph database services

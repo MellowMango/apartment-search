@@ -4,10 +4,13 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from app.schemas.broker import Broker, BrokerCreate, BrokerUpdate
 from app.services.broker_service import BrokerService
 from app.db.neo4j_client import Neo4jClient
+from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from backend.app.interfaces.api import ApiEndpoint
 
 router = APIRouter()
 
 @router.get("/", response_model=List[Broker])
+@layer(ArchitectureLayer.API)
 async def get_brokers(
     skip: int = 0,
     limit: int = 100,
@@ -24,6 +27,7 @@ async def get_brokers(
     )
 
 @router.get("/{broker_id}", response_model=Broker)
+@layer(ArchitectureLayer.API)
 async def get_broker(
     broker_id: str,
     broker_service: BrokerService = Depends()

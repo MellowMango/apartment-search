@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Layout from '../components/Layout';
 import { useAuth } from '../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../utils/supabase';
 
 interface SavedSearch {
   id: string;

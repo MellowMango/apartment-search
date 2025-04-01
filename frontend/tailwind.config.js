@@ -6,6 +6,10 @@ module.exports = {
     './components/**/*.{js,jsx}',
     './app/**/*.{js,jsx}',
     './src/**/*.{js,jsx}',
+    './src/**/*.{ts,tsx}',
+    './pages/**/*.{ts,tsx}',
+    './components/**/*.{ts,tsx}',
+    './app/**/*.{ts,tsx}',
   ],
   theme: {
     container: {
@@ -65,10 +69,20 @@ module.exports = {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: 0 },
         },
+        "fadeIn": {
+          from: { opacity: 0 },
+          to: { opacity: 1 },
+        },
+        "slideIn": {
+          from: { transform: "translateY(-10px)", opacity: 0 },
+          to: { transform: "translateY(0)", opacity: 1 },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "fadeIn": "fadeIn 0.3s ease-in-out",
+        "slideIn": "slideIn 0.4s ease-out",
       },
     },
   },

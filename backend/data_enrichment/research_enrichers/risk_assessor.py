@@ -11,6 +11,9 @@ from backend.data_enrichment.mcp_client import DeepResearchMCPClient
 
 logger = logging.getLogger(__name__)
 
+from backend.app.utils.architecture import layer, ArchitectureLayer
+
+@layer(ArchitectureLayer.PROCESSING)
 class RiskAssessor:
     """
     Identifies potential risks and blindspots for properties.

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { supabase } from '../../../lib/supabase';
-import Layout from '../../components/Layout';
-import { triggerBatchGeocode, getGeocodingStats, checkGeocodingTaskStatus, verifyCoordinates, getVerificationTaskResults } from '../../utils/geocodingApi';
+import { supabase } from '../../utils/supabase';
+import Layout from '../../src/components/Layout';
+import { triggerBatchGeocode, getGeocodingStats, checkGeocodingTaskStatus, verifyCoordinates, getVerificationTaskResults } from '../../src/utils/geocodingApi';
 
 // TaskItem component for displaying task status
 const TaskItem = ({ taskId, onRefresh }) => {
@@ -244,217 +244,221 @@ export default function GeocodingAdmin() {
     }
   };
 
+  const handleCheckTask = async (taskId) => {
+    try {
+      setIsLoading(true);
+      // Get basic task info first
+      const basicTaskInfo = await checkGeocodingTaskStatus(taskId);
+      
+      // Get detailed task status with the appropriate function based on task type
+      let taskData;
+      if (basicTaskInfo.task_type === "verify_coordinates") {
+        taskData = await getVerificationTaskResults(taskId);
+      } else {
+        // For regular geocoding tasks
+        taskData = basicTaskInfo;
+      }
+      
+      // Display results
+      alert(`
+        Task ID: ${taskData.id}
+        Status: ${taskData.status}
+        Started: ${new Date(taskData.start_time).toLocaleString()}
+        ${taskData.end_time ? `Completed: ${new Date(taskData.end_time).toLocaleString()}` : 'Not completed yet'}
+        ${taskData.progress ? `Progress: ${taskData.progress}%` : ''}
+        ${taskData.success_count !== undefined ? `Success: ${taskData.success_count}` : ''}
+        ${taskData.error_count !== undefined ? `Errors: ${taskData.error_count}` : ''}
+        ${taskData.total_count !== undefined ? `Total: ${taskData.total_count}` : ''}
+      `);
+      
+      // Refresh stats after checking task
+      loadStats();
+    } catch (err) {
+      console.error('Failed to check task status:', err);
+      alert('Failed to check task status: ' + err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (!isAdmin) {
     return (
       <Layout>
         <div className="container mx-auto px-4 py-8">
-          <div className="text-center py-12">Checking authentication...</div>
+          <p>Please log in with administrator privileges.</p>
         </div>
       </Layout>
     );
   }
 
   return (
-    <Layout>
+    <Layout title="Geocoding Admin | Austin Multifamily Map">
       <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Property Geocoding Admin</h1>
+        <h1 className="text-2xl font-bold mb-6">Geocoding Administration</h1>
         
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow p-4 mb-4">
-              <h2 className="text-xl font-semibold mb-4">Geocoding Stats</h2>
+        {/* Stats Section */}
+        <div className="bg-white shadow rounded-lg p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4">Geocoding Statistics</h2>
+          
+          {loading ? (
+            <p>Loading statistics...</p>
+          ) : stats ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-blue-50 p-4 rounded">
+                <h3 className="text-lg font-medium text-blue-800">Total Properties</h3>
+                <p className="text-3xl font-bold">{stats.total_properties}</p>
+              </div>
               
-              {loading ? (
-                <div className="flex justify-center py-4">
-                  <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-                </div>
-              ) : stats ? (
-                <div className="space-y-3">
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500">Properties with Coordinates</h3>
-                    <p className="text-2xl font-bold">{stats.properties_with_coordinates}</p>
-                    <p className="text-sm text-gray-500">{stats.geocoded_percent}% of total properties</p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500">Properties without Coordinates</h3>
-                    <p className="text-2xl font-bold">{stats.total_properties - stats.properties_with_coordinates}</p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500">Verified Properties</h3>
-                    <p className="text-2xl font-bold">{stats.verified_properties || 0}</p>
-                    <p className="text-sm text-gray-500">{stats.verified_percent || 0}% of geocoded properties</p>
-                  </div>
-                  
-                  <div>
-                    <h3 className="text-sm font-medium text-gray-500">Total Properties</h3>
-                    <p className="text-2xl font-bold">{stats.total_properties}</p>
-                  </div>
-                  
-                  <button
-                    onClick={loadStats}
-                    className="w-full mt-4 py-2 bg-gray-100 rounded hover:bg-gray-200 text-gray-800"
-                  >
-                    Refresh Stats
-                  </button>
-                </div>
-              ) : (
-                <div className="text-gray-500">No stats available</div>
-              )}
-            </div>
-            
-            <div className="bg-white rounded-lg shadow p-4 mb-4">
-              <h2 className="text-xl font-semibold mb-4">Run Batch Geocoding</h2>
+              <div className="bg-green-50 p-4 rounded">
+                <h3 className="text-lg font-medium text-green-800">Geocoded</h3>
+                <p className="text-3xl font-bold">{stats.properties_with_coordinates}</p>
+                <p className="text-sm mt-1">
+                  {stats.geocoded_percent}% of total
+                </p>
+              </div>
               
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Batch Size
-                  </label>
-                  <input
-                    type="number"
-                    value={batchSize}
-                    onChange={(e) => setBatchSize(Math.max(1, parseInt(e.target.value) || 1))}
-                    className="w-full p-2 border rounded"
-                    min="1"
-                    max="1000"
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Number of properties to process in this batch (1-1000)
-                  </p>
-                </div>
-                
-                <div className="flex items-center">
-                  <input
-                    type="checkbox"
-                    id="force-refresh"
-                    checked={forceRefresh}
-                    onChange={(e) => setForceRefresh(e.target.checked)}
-                    className="h-4 w-4 text-blue-600 border-gray-300 rounded"
-                  />
-                  <label htmlFor="force-refresh" className="ml-2 text-sm text-gray-700">
-                    Force refresh existing coordinates
-                  </label>
-                </div>
-                
-                <button
-                  onClick={handleStartGeocodingTask}
-                  disabled={loading}
-                  className="w-full py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:opacity-50"
-                >
-                  {loading ? 'Processing...' : 'Start Geocoding Task'}
-                </button>
+              <div className="bg-yellow-50 p-4 rounded">
+                <h3 className="text-lg font-medium text-yellow-800">Verified</h3>
+                <p className="text-3xl font-bold">{stats.verified_properties || 0}</p>
+                <p className="text-sm mt-1">
+                  {stats.verified_percent || 0}% of geocoded
+                </p>
               </div>
             </div>
+          ) : (
+            <p>Failed to load statistics.</p>
+          )}
+          
+          <div className="mt-4">
+            <button 
+              onClick={loadStats} 
+              className="text-blue-600 hover:text-blue-800 text-sm"
+              disabled={loading}
+            >
+              {loading ? 'Refreshing...' : 'Refresh Statistics'}
+            </button>
+          </div>
+        </div>
+        
+        {/* Batch Geocoding Section */}
+        <div className="bg-white shadow rounded-lg p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4">Batch Geocoding</h2>
+          
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Batch Size (max 500)
+            </label>
+            <input
+              type="number"
+              min="1"
+              max="500"
+              value={batchSize}
+              onChange={(e) => setBatchSize(Math.min(500, Math.max(1, parseInt(e.target.value) || 1)))}
+              className="w-full md:w-1/4 p-2 border rounded"
+            />
+          </div>
+          
+          <div className="mb-4">
+            <label className="flex items-center text-sm font-medium text-gray-700">
+              <input
+                type="checkbox"
+                checked={forceRefresh}
+                onChange={(e) => setForceRefresh(e.target.checked)}
+                className="mr-2"
+              />
+              Reprocess properties that already have coordinates
+            </label>
+          </div>
+          
+          <button
+            onClick={handleStartGeocodingTask}
+            disabled={loading}
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
+          >
+            {loading ? 'Processing...' : 'Start Batch Geocoding'}
+          </button>
+        </div>
+        
+        {/* Coordinate Verification Section */}
+        <div className="bg-white shadow rounded-lg p-6 mb-8">
+          <h2 className="text-xl font-semibold mb-4">Verify Coordinates</h2>
+          <p className="mb-4 text-gray-600">
+            Analyze existing properties to ensure their coordinates match their addresses using Google Maps.
+          </p>
+          
+          <div className="space-y-4 mb-6">
+            <div>
+              <label className="flex items-center text-sm font-medium text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={coordinateVerificationCheckSuspicious}
+                  onChange={(e) => setCoordinateVerificationCheckSuspicious(e.target.checked)}
+                  className="mr-2"
+                />
+                Check potentially incorrect coordinates (recommended)
+              </label>
+            </div>
             
-            <div className="bg-white rounded-lg shadow p-4">
-              <h2 className="text-xl font-semibold mb-4">Verify Coordinates</h2>
-              <p className="text-sm text-gray-600 mb-3">
-                Analyze existing properties to ensure that their coordinates match their addresses using Google Maps API.
-              </p>
-              
-              <div className="space-y-4">
-                <div>
-                  <h3 className="font-semibold mb-2">Verification Options:</h3>
-                  <div className="flex flex-col space-y-2">
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={coordinateVerificationCheckSuspicious}
-                        onChange={(e) => {
-                          setCoordinateVerificationCheckSuspicious(e.target.checked);
-                          if (e.target.checked) {
-                            setCoordinateVerificationCheckAll(false);
-                          }
-                        }}
-                        className="form-checkbox"
-                      />
-                      <span>Check potentially incorrect coordinates (outside Austin area, etc.)</span>
-                    </label>
-                    
-                    <label className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        checked={coordinateVerificationCheckAll}
-                        onChange={(e) => {
-                          setCoordinateVerificationCheckAll(e.target.checked);
-                          if (e.target.checked) {
-                            setCoordinateVerificationCheckSuspicious(false);
-                          }
-                        }}
-                        className="form-checkbox"
-                      />
-                      <span>Re-verify all properties with coordinates</span>
-                    </label>
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="block mb-2">
-                    Batch Size (1-500):
-                    <input
-                      type="number"
-                      value={coordinateVerificationBatchSize}
-                      onChange={(e) => setCoordinateVerificationBatchSize(
-                        Math.min(Math.max(1, parseInt(e.target.value) || 1), 500)
-                      )}
-                      min="1"
-                      max="500"
-                      className="form-input ml-2 w-24"
-                    />
-                  </label>
-                  <p className="text-sm text-gray-500">Larger batches will take longer to process</p>
-                </div>
-                
-                <div>
-                  <label className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      checked={coordinateVerificationAutoFix}
-                      onChange={(e) => setCoordinateVerificationAutoFix(e.target.checked)}
-                      className="form-checkbox"
-                    />
-                    <span>Automatically fix incorrect coordinates</span>
-                  </label>
-                  <p className="text-sm text-gray-500">
-                    Properties with coordinates more than 100 meters off will be updated with Google Maps data
-                  </p>
-                </div>
-                
-                <button
-                  onClick={handleVerifyCoordinates}
-                  disabled={isLoading || (!coordinateVerificationCheckAll && !coordinateVerificationCheckSuspicious)}
-                  className={`bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 ${
-                    isLoading || (!coordinateVerificationCheckAll && !coordinateVerificationCheckSuspicious)
-                      ? 'opacity-50 cursor-not-allowed'
-                      : ''
-                  }`}
-                >
-                  {isLoading ? 'Processing...' : 'Verify Coordinates'}
-                </button>
-              </div>
+            <div>
+              <label className="flex items-center text-sm font-medium text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={coordinateVerificationCheckAll}
+                  onChange={(e) => setCoordinateVerificationCheckAll(e.target.checked)}
+                  className="mr-2"
+                />
+                Re-verify all properties with coordinates
+              </label>
+            </div>
+            
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Batch Size (max 500)
+              </label>
+              <input
+                type="number"
+                min="1"
+                max="500"
+                value={coordinateVerificationBatchSize}
+                onChange={(e) => setCoordinateVerificationBatchSize(
+                  Math.min(500, Math.max(1, parseInt(e.target.value) || 50))
+                )}
+                className="w-full md:w-1/4 p-2 border rounded"
+              />
+            </div>
+            
+            <div>
+              <label className="flex items-center text-sm font-medium text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={coordinateVerificationAutoFix}
+                  onChange={(e) => setCoordinateVerificationAutoFix(e.target.checked)}
+                  className="mr-2"
+                />
+                Automatically fix incorrect coordinates
+              </label>
             </div>
           </div>
           
-          <div className="lg:col-span-2">
-            <h2 className="text-xl font-semibold mb-4">Recent Geocoding Tasks</h2>
-            
-            {recentTasks.length > 0 ? (
-              recentTasks.map((taskId) => (
-                <TaskItem 
-                  key={taskId} 
-                  taskId={taskId} 
-                  onRefresh={loadStats} 
-                />
-              ))
-            ) : (
-              <div className="bg-white rounded-lg shadow p-6 text-center text-gray-500">
-                No recent tasks. Start a new geocoding task to see results here.
-              </div>
-            )}
-          </div>
+          <button
+            onClick={handleVerifyCoordinates}
+            disabled={isLoading}
+            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
+          >
+            {isLoading ? 'Processing...' : 'Verify Coordinates'}
+          </button>
         </div>
+        
+        {/* Recent Tasks Section */}
+        {recentTasks.length > 0 && (
+          <div className="bg-white shadow rounded-lg p-6">
+            <h2 className="text-xl font-semibold mb-4">Recent Tasks</h2>
+            
+            {recentTasks.map((taskId) => (
+              <TaskItem key={taskId} taskId={taskId} onRefresh={loadStats} />
+            ))}
+          </div>
+        )}
       </div>
     </Layout>
   );

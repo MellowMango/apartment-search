@@ -1,13 +1,26 @@
 from typing import List, Optional
+from datetime import datetime
+import logging
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
 from app.schemas.property import Property, PropertyCreate, PropertyUpdate
 from app.services.property_service import PropertyService
 from app.db.neo4j_client import Neo4jClient
+from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from backend.app.interfaces.api import ApiEndpoint
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
-@router.get("/", response_model=List[Property])
+# This module uses function-based endpoints with FastAPI,
+# but we'll tag the key functions with their architectural layer
+
+from backend.app.schemas.api import APIResponse
+from backend.app.core.exceptions import ValidationError, NotFoundException, StorageException
+
+@router.get("/")
+@layer(ArchitectureLayer.API)
 async def get_properties(
     skip: int = 0,
     limit: int = 100,
@@ -21,43 +34,195 @@ async def get_properties(
 ):
     """
     Get all properties with optional filtering.
+    
+    Returns:
+        Standardized API response with paginated property data
     """
-    return await property_service.get_properties(
-        skip=skip,
-        limit=limit,
-        status=status,
-        min_units=min_units,
-        max_units=max_units,
-        min_year_built=min_year_built,
-        max_year_built=max_year_built,
-        brokerage=brokerage
-    )
+    try:
+        # Validate input parameters
+        if skip < 0:
+            raise ValidationError(
+                message="Skip parameter must be non-negative",
+                field="skip"
+            )
+            
+        if limit < 1 or limit > 1000:
+            raise ValidationError(
+                message="Limit parameter must be between 1 and 1000",
+                field="limit"
+            )
+            
+        if min_units is not None and min_units < 0:
+            raise ValidationError(
+                message="Minimum units must be non-negative",
+                field="min_units"
+            )
+            
+        if max_units is not None and max_units < 0:
+            raise ValidationError(
+                message="Maximum units must be non-negative",
+                field="max_units"
+            )
+            
+        if min_year_built is not None and min_year_built < 1800:
+            raise ValidationError(
+                message="Minimum year built must be after 1800",
+                field="min_year_built"
+            )
+            
+        if max_year_built is not None and max_year_built > datetime.now().year + 5:
+            raise ValidationError(
+                message=f"Maximum year built cannot be more than 5 years in the future",
+                field="max_year_built"
+            )
+            
+        if min_units is not None and max_units is not None and min_units > max_units:
+            raise ValidationError(
+                message="Minimum units cannot be greater than maximum units",
+                details={"min_units": min_units, "max_units": max_units}
+            )
+            
+        if min_year_built is not None and max_year_built is not None and min_year_built > max_year_built:
+            raise ValidationError(
+                message="Minimum year built cannot be greater than maximum year built",
+                details={"min_year_built": min_year_built, "max_year_built": max_year_built}
+            )
+        
+        # Get properties using service
+        properties = await property_service.get_properties(
+            skip=skip,
+            limit=limit,
+            status=status,
+            min_units=min_units,
+            max_units=max_units,
+            min_year_built=min_year_built,
+            max_year_built=max_year_built,
+            brokerage=brokerage
+        )
+        
+        # Return paginated response
+        # Calculate total count (this should ideally come from the service)
+        # For now, we'll use a placeholder for total_count
+        total_count = len(properties) + skip  # This is an approximation
+        
+        # Create page number (1-based)
+        page = (skip // limit) + 1 if limit > 0 else 1
+        
+        return APIResponse.paginated_response(
+            data=properties,
+            page=page,
+            page_size=limit,
+            total_items=total_count,
+            message="Properties retrieved successfully",
+            meta={
+                "filters": {
+                    "status": status,
+                    "min_units": min_units,
+                    "max_units": max_units,
+                    "min_year_built": min_year_built,
+                    "max_year_built": max_year_built,
+                    "brokerage": brokerage
+                }
+            }
+        )
+        
+    except ValidationError as e:
+        # ValidationError is handled by the exception handler middleware
+        raise
+        
+    except Exception as e:
+        # Log unexpected errors
+        logger.exception(f"Unexpected error in get_properties: {str(e)}")
+        raise StorageException(
+            message="Failed to retrieve properties",
+            details={"error": str(e)}
+        )
 
-@router.get("/{property_id}", response_model=Property)
+@router.get("/{property_id}")
 async def get_property(
     property_id: str,
     property_service: PropertyService = Depends()
 ):
     """
     Get a specific property by ID.
+    
+    Returns:
+        Standardized API response with property data
     """
-    property_data = await property_service.get_property(property_id)
-    if property_data is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Property not found"
+    try:
+        # Validate ID format (basic validation)
+        if not property_id or len(property_id) < 3:
+            raise ValidationError(
+                message="Invalid property ID format",
+                field="property_id"
+            )
+        
+        # Get property using service
+        property_data = await property_service.get_property(property_id)
+        
+        # Handle not found case
+        if property_data is None:
+            raise NotFoundException(
+                message=f"Property with ID {property_id} not found",
+                details={"property_id": property_id}
+            )
+        
+        # Return success response
+        return APIResponse.success_response(
+            data=property_data,
+            message="Property retrieved successfully",
+            meta={"property_id": property_id}
         )
-    return property_data
+        
+    except (ValidationError, NotFoundException) as e:
+        # These exceptions are handled by the exception handler middleware
+        raise
+        
+    except Exception as e:
+        # Log unexpected errors
+        logger.exception(f"Unexpected error in get_property: {str(e)}")
+        raise StorageException(
+            message=f"Failed to retrieve property with ID {property_id}",
+            details={"property_id": property_id, "error": str(e)}
+        )
 
-@router.post("/", response_model=Property, status_code=status.HTTP_201_CREATED)
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_property(
     property_data: PropertyCreate,
     property_service: PropertyService = Depends()
 ):
     """
     Create a new property.
+    
+    Returns:
+        Standardized API response with created property data
     """
-    return await property_service.create_property(property_data)
+    try:
+        # Validate property data
+        # Note: Most validation should be handled by Pydantic model,
+        # but we can add additional business rule validations here
+        
+        # Create property using service
+        created_property = await property_service.create_property(property_data)
+        
+        # Return success response
+        return APIResponse.success_response(
+            data=created_property,
+            message="Property created successfully",
+            meta={"property_id": getattr(created_property, "id", None)}
+        )
+        
+    except ValidationError as e:
+        # Validation errors are handled by the exception handler middleware
+        raise
+        
+    except Exception as e:
+        # Log unexpected errors
+        logger.exception(f"Unexpected error in create_property: {str(e)}")
+        raise StorageException(
+            message="Failed to create property",
+            details={"error": str(e)}
+        )
 
 @router.put("/{property_id}", response_model=Property)
 async def update_property(

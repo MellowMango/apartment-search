@@ -10,6 +10,7 @@ from app.services.property_service import PropertyService
 from app.services.broker_service import BrokerService
 from app.services.brokerage_service import BrokerageService
 from app.services.neo4j_sync import Neo4jSyncService
+from app.services.metrics_service import MetricsService
 from .... import schemas
 from ....core.auth import get_current_active_superuser, get_current_active_user
 from ....db.session import get_db
@@ -94,6 +95,118 @@ async def trigger_scrape(
     # For now, we'll just return a message
     
     return {"message": "Scrape job started"}
+
+# Architecture Diagnostics and Metrics Endpoints
+
+@router.get("/architecture/metrics")
+async def get_architecture_metrics(
+    current_user: schemas.User = Depends(get_current_active_superuser),
+    metrics_service: MetricsService = Depends()
+):
+    """
+    Get current architecture metrics.
+    Only accessible by superusers.
+    """
+    return await metrics_service.get_architecture_metrics()
+
+@router.get("/architecture/health")
+async def get_architecture_health(
+    current_user: schemas.User = Depends(get_current_active_superuser),
+    metrics_service: MetricsService = Depends()
+):
+    """
+    Get health indicators for the architecture.
+    Only accessible by superusers.
+    """
+    return await metrics_service.get_health_indicators()
+
+@router.post("/architecture/run-diagnostics")
+async def run_architecture_diagnostics(
+    background_tasks: BackgroundTasks,
+    current_user: schemas.User = Depends(get_current_active_superuser),
+    metrics_service: MetricsService = Depends()
+):
+    """
+    Run all architecture diagnostic scripts.
+    This is a long-running operation, so it runs in the background.
+    Only accessible by superusers.
+    """
+    # Run diagnostics in the background
+    background_tasks.add_task(metrics_service.run_all_diagnostics)
+    
+    return {
+        "message": "Architecture diagnostics started",
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+@router.post("/architecture/run-diagnostic/{script_name}")
+async def run_specific_diagnostic(
+    script_name: str,
+    background_tasks: BackgroundTasks,
+    current_user: schemas.User = Depends(get_current_active_superuser),
+    metrics_service: MetricsService = Depends()
+):
+    """
+    Run a specific architecture diagnostic script.
+    This is a long-running operation, so it runs in the background.
+    Only accessible by superusers.
+    
+    Available script names:
+    - test_layer_interactions
+    - verify_property_tracking
+    - test_architecture_flow
+    """
+    # Validate script name
+    valid_scripts = ["test_layer_interactions", "verify_property_tracking", "test_architecture_flow"]
+    if script_name not in valid_scripts:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid script name. Must be one of: {', '.join(valid_scripts)}"
+        )
+    
+    # Run diagnostics in the background
+    background_tasks.add_task(metrics_service.run_diagnostic_script, script_name)
+    
+    return {
+        "message": f"Diagnostic script {script_name} started",
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+@router.get("/architecture/diagnostics/latest")
+async def get_latest_diagnostics(
+    current_user: schemas.User = Depends(get_current_active_superuser),
+    metrics_service: MetricsService = Depends()
+):
+    """
+    Get latest results from diagnostic scripts.
+    Only accessible by superusers.
+    """
+    return await metrics_service.get_latest_diagnostic_results()
+
+@router.get("/architecture/diagnostics/history")
+async def get_diagnostics_history(
+    limit: int = Query(10, description="Maximum number of history entries to return"),
+    current_user: schemas.User = Depends(get_current_active_superuser),
+    metrics_service: MetricsService = Depends()
+):
+    """
+    Get history of diagnostic runs.
+    Only accessible by superusers.
+    """
+    return await metrics_service.get_diagnostic_history(limit=limit)
+
+@router.post("/architecture/save-metrics")
+async def save_current_metrics(
+    current_user: schemas.User = Depends(get_current_active_superuser),
+    metrics_service: MetricsService = Depends()
+):
+    """
+    Manually trigger saving current metrics to a file.
+    Only accessible by superusers.
+    """
+    return await metrics_service.save_current_metrics()
+
+# Original missing info endpoints continue below
 
 @router.get("/missing-info/reports", response_model=List[schemas.MissingInfoReport])
 async def get_missing_info_reports(

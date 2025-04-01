@@ -2,19 +2,25 @@
 """
 Property Validator Module
 
-This module provides functions for validating property data
-to ensure data quality and consistency.
+This module provides components for validating property data
+to ensure data quality and consistency. It implements the DataValidator
+interface from the layered architecture.
 """
 
 import logging
 import re
 from typing import Dict, Any, List, Optional, Set, Tuple
+import asyncio
+
+from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from backend.app.interfaces.processing import DataValidator
 
 logger = logging.getLogger(__name__)
 
-class PropertyValidator:
+@layer(ArchitectureLayer.PROCESSING)
+class PropertyValidator(DataValidator):
     """
-    Class for validating property data.
+    Class for validating property data. Implements DataValidator interface.
     """
     
     def __init__(self):
@@ -85,7 +91,38 @@ class PropertyValidator:
             }
         }
     
-    def validate_field(self, field_name: str, value: Any) -> Tuple[bool, str]:
+    @log_cross_layer_call(ArchitectureLayer.PROCESSING, ArchitectureLayer.PROCESSING)
+    async def validate(self, data: Dict[str, Any]) -> Dict[str, List[str]]:
+        """
+        Validate data against rules and return validation errors.
+        
+        This implements the DataValidator interface method.
+        
+        Args:
+            data: The property data to validate
+            
+        Returns:
+            Dictionary mapping field names to lists of validation errors
+        """
+        return self._validate_property(data)
+    
+    @log_cross_layer_call(ArchitectureLayer.PROCESSING, ArchitectureLayer.PROCESSING)
+    async def is_valid(self, data: Dict[str, Any]) -> bool:
+        """
+        Check if data is valid.
+        
+        This implements the DataValidator interface method.
+        
+        Args:
+            data: The property data to validate
+            
+        Returns:
+            True if the data is valid, False otherwise
+        """
+        errors = await self.validate(data)
+        return len(errors) == 0
+    
+    def _validate_field(self, field_name: str, value: Any) -> Tuple[bool, str]:
         """
         Validate a single field against its rules.
         
@@ -140,7 +177,7 @@ class PropertyValidator:
         
         return True, ""
     
-    def validate_property(self, property_data: Dict[str, Any]) -> Dict[str, List[str]]:
+    def _validate_property(self, property_data: Dict[str, Any]) -> Dict[str, List[str]]:
         """
         Validate all fields in a property dictionary.
         
@@ -158,7 +195,7 @@ class PropertyValidator:
             value = property_data.get(field_name)
             
             # Validate field
-            is_valid, error_message = self.validate_field(field_name, value)
+            is_valid, error_message = self._validate_field(field_name, value)
             
             # If not valid, add error message
             if not is_valid:
@@ -167,19 +204,6 @@ class PropertyValidator:
                 errors[field_name].append(error_message)
         
         return errors
-    
-    def is_valid_property(self, property_data: Dict[str, Any]) -> bool:
-        """
-        Check if a property is valid.
-        
-        Args:
-            property_data: Property dictionary to validate
-            
-        Returns:
-            True if property is valid, False otherwise
-        """
-        errors = self.validate_property(property_data)
-        return len(errors) == 0
     
     def get_validation_summary(self, property_data: Dict[str, Any]) -> Dict[str, Any]:
         """
@@ -191,7 +215,14 @@ class PropertyValidator:
         Returns:
             Dictionary with validation summary
         """
-        errors = self.validate_property(property_data)
+        # Create a sync wrapper around the async validate method
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
+        errors = loop.run_until_complete(self.validate(property_data))
         
         return {
             'is_valid': len(errors) == 0,
@@ -214,8 +245,15 @@ class PropertyValidator:
         invalid_count = 0
         all_errors = {}
         
+        # Create a sync wrapper around the async validate method
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            
         for property_data in properties:
-            errors = self.validate_property(property_data)
+            errors = loop.run_until_complete(self.validate(property_data))
             
             if len(errors) == 0:
                 valid_count += 1
@@ -230,4 +268,4 @@ class PropertyValidator:
             'invalid_count': invalid_count,
             'success_rate': (valid_count / len(properties)) * 100 if properties else 0,
             'errors': all_errors
-        } 
+        }

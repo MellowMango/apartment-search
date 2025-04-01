@@ -3,7 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup, useMap, ZoomControl } from 'rea
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Property } from '../types/property';
-import { geocodeProperties, enhancedGeocodeProperties } from '../../lib/geocoding';
+import { geocodeProperties, enhancedGeocodeProperties } from '../utils/geocoding';
 import CustomMarkerClusterGroup from './map/CustomMarkerCluster';
 // MarkerCluster CSS is loaded in _app.js/tsx instead of here to avoid Next.js CSS import restrictions
 // Original import: import 'react-leaflet-cluster/lib/assets/MarkerCluster.Default.css';
@@ -469,6 +469,297 @@ const MapSearch: FC<{
           </div>
         </div>
       )}
+    </div>
+  );
+};
+
+// Add new PropertiesList component
+const PropertiesList: FC<{
+  properties: Property[];
+  onPropertySelect: (property: Property) => void;
+  mapFilters: {
+    showPremium: boolean;
+    showAvailable: boolean;
+    showUnderContract: boolean;
+    showSold: boolean;
+  };
+  setMapFilters: (filters: any) => void;
+}> = ({ properties, onPropertySelect, mapFilters, setMapFilters }) => {
+  const [sortBy, setSortBy] = useState<string>('recent');
+  const [unitFilter, setUnitFilter] = useState<[number, number]>([0, 1000]);
+  const [yearFilter, setYearFilter] = useState<[number, number]>([1900, new Date().getFullYear()]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  // Calculate ranges for filters
+  const ranges = useMemo(() => {
+    const units = properties.map(p => p.num_units || p.units || 0);
+    const years = properties.map(p => p.year_built || 0).filter(y => y > 0);
+    return {
+      units: {
+        min: Math.min(...units),
+        max: Math.max(...units)
+      },
+      years: {
+        min: Math.min(...years),
+        max: Math.max(...years)
+      }
+    };
+  }, [properties]);
+
+  // Filter and sort properties
+  const filteredAndSortedProperties = useMemo(() => {
+    return properties
+      .filter(property => {
+        // Status filters
+        const status = (property.status || '').toLowerCase();
+        if (status.includes('contract') || status.includes('pending')) {
+          if (!mapFilters.showUnderContract) return false;
+        } else if (status.includes('sold')) {
+          if (!mapFilters.showSold) return false;
+        } else {
+          if (!mapFilters.showAvailable) return false;
+        }
+
+        // Premium filter
+        if (property.price && property.price >= 10000000) {
+          if (!mapFilters.showPremium) return false;
+        }
+
+        // Unit filter
+        const units = property.num_units || property.units || 0;
+        if (units < unitFilter[0] || units > unitFilter[1]) return false;
+
+        // Year filter
+        const year = property.year_built || 0;
+        if (year && (year < yearFilter[0] || year > yearFilter[1])) return false;
+
+        // Search term
+        if (searchTerm) {
+          const searchLower = searchTerm.toLowerCase();
+          return (
+            property.name?.toLowerCase().includes(searchLower) ||
+            property.address?.toLowerCase().includes(searchLower) ||
+            property.broker?.toLowerCase().includes(searchLower)
+          );
+        }
+
+        return true;
+      })
+      .sort((a, b) => {
+        switch (sortBy) {
+          case 'units-high':
+            return (b.num_units || b.units || 0) - (a.num_units || a.units || 0);
+          case 'units-low':
+            return (a.num_units || a.units || 0) - (b.num_units || b.units || 0);
+          case 'year-new':
+            return (b.year_built || 0) - (a.year_built || 0);
+          case 'year-old':
+            return (a.year_built || 0) - (b.year_built || 0);
+          case 'recent':
+          default:
+            return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+        }
+      });
+  }, [properties, mapFilters, unitFilter, yearFilter, searchTerm, sortBy]);
+
+  return (
+    <div className="absolute left-0 top-0 h-full w-96 bg-white dark:bg-gray-800 shadow-lg flex flex-col">
+      {/* Header */}
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+        <h2 className="text-lg font-semibold mb-2">Properties</h2>
+        <div className="relative">
+          <input
+            type="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            placeholder="Search properties..."
+            className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg text-sm"
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="p-4 border-b border-gray-200 dark:border-gray-700 space-y-4">
+        {/* Sort dropdown */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Sort By</label>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 rounded-lg text-sm"
+          >
+            <option value="recent">Most Recent</option>
+            <option value="units-high">Units (High to Low)</option>
+            <option value="units-low">Units (Low to High)</option>
+            <option value="year-new">Year Built (Newest)</option>
+            <option value="year-old">Year Built (Oldest)</option>
+          </select>
+        </div>
+
+        {/* Status filters */}
+        <div>
+          <label className="block text-sm font-medium mb-2">Status</label>
+          <div className="space-y-2">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={mapFilters.showAvailable}
+                onChange={(e) => setMapFilters({ ...mapFilters, showAvailable: e.target.checked })}
+                className="form-checkbox h-4 w-4 text-blue-600"
+              />
+              <span className="ml-2 text-sm">Available</span>
+            </label>
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={mapFilters.showUnderContract}
+                onChange={(e) => setMapFilters({ ...mapFilters, showUnderContract: e.target.checked })}
+                className="form-checkbox h-4 w-4 text-yellow-600"
+              />
+              <span className="ml-2 text-sm">Under Contract</span>
+            </label>
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={mapFilters.showSold}
+                onChange={(e) => setMapFilters({ ...mapFilters, showSold: e.target.checked })}
+                className="form-checkbox h-4 w-4 text-red-600"
+              />
+              <span className="ml-2 text-sm">Sold</span>
+            </label>
+          </div>
+        </div>
+
+        {/* Unit range filter */}
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            Units Range: {unitFilter[0]} - {unitFilter[1]}
+          </label>
+          <div className="px-2">
+            <input
+              type="range"
+              min={ranges.units.min}
+              max={ranges.units.max}
+              value={unitFilter[0]}
+              onChange={(e) => setUnitFilter([parseInt(e.target.value), unitFilter[1]])}
+              className="w-full"
+            />
+            <input
+              type="range"
+              min={ranges.units.min}
+              max={ranges.units.max}
+              value={unitFilter[1]}
+              onChange={(e) => setUnitFilter([unitFilter[0], parseInt(e.target.value)])}
+              className="w-full"
+            />
+          </div>
+        </div>
+
+        {/* Year built filter */}
+        <div>
+          <label className="block text-sm font-medium mb-2">
+            Year Built: {yearFilter[0]} - {yearFilter[1]}
+          </label>
+          <div className="px-2">
+            <input
+              type="range"
+              min={ranges.years.min}
+              max={ranges.years.max}
+              value={yearFilter[0]}
+              onChange={(e) => setYearFilter([parseInt(e.target.value), yearFilter[1]])}
+              className="w-full"
+            />
+            <input
+              type="range"
+              min={ranges.years.min}
+              max={ranges.years.max}
+              value={yearFilter[1]}
+              onChange={(e) => setYearFilter([yearFilter[0], parseInt(e.target.value)])}
+              className="w-full"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Properties list */}
+      <div className="flex-1 overflow-y-auto">
+        {filteredAndSortedProperties.length === 0 ? (
+          <div className="p-4 text-center text-gray-500">
+            No properties match your filters
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-200 dark:divide-gray-700">
+            {filteredAndSortedProperties.map((property) => (
+              <div
+                key={property.id}
+                onClick={() => onPropertySelect(property)}
+                className="p-4 hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer"
+              >
+                <div className="flex items-start gap-3">
+                  <div className="flex-shrink-0 w-16 h-16 bg-gray-100 dark:bg-gray-600 rounded overflow-hidden">
+                    {property.image_url ? (
+                      <img
+                        src={property.image_url}
+                        alt={property.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-medium truncate">{property.name}</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1 truncate">
+                      {property.address}
+                    </p>
+                    <div className="mt-2 flex items-center gap-2">
+                      <span className={`px-2 py-0.5 rounded-full text-xs ${
+                        property.status?.toLowerCase().includes('available') || 
+                        property.status?.toLowerCase().includes('active')
+                          ? 'bg-green-100 text-green-800' 
+                          : property.status?.toLowerCase().includes('contract')
+                          ? 'bg-yellow-100 text-yellow-800' 
+                          : 'bg-red-100 text-red-800'
+                      }`}>
+                        {property.status?.toLowerCase().includes('available') || 
+                         property.status?.toLowerCase().includes('active')
+                          ? 'Available'
+                          : property.status?.toLowerCase().includes('contract')
+                          ? 'Under Contract'
+                          : property.status || 'Unknown'}
+                      </span>
+                      {(property.num_units || property.units) && (
+                        <span className="text-xs text-gray-500">
+                          {property.num_units || property.units} units
+                        </span>
+                      )}
+                      {property.year_built && (
+                        <span className="text-xs text-gray-500">
+                          Built {property.year_built}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -969,233 +1260,187 @@ const MapComponent: FC<MapComponentProps> = ({
 
   return (
     <div className="relative h-full w-full">
-      {/* Property count information - ENHANCED */}
-      <div className="absolute top-4 right-4 z-10 bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 px-3 text-sm">
-        <div className="font-semibold">
-          Showing {filteredProperties.length} of {properties?.length || 0} properties
-        </div>
-        {filteredProperties.length < (properties?.length || 0) && (
-          <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-            {properties?.length - filteredProperties.length} properties filtered out or lacking valid coordinates
-            
-            {validProperties.length < (properties?.length || 0) && (
-              <button 
-                className="ml-1 text-blue-500 hover:text-blue-700 focus:outline-none underline"
-                onClick={() => {
-                  // Count issues with coordinates
-                  const missingCoords = properties?.filter(p => !p.latitude || !p.longitude).length || 0;
-                  const zeroCoords = properties?.filter(p => p.latitude === 0 && p.longitude === 0).length || 0;
-                  const invalidRange = properties?.filter(p => {
-                    if (!p.latitude || !p.longitude) return false;
-                    const lat = typeof p.latitude === 'number' ? p.latitude : parseFloat(String(p.latitude));
-                    const lng = typeof p.longitude === 'number' ? p.longitude : parseFloat(String(p.longitude));
-                    return (lat < -90 || lat > 90 || lng < -180 || lng > 180);
-                  }).length || 0;
-                  
-                  // Display an alert with the breakdown
-                  alert(
-                    `Properties not shown on map:\n\n` +
-                    `- Missing coordinates: ${missingCoords}\n` +
-                    `- Zero coordinates: ${zeroCoords}\n` +
-                    `- Invalid coordinate range: ${invalidRange}\n` +
-                    `- Filtered by status or price: ${(properties?.length || 0) - validProperties.length - missingCoords - zeroCoords - invalidRange}\n\n` +
-                    `To improve map coverage, try geocoding properties with missing coordinates.`
-                  );
-                }}
-              >
-                (details)
-              </button>
-            )}
-          </div>
-        )}
-        
-        {/* Add a note about property clusters */}
-        <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-          <span className="font-medium">Tip:</span> Click on clustered markers to expand them. Many properties share the exact same coordinates.
-        </div>
+      {/* Properties List Panel */}
+      <PropertiesList 
+        properties={properties} 
+        onPropertySelect={setSelectedProperty}
+        mapFilters={mapFilters}
+        setMapFilters={setMapFilters}
+      />
+      
+      {/* Existing map container with adjusted margin for list panel */}
+      <div className="ml-96 h-full">
+        <MapContainer 
+          center={defaultCenter} 
+          zoom={defaultZoom}
+          style={{ height: '100%', width: '100%' }}
+          zoomControl={false}
+          whenReady={handleMapLoad}
+        >
+          <MapInitializer />
+          
+          {/* Use Mapbox if token is provided and valid, otherwise use OpenStreetMap */}
+          {isValidMapboxToken ? (
+            <TileLayer
+              attribution='© <a href="https://www.mapbox.com/about/maps/">Mapbox</a>'
+              url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${mapboxTokenEnv}`}
+              tileSize={512}
+              zoomOffset={-1}
+              eventHandlers={{
+                error: handleMapError
+              }}
+            />
+          ) : (
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          )}
+          
+          {/* Show map error if there is one */}
+          {mapError && (
+            <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-red-100 text-red-700 px-4 py-2 rounded-md shadow-md z-50">
+              {mapError}
+            </div>
+          )}
+          
+          {/* Map markers for properties */}
+          {filteredProperties.length > 0 && (
+            <CustomMarkerClusterGroup
+              // These props will be merged with the enhanced props in CustomMarkerClusterGroup
+              chunkedLoading={true}
+              showCoverageOnHover={false}  // Disable coverage display which can be distracting
+              disableClusteringAtZoom={18} // Disable clustering at maximum zoom
+            >
+              {filteredProperties.map((property) => {
+                // Find properties at same location
+                const sameLocationProperties = findPropertiesAtSameLocation(property);
+                const hasMultipleProperties = sameLocationProperties.length > 0;
+                
+                return (
+                <Marker
+                  key={property.id}
+                  position={[property.latitude, property.longitude]}
+                  icon={getMarkerIcon(property)}
+                  eventHandlers={{
+                    click: () => {
+                      // Find the original property in the properties array to make sure we have the latest data
+                      const originalProperty = properties.find(p => p.id === property.id) || property;
+                      setSelectedProperty(originalProperty);
+                    },
+                  }}
+                >
+                  <Popup>
+                    <div className="min-w-[220px]">
+                      <div className="flex items-start justify-between">
+                        <h3 className="font-bold text-lg">{property.name}</h3>
+                        {/* Normalize and display status */}
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          property.status?.toLowerCase().includes('available') || 
+                          property.status?.toLowerCase().includes('active') || 
+                          property.status === 'Actively Marketed'
+                            ? 'bg-green-100 text-green-800' 
+                            : property.status?.toLowerCase().includes('contract') || 
+                              property.status?.toLowerCase().includes('pending')
+                            ? 'bg-yellow-100 text-yellow-800' 
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {property.status?.toLowerCase().includes('available') || 
+                           property.status?.toLowerCase().includes('active') 
+                            ? 'Available'
+                            : property.status?.toLowerCase().includes('contract')
+                            ? 'Under Contract'
+                            : property.status || 'Unknown'}
+                        </span>
+                      </div>
+                      
+                      {/* Address with verification */}
+                      <div className="mt-2">
+                        <p className="text-gray-600 flex items-center">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                          {property.verified_address || property.address}
+                          {property.verified_address && (
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                            </svg>
+                          )}
+                        </p>
+                      </div>
+
+                      {/* Property details grid */}
+                      <div className="grid grid-cols-2 gap-3 mt-3">
+                        <div className="bg-gray-50 p-2 rounded">
+                          <span className="text-gray-500 text-xs block">Units</span>
+                          <p className="font-medium">{property.num_units || property.units || 'N/A'}</p>
+                        </div>
+                        <div className="bg-gray-50 p-2 rounded">
+                          <span className="text-gray-500 text-xs block">Year Built</span>
+                          <p className="font-medium">{property.year_built || 'N/A'}</p>
+                        </div>
+                        {property.square_feet && (
+                          <div className="bg-gray-50 p-2 rounded">
+                            <span className="text-gray-500 text-xs block">Square Feet</span>
+                            <p className="font-medium">{property.square_feet.toLocaleString()}</p>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Multiple properties indicator */}
+                      {hasMultipleProperties && (
+                        <div className="mt-3 bg-blue-50 p-2 rounded">
+                          <p className="text-sm text-blue-700 font-medium">
+                            {sameLocationProperties.length + 1} properties at this location
+                          </p>
+                          <div className="mt-1 max-h-32 overflow-y-auto">
+                            {sameLocationProperties.map((relatedProperty) => (
+                              <div 
+                                key={relatedProperty.id}
+                                className="text-xs p-1 hover:bg-blue-100 rounded cursor-pointer"
+                                onClick={() => {
+                                  const originalRelatedProperty = properties.find(p => p.id === relatedProperty.id) || relatedProperty;
+                                  setSelectedProperty(originalRelatedProperty);
+                                }}
+                              >
+                                <div className="font-medium">{relatedProperty.name}</div>
+                                <div className="text-blue-600">{relatedProperty.num_units || relatedProperty.units} units</div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Property link */}
+                      <div className="mt-3 pt-3 border-t border-gray-200">
+                        <a 
+                          href={`/properties/${property.id}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:text-blue-800 text-sm flex items-center"
+                        >
+                          View Full Details
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                          </svg>
+                        </a>
+                      </div>
+                    </div>
+                  </Popup>
+                </Marker>
+              )})}
+            </CustomMarkerClusterGroup>
+          )}
+          
+          {/* Map controllers */}
+          <MapRecenter selectedProperty={selectedProperty} />
+          {onBoundsChange && <MapBoundsUpdater onBoundsChange={onBoundsChange} />}
+          
+          {/* Add ZoomControl in top-right */}
+          <ZoomControl position="topright" />
+        </MapContainer>
       </div>
-      
-      {/* Search box */}
-      <MapSearch properties={properties} onPropertySelect={setSelectedProperty} />
-      
-      {/* Quick filter */}
-      <MapFilter onFilterChange={setMapFilters} />
-      
-      {/* Map Legend */}
-      <MapLegend />
-      
-      {/* Geocoding status indicator */}
-      {geocodingStatus.isGeocoding && (
-        <div className="absolute top-16 left-4 z-10 bg-white dark:bg-gray-800 rounded-lg shadow-md p-2 px-3 flex items-center text-sm">
-          <svg className="animate-spin h-4 w-4 mr-2 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          <span>Locating properties on map...</span>
-        </div>
-      )}
-      
-      {/* No properties with valid coordinates message */}
-      {filteredProperties.length === 0 && (
-        <div className="absolute z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-md text-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 mx-auto mb-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          <h3 className="font-semibold text-lg">No Properties Match Filters</h3>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">Try adjusting your filters to see more properties.</p>
-        </div>
-      )}
-
-      <MapContainer 
-        center={defaultCenter} 
-        zoom={defaultZoom}
-        style={{ height: '100%', width: '100%' }}
-        zoomControl={false}
-        whenReady={handleMapLoad}
-      >
-        <MapInitializer />
-        
-        {/* Use Mapbox if token is provided and valid, otherwise use OpenStreetMap */}
-        {isValidMapboxToken ? (
-          <TileLayer
-            attribution='© <a href="https://www.mapbox.com/about/maps/">Mapbox</a>'
-            url={`https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token=${mapboxTokenEnv}`}
-            tileSize={512}
-            zoomOffset={-1}
-            eventHandlers={{
-              error: handleMapError
-            }}
-          />
-        ) : (
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-        )}
-        
-        {/* Show map error if there is one */}
-        {mapError && (
-          <div className="absolute top-4 left-1/2 transform -translate-x-1/2 bg-red-100 text-red-700 px-4 py-2 rounded-md shadow-md z-50">
-            {mapError}
-          </div>
-        )}
-        
-        {/* Map markers for properties */}
-        {filteredProperties.length > 0 && (
-          <CustomMarkerClusterGroup
-            // These props will be merged with the enhanced props in CustomMarkerClusterGroup
-            chunkedLoading={true}
-            showCoverageOnHover={false}  // Disable coverage display which can be distracting
-            disableClusteringAtZoom={18} // Disable clustering at maximum zoom
-          >
-            {filteredProperties.map((property) => {
-              // Find properties at same location
-              const sameLocationProperties = findPropertiesAtSameLocation(property);
-              const hasMultipleProperties = sameLocationProperties.length > 0;
-              
-              return (
-              <Marker
-                key={property.id}
-                position={[property.latitude, property.longitude]}
-                icon={getMarkerIcon(property)}
-                eventHandlers={{
-                  click: () => {
-                    // Find the original property in the properties array to make sure we have the latest data
-                    const originalProperty = properties.find(p => p.id === property.id) || property;
-                    setSelectedProperty(originalProperty);
-                  },
-                }}
-              >
-                <Popup>
-                  <div className="min-w-[220px]">
-                    <h3 className="font-bold text-lg">{property.name}</h3>
-                    
-                    {/* Show verified address if available, otherwise show regular address */}
-                    <p className="text-gray-600">
-                      {property.verified_address || property.address}
-                    </p>
-                    
-                    {/* Add verification status indicator */}
-                    {property.verified_address && (
-                      <p className="text-xs text-green-600 flex items-center mt-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                        </svg>
-                        Verified with Google Maps
-                      </p>
-                    )}
-
-                    {/* Show geocoding source information */}
-                    {property._geocoding_source && !property.verified_address && (
-                      <p className="text-xs text-blue-600 flex items-center mt-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                        </svg>
-                        {property._geocoding_source === 'existing' && 'Coordinates from database'}
-                        {property._geocoding_source === 'verified_address' && 'Geocoded from verified address'}
-                        {property._geocoding_source === 'full_address' && 'Geocoded from full address'}
-                        {property._geocoding_source === 'property_name' && 'Approximated from property name'}
-                      </p>
-                    )}
-                    
-                    {!property.verified_address && !property._geocoding_source && property.geocoded_at && (
-                      <p className="text-xs text-blue-600 flex items-center mt-1">
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                          <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                        </svg>
-                        Location estimated from address
-                      </p>
-                    )}
-                    
-                    <div className="grid grid-cols-2 gap-1 my-2">
-                      <div>
-                        <span className="text-gray-500 text-sm">Units:</span>
-                        <p className="font-medium">{property.num_units || property.units}</p>
-                      </div>
-                      <div>
-                        <span className="text-gray-500 text-sm">Year Built:</span>
-                        <p className="font-medium">{property.year_built || 'N/A'}</p>
-                      </div>
-                    </div>
-                    <div className="mt-2 pt-2 border-t">
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        property.status === 'available' || property.status === 'Actively Marketed'
-                          ? 'bg-green-100 text-green-800' 
-                          : property.status === 'under_contract' || property.status === 'Under Contract'
-                          ? 'bg-yellow-100 text-yellow-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {property.status}
-                      </span>
-                    </div>
-                    
-                    {/* Show link to property */}
-                    <div className="mt-3 text-sm">
-                      <span className="text-gray-500">Property Link: </span>
-                      <a 
-                        href={`/properties/${property.id}`}
-                        className="text-blue-600 hover:text-blue-800 hover:underline"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                      >
-                        View Details
-                      </a>
-                    </div>
-                  </div>
-                </Popup>
-              </Marker>
-            )})}
-          </CustomMarkerClusterGroup>
-        )}
-        
-        {/* Map controllers */}
-        <MapRecenter selectedProperty={selectedProperty} />
-        {onBoundsChange && <MapBoundsUpdater onBoundsChange={onBoundsChange} />}
-        
-        {/* Add ZoomControl in top-right */}
-        <ZoomControl position="topright" />
-      </MapContainer>
     </div>
   );
 };

@@ -1,16 +1,71 @@
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 import socketio
+import logging
 
 from app.core.config import settings
 from app.schemas.property import PropertyCreate, PropertyUpdate, Property
 from app.db.supabase import get_supabase_client
+from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from backend.app.interfaces.api import DataProvider, ApiResponse
+from backend.app.interfaces.storage import PaginationParams, QueryResult, StorageResult
+from backend.app.interfaces.repository import PropertyRepository
+from backend.app.models.property_model import PropertyBase
+from backend.app.adapters.property_adapter import PropertyAdapter
+from backend.app.db.repository_factory import get_repository_factory
 
-class PropertyService:
-    def __init__(self):
+logger = logging.getLogger(__name__)
+
+@layer(ArchitectureLayer.API)
+class PropertyService(DataProvider):
+    def __init__(self, repository_factory=None):
+        # Get repository through factory
+        factory = repository_factory or get_repository_factory()
+        self.property_repository = factory.create_property_repository()
+        
+        # Legacy client for backward compatibility and real-time updates
         self.supabase = get_supabase_client()
         self.sio = socketio.AsyncClient()
+        self.property_adapter = PropertyAdapter()
     
+    @log_cross_layer_call(ArchitectureLayer.API, ArchitectureLayer.STORAGE)
+    async def get_by_id(self, entity_id: str) -> Optional[PropertyBase]:
+        """
+        Get a property by ID using the standardized model.
+        
+        This implements the DataProvider interface method.
+        
+        Args:
+            entity_id: ID of the property to retrieve
+            
+        Returns:
+            Standardized property model if found, None otherwise
+        """
+        # Use repository instead of direct database access
+        return await self.property_repository.get(entity_id)
+    
+    @log_cross_layer_call(ArchitectureLayer.API, ArchitectureLayer.STORAGE)
+    async def query(
+        self, 
+        filters: Dict[str, Any], 
+        pagination: PaginationParams
+    ) -> QueryResult[PropertyBase]:
+        """
+        Query properties with filters and pagination using standardized model.
+        
+        This implements the DataProvider interface method.
+        
+        Args:
+            filters: Dictionary of filter criteria
+            pagination: Pagination parameters
+            
+        Returns:
+            QueryResult containing matching properties and metadata
+        """
+        # Use repository list method with filters and pagination
+        return await self.property_repository.list(filters, pagination)
+    
+    # Legacy methods for backward compatibility
     async def get_properties(
         self,
         skip: int = 0,
@@ -24,105 +79,244 @@ class PropertyService:
     ) -> List[Property]:
         """
         Get properties with optional filtering.
+        
+        This is a legacy method maintained for backward compatibility.
+        New code should use the query() method instead.
         """
-        query = self.supabase.table("properties").select("*")
-        
-        # Apply filters
+        # Create filters dictionary for the new interface
+        filters = {}
         if status:
-            query = query.eq("status", status)
+            filters["status"] = status
         if min_units:
-            query = query.gte("num_units", min_units)
+            filters["min_units"] = min_units
         if max_units:
-            query = query.lte("num_units", max_units)
+            filters["max_units"] = max_units
         if min_year_built:
-            query = query.gte("year_built", min_year_built)
+            filters["min_year_built"] = min_year_built
         if max_year_built:
-            query = query.lte("year_built", max_year_built)
+            filters["max_year_built"] = max_year_built
         if brokerage:
-            query = query.eq("brokerage_id", brokerage)
+            filters["brokerage"] = brokerage
         
-        # Apply pagination
-        query = query.range(skip, skip + limit - 1)
+        # Create pagination parameters
+        pagination = PaginationParams(
+            page=1 + (skip // limit if limit > 0 else 0),
+            page_size=limit
+        )
         
-        # Execute query
-        response = query.execute()
+        # Use the new query method
+        result = await self.query(filters, pagination)
         
-        # Convert to Property objects
-        properties = [Property(**item) for item in response.data]
+        # Convert standardized models to legacy Property objects
+        properties = []
+        for standardized_property in result.items:
+            legacy_dict = self.property_adapter.from_standardized_model(standardized_property)
+            properties.append(Property(**legacy_dict))
         
         return properties
     
     async def get_property(self, property_id: str) -> Optional[Property]:
         """
         Get a specific property by ID.
-        """
-        response = self.supabase.table("properties").select("*").eq("id", property_id).execute()
         
-        if not response.data:
+        This is a legacy method maintained for backward compatibility.
+        New code should use the get_by_id() method instead.
+        """
+        # Use the new get_by_id method
+        standardized_property = await self.get_by_id(property_id)
+        
+        if standardized_property is None:
             return None
         
-        return Property(**response.data[0])
+        # Convert standardized model to legacy Property object
+        legacy_dict = self.property_adapter.from_standardized_model(standardized_property)
+        return Property(**legacy_dict)
+    
+    @log_cross_layer_call(ArchitectureLayer.API, ArchitectureLayer.STORAGE)
+    async def create_standardized_property(self, property_data: PropertyBase) -> StorageResult[PropertyBase]:
+        """
+        Create a new property using the standardized model.
+        
+        Args:
+            property_data: Standardized property data
+            
+        Returns:
+            StorageResult containing the created property or error information
+        """
+        # Use repository to create property
+        result = await self.property_repository.create(property_data)
+        
+        # Handle real-time notifications if needed
+        if result.success and settings.ENABLE_REAL_TIME_UPDATES:
+            try:
+                # Convert to legacy format for notification
+                legacy_dict = self.property_adapter.from_standardized_model(result.entity)
+                await self.sio.emit("property_created", legacy_dict)
+            except Exception as e:
+                logger.warning(f"Failed to send real-time update: {str(e)}")
+        
+        return result
     
     async def create_property(self, property_data: PropertyCreate) -> Property:
         """
         Create a new property.
+        
+        This is a legacy method maintained for backward compatibility.
+        New code should use the create_standardized_property() method instead.
         """
-        # Add timestamps
-        now = datetime.utcnow()
-        property_dict = property_data.dict()
-        property_dict.update({
-            "date_first_appeared": now,
-            "date_updated": now
-        })
+        # Convert to standardized model
+        standardized_data = self.property_adapter.from_schema(property_data)
         
-        # Insert into database
-        response = self.supabase.table("properties").insert(property_dict).execute()
+        # Use the new create method
+        result = await self.create_standardized_property(standardized_data)
         
-        # Notify clients about new property
-        if settings.ENABLE_REAL_TIME_UPDATES:
-            await self.sio.emit("property_created", response.data[0])
+        if not result.success:
+            raise ValueError(result.error)
+            
+        # Convert back to legacy format
+        legacy_dict = self.property_adapter.from_standardized_model(result.entity)
+        return Property(**legacy_dict)
+    
+    @log_cross_layer_call(ArchitectureLayer.API, ArchitectureLayer.STORAGE)
+    async def update_standardized_property(self, entity_id: str, property_data: PropertyBase) -> StorageResult[PropertyBase]:
+        """
+        Update a property using the standardized model.
         
-        return Property(**response.data[0])
+        Args:
+            entity_id: ID of the property to update
+            property_data: Updated property data
+            
+        Returns:
+            StorageResult containing the updated property or error information
+        """
+        # Use repository to update property
+        result = await self.property_repository.update(entity_id, property_data)
+        
+        # Handle real-time notifications if needed
+        if result.success and settings.ENABLE_REAL_TIME_UPDATES:
+            try:
+                # Convert to legacy format for notification
+                legacy_dict = self.property_adapter.from_standardized_model(result.entity)
+                await self.sio.emit("property_updated", legacy_dict)
+            except Exception as e:
+                logger.warning(f"Failed to send real-time update: {str(e)}")
+        
+        return result
     
     async def update_property(self, property_id: str, property_data: PropertyUpdate) -> Optional[Property]:
         """
         Update a property.
+        
+        This is a legacy method maintained for backward compatibility.
+        New code should use the update_standardized_property() method instead.
         """
         # Get current property
-        current_property = await self.get_property(property_id)
+        current_property = await self.get_by_id(property_id)
         if not current_property:
             return None
         
-        # Update timestamp
-        property_dict = property_data.dict(exclude_unset=True)
-        property_dict["date_updated"] = datetime.utcnow()
+        # Apply updates to standardized model
+        for key, value in property_data.dict(exclude_unset=True).items():
+            setattr(current_property, key, value)
         
-        # Update in database
-        response = self.supabase.table("properties").update(property_dict).eq("id", property_id).execute()
+        # Use the new update method
+        result = await self.update_standardized_property(property_id, current_property)
         
-        if not response.data:
+        if not result.success:
             return None
+            
+        # Convert back to legacy model
+        legacy_dict = self.property_adapter.from_standardized_model(result.entity)
+        return Property(**legacy_dict)
+    
+    @log_cross_layer_call(ArchitectureLayer.API, ArchitectureLayer.STORAGE)
+    async def delete_standardized_property(self, entity_id: str) -> StorageResult:
+        """
+        Delete a property using the standardized interface.
         
-        # Notify clients about updated property
-        if settings.ENABLE_REAL_TIME_UPDATES:
-            await self.sio.emit("property_updated", response.data[0])
+        Args:
+            entity_id: ID of the property to delete
+            
+        Returns:
+            StorageResult indicating success or failure
+        """
+        # Use repository to delete property
+        result = await self.property_repository.delete(entity_id)
         
-        return Property(**response.data[0])
+        # Handle real-time notifications if needed
+        if result.success and settings.ENABLE_REAL_TIME_UPDATES:
+            try:
+                await self.sio.emit("property_deleted", {"id": entity_id})
+            except Exception as e:
+                logger.warning(f"Failed to send real-time update: {str(e)}")
+        
+        return result
     
     async def delete_property(self, property_id: str) -> bool:
         """
         Delete a property.
+        
+        This is a legacy method maintained for backward compatibility.
+        New code should use the delete_standardized_property() method instead.
         """
-        # Check if property exists
-        current_property = await self.get_property(property_id)
-        if not current_property:
-            return False
+        # Use the new delete method
+        result = await self.delete_standardized_property(property_id)
+        return result.success
+    
+    @log_cross_layer_call(ArchitectureLayer.API, ArchitectureLayer.STORAGE)
+    async def get_properties_by_coordinates(self, latitude: float, longitude: float, 
+                                         radius: float = 0.01) -> List[PropertyBase]:
+        """
+        Get properties within a specific geographic radius.
         
-        # Delete from database
-        response = self.supabase.table("properties").delete().eq("id", property_id).execute()
+        Args:
+            latitude: The center latitude
+            longitude: The center longitude
+            radius: The search radius in decimal degrees
+            
+        Returns:
+            List of properties within the radius
+        """
+        return await self.property_repository.get_by_coordinates(
+            latitude=latitude, 
+            longitude=longitude, 
+            radius=radius
+        )
+    
+    @log_cross_layer_call(ArchitectureLayer.API, ArchitectureLayer.STORAGE)
+    async def get_property_by_address(self, street: str, city: str, 
+                                   state: str) -> Optional[PropertyBase]:
+        """
+        Get a property by address.
         
-        # Notify clients about deleted property
-        if settings.ENABLE_REAL_TIME_UPDATES:
-            await self.sio.emit("property_deleted", {"id": property_id})
+        Args:
+            street: Street address
+            city: City name
+            state: State code
+            
+        Returns:
+            Property if found, None otherwise
+        """
+        return await self.property_repository.get_by_address(
+            street=street,
+            city=city,
+            state=state
+        )
+    
+    @log_cross_layer_call(ArchitectureLayer.API, ArchitectureLayer.STORAGE)
+    async def mark_property_as_verified(self, property_id: str, 
+                                     verified: bool = True) -> StorageResult[PropertyBase]:
+        """
+        Mark a property's geocoding information as verified.
         
-        return True 
+        Args:
+            property_id: The ID of the property to mark
+            verified: Whether the property should be marked as verified
+            
+        Returns:
+            StorageResult containing the updated property or error information
+        """
+        return await self.property_repository.mark_as_verified(
+            id=property_id,
+            verified=verified
+        )

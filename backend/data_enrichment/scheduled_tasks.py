@@ -19,6 +19,7 @@ logger = logging.getLogger(__name__)
 from backend.data_enrichment.property_researcher import PropertyResearcher
 from backend.data_enrichment.database_extensions import EnrichmentDatabaseOps
 from backend.data_enrichment.config import DB_CONFIG
+from backend.app.services.metrics_service import MetricsService
 
 # Create Celery app
 celery_app = Celery('deep_research_tasks')
@@ -76,6 +77,17 @@ celery_app.conf.beat_schedule = {
     'research-database-maintenance-weekly': {
         'task': 'backend.data_enrichment.scheduled_tasks.research_database_maintenance_task',
         'schedule': crontab(day_of_week=6, hour=4, minute=0),  # Run at 4:00 AM every Saturday
+        'args': (),
+    },
+    # Architecture diagnostics tasks
+    'architecture-diagnostics-daily': {
+        'task': 'backend.data_enrichment.scheduled_tasks.run_architecture_diagnostics_task',
+        'schedule': crontab(hour=5, minute=0),  # Run at 5:00 AM every day
+        'args': (),
+    },
+    'architecture-metrics-hourly': {
+        'task': 'backend.data_enrichment.scheduled_tasks.save_architecture_metrics_task',
+        'schedule': crontab(minute=15),  # Run at 15 minutes past every hour
         'args': (),
     },
 }
@@ -475,6 +487,111 @@ async def clean_orphaned_research(db_ops: EnrichmentDatabaseOps) -> int:
         logger.error(f"Error cleaning orphaned research: {str(e)}")
         return 0
 
+# Architecture diagnostic tasks
+
+@celery_app.task(bind=True, name='backend.data_enrichment.scheduled_tasks.run_architecture_diagnostics_task')
+def run_architecture_diagnostics_task(self):
+    """
+    Run full architecture diagnostics to verify system health.
+    
+    This task runs all diagnostic scripts and saves the results.
+    """
+    try:
+        logger.info("Starting architecture diagnostics")
+        
+        # Initialize metrics service
+        metrics_service = MetricsService()
+        
+        # Run all diagnostics
+        results = run_async(metrics_service.run_all_diagnostics())
+        
+        logger.info(f"Architecture diagnostics completed. Overall success: {results.get('success', False)}")
+        
+        # Count successful and failed tests
+        test_results = results.get("results", {})
+        success_count = sum(1 for r in test_results.values() if r.get("success", False))
+        failed_count = len(test_results) - success_count
+        
+        return {
+            "status": "success", 
+            "message": "Architecture diagnostics completed",
+            "details": {
+                "success": results.get("success", False),
+                "tests_passed": success_count,
+                "tests_failed": failed_count,
+                "timestamp": results.get("timestamp")
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in run_architecture_diagnostics_task: {str(e)}")
+        return {"status": "error", "message": str(e)}
+
+@celery_app.task(bind=True, name='backend.data_enrichment.scheduled_tasks.save_architecture_metrics_task')
+def save_architecture_metrics_task(self):
+    """
+    Save current architecture metrics to a file.
+    
+    This task runs hourly to capture metrics for trend analysis.
+    """
+    try:
+        logger.info("Saving architecture metrics")
+        
+        # Initialize metrics service
+        metrics_service = MetricsService()
+        
+        # Save metrics to file
+        result = run_async(metrics_service.save_current_metrics())
+        
+        logger.info(f"Architecture metrics saved: {result.get('success', False)}")
+        
+        return {
+            "status": "success" if result.get("success", False) else "error", 
+            "message": "Architecture metrics saved",
+            "details": {
+                "filepath": result.get("filepath"),
+                "timestamp": result.get("timestamp")
+            }
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in save_architecture_metrics_task: {str(e)}")
+        return {"status": "error", "message": str(e)}
+
+@celery_app.task(bind=True, name='backend.data_enrichment.scheduled_tasks.run_specific_diagnostic_task')
+def run_specific_diagnostic_task(self, script_name: str):
+    """
+    Run a specific diagnostic script.
+    
+    Args:
+        script_name: Name of the diagnostic script to run
+    """
+    try:
+        logger.info(f"Running specific diagnostic: {script_name}")
+        
+        # Validate script name
+        valid_scripts = ["test_layer_interactions", "verify_property_tracking", "test_architecture_flow"]
+        if script_name not in valid_scripts:
+            return {"status": "error", "message": f"Invalid script name. Must be one of: {', '.join(valid_scripts)}"}
+            
+        # Initialize metrics service
+        metrics_service = MetricsService()
+        
+        # Run the specific diagnostic
+        result = run_async(metrics_service.run_diagnostic_script(script_name))
+        
+        logger.info(f"Diagnostic {script_name} completed. Success: {result.get('success', False)}")
+        
+        return {
+            "status": "success" if result.get("success", False) else "error", 
+            "message": f"Diagnostic {script_name} completed",
+            "details": result
+        }
+        
+    except Exception as e:
+        logger.error(f"Error in run_specific_diagnostic_task: {str(e)}")
+        return {"status": "error", "message": str(e)}
+
 # Manual test function for development
 def test_tasks():
     """Run tasks manually for testing."""
@@ -496,6 +613,14 @@ def test_tasks():
     
     print("\nTesting research_database_maintenance_task:")
     result = research_database_maintenance_task()
+    print(result)
+    
+    print("\nTesting architecture diagnostic tasks:")
+    result = run_architecture_diagnostics_task()
+    print(result)
+    
+    print("\nTesting save architecture metrics task:")
+    result = save_architecture_metrics_task()
     print(result)
     
     # Clean up

@@ -11,6 +11,7 @@ export interface Broker {
 }
 
 export interface Property {
+  // Core property fields
   id: string | number;
   name?: string;
   address?: string;
@@ -22,22 +23,29 @@ export interface Property {
   price?: number;
   price_per_unit?: number;
   year_built?: number;
-  latitude?: number;
-  longitude?: number;
-  status?: string;
+  square_feet?: number;
+  cap_rate?: number;
+  property_type?: string;
   property_status?: string;
+  status?: string;
+  description?: string;
+  amenities?: Record<string, any>;
+  images?: string[];
+  image_url?: string;
+  broker_id?: string;
+  broker?: string;
+  is_multifamily?: boolean;
   created_at?: string;
   updated_at?: string;
-  broker?: string;
-  image_url?: string;
-  description?: string;
   _highlight?: boolean;
-  
-  // Geocoding-related fields
+
+  // Location and geocoding fields
+  latitude?: number;
+  longitude?: number;
   verified_address?: string;
   geocoded_at?: string;
   
-  // Coordinate status flags
+  // Data quality and validation flags
   _coordinates_missing?: boolean;
   _needs_geocoding?: boolean;
   _geocoded?: boolean;
@@ -46,22 +54,40 @@ export interface Property {
   _outside_austin?: boolean;
   _coordinates_from_research?: boolean;
   _is_test_property?: boolean;
+  non_multifamily_detected?: boolean;
   
-  // Enhanced geocoding fields
+  // Geocoding process fields
   _geocoding_source?: 'existing' | 'verified_address' | 'full_address' | 'property_name';
   _geocoding_failed?: boolean;
   
-  // Data cleaning fields
+  // Data normalization and cleaning
   _data_cleaned?: boolean;
   _cleaning_notes?: string;
   _data_quality_issues?: string[];
+  cleaning_note?: string;
   
-  // Data enrichment fields
+  // Enrichment fields
   _data_enriched?: boolean;
   _enrichment_notes?: string;
+  _investment_metrics?: {
+    noi?: number;
+    cap_rate?: number;
+    price_per_sqft?: number;
+    occupancy_rate?: number;
+  };
+  _market_analysis?: {
+    market_rent?: number;
+    comp_properties?: string[];
+    market_vacancy?: number;
+  };
+  _risk_assessment?: {
+    risk_score?: number;
+    risk_factors?: string[];
+  };
   
-  // Research data
+  // Research and additional data
   _research?: any;
+  _additional_data?: Record<string, any>;
 }
 
 export interface PropertySearchParams {
