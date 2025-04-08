@@ -2,9 +2,12 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import OAuth2PasswordBearer
 
-from app.schemas.subscription import Subscription, SubscriptionCreate, SubscriptionUpdate
-from app.services.subscription_service import SubscriptionService
-from app.services.user_service import UserService
+from ....schemas.subscription import Subscription, SubscriptionCreate, SubscriptionUpdate
+from ....services.subscription_service import SubscriptionService
+from ....services.user_service import UserService
+from ....core.dependencies import get_current_active_user
+from ....schemas.user import User
+from ....schemas.api import APIResponse
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")

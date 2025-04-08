@@ -1,13 +1,17 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
-# Relative imports
-from app import schemas
-from app.services.brokerage_service import BrokerageService
-from app.core.dependencies import get_current_active_user
-from app.schemas.api import APIResponse
+# Change to relative imports
+from .... import schemas
+from ....services.brokerage_service import BrokerageService
+from ....core.dependencies import get_current_active_user
+from ....schemas.api import APIResponse
 
 router = APIRouter()
+
+# Dependency injection for BrokerageService (example)
+# def get_brokerage_service():
+#     return BrokerageService()
 
 @router.get("/", response_model=APIResponse[List[schemas.Brokerage]])
 async def get_brokerages(

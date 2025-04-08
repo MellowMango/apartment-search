@@ -2,15 +2,15 @@ import logging
 from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
-# Relative imports
-from app import schemas
-from app.services.broker_service import BrokerService
-from app.db.neo4j_client import Neo4jClient
-from app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
-from app.interfaces.api import ApiEndpoint
-from app.core.exceptions import ValidationError, NotFoundException, StorageException
-from app.core.dependencies import get_current_active_user # Assuming authentication is needed
-from app.schemas.api import APIResponse
+# Change to relative imports
+from .... import schemas
+from ....services.broker_service import BrokerService
+from ....db.neo4j_client import Neo4jClient
+from ....utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from ....interfaces.api import ApiEndpoint
+from ....core.exceptions import ValidationError, NotFoundException, StorageException
+from ....core.dependencies import get_current_active_user # Assuming authentication is needed
+from ....schemas.api import APIResponse
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -139,7 +139,7 @@ async def delete_broker(
 # This endpoint remains largely unchanged as it uses a different client and has specific logic
 # Consider refactoring Neo4jClient instantiation if using DI
 
-from app.db.neo4j_client import Neo4jClient # Moved import closer to usage
+from ....db.neo4j_client import Neo4jClient # Changed to relative import
 
 @router.get("/{broker_id}/network", response_model=APIResponse[List[Dict[str, Any]]]) # Changed response model
 async def get_broker_network(

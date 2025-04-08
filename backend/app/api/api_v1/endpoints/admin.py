@@ -4,22 +4,24 @@ from fastapi.security import OAuth2PasswordBearer
 from datetime import datetime, timedelta
 # from sqlalchemy.orm import Session # Likely unused
 import json
+import logging
 
-# Change back to absolute imports starting from app
-from app.core.dependencies import get_current_active_superuser
-from app import schemas # Import the top-level schemas
-from app.schemas.architecture import ArchitectureMetrics, LayerComponentCount
-from app.utils.monitoring import get_metrics, get_layer_metrics
-from app.schemas.api import APIResponse
-from app.services.user_service import UserService
-from app.services.property_service import PropertyService
-from app.services.broker_service import BrokerService
-from app.services.brokerage_service import BrokerageService
-from app.core.config import settings
-# from app.services.neo4j_sync import Neo4jSyncService # Assuming this exists
-# from app.services.metrics_service import MetricsService # Assuming this exists
-# from app.data_enrichment.database_extensions import EnrichmentDatabaseOps # Assuming structure
+# Change back to relative imports
+from ....core.dependencies import get_current_active_superuser
+from .... import schemas # Import the top-level schemas
+from ....schemas.architecture import ArchitectureMetrics, LayerComponentCount
+from ....utils.monitoring import get_metrics, get_layer_metrics
+from ....schemas.api import APIResponse
+from ....services.user_service import UserService
+from ....services.property_service import PropertyService
+from ....services.broker_service import BrokerService
+from ....services.brokerage_service import BrokerageService
+from ....core.config import settings
+# from ....services.neo4j_sync import Neo4jSyncService # Assuming this exists
+# from ....services.metrics_service import MetricsService # Assuming this exists
+# from ....data_enrichment.database_extensions import EnrichmentDatabaseOps # Assuming structure
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{settings.API_V1_STR}/auth/access-token")
 
@@ -334,3 +336,22 @@ async def save_current_metrics(
 #         return properties
 #     finally:
 #         await detector.db_ops.close() # Ensure db connection is closed 
+
+@router.post("/trigger-missing-info-detection", status_code=status.HTTP_202_ACCEPTED, response_model=APIResponse[Dict[str, str]])
+async def trigger_missing_info_detection_endpoint(
+    # ... existing code ...
+):
+    # Dynamically import here if needed to avoid circular dependencies
+    # from ....workers.missing_info_detector import MissingInfoDetector # Import here to avoid circular dependency
+    detector = MissingInfoDetector()
+    background_tasks.add_task(detector.run_detection)
+    # ... existing code ...
+
+@router.post("/test-missing-info-detection/{property_id}", status_code=status.HTTP_200_OK, response_model=APIResponse[Dict[str, Any]])
+async def test_missing_info_detection_for_property(
+    # ... existing code ...
+):
+    # Dynamically import here if needed to avoid circular dependencies
+    # from ....workers.missing_info_detector import MissingInfoDetector # Import here
+    detector = MissingInfoDetector()
+    # ... existing code ... 

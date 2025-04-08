@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
 from .endpoints import properties, users, auth, brokers, brokerages, subscriptions, admin #, corrections
-from scripts.batch_geocode_api import router as batch_geocode_router
+from backend.scripts.batch_geocode_api import router as batch_geocode_router
 
 api_router = APIRouter()
 api_router.include_router(properties.router, prefix="/properties", tags=["properties"])

@@ -7,6 +7,7 @@ from typing import List, Union, Dict, Set, Optional, Tuple, Type
 from pydantic_settings import BaseSettings, SettingsConfigDict
 import pydantic_settings
 from pydantic import AnyHttpUrl, validator, EmailStr, Field
+from functools import lru_cache
 
 class Settings(BaseSettings):
     """Application settings."""
@@ -154,7 +155,7 @@ class Settings(BaseSettings):
     class Config:
         # Explicitly set env_file path relative to this config file
         # Go up one level (core -> app) then to backend/.env
-        env_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env') 
+        env_file = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), '.env')
         case_sensitive = True
         extra = 'ignore'
         _env_file_encoding = 'utf-8'

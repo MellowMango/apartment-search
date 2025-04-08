@@ -24,9 +24,10 @@ from .schemas import User
 from .utils.error_handling import add_error_handlers
 from .utils.auth_session import AuthSessionMiddleware
 from .utils.monitoring import record_api_call, start_metrics_monitoring
-from .middleware.exceptions import ExceptionHandlerMiddleware
+from .middleware.exception_handler import ExceptionHandlerMiddleware
 from .middleware.request_tracker import RequestTrackerMiddleware
 from .middleware.rate_limiter import RateLimiterMiddleware
+from .db.session import engine, SessionLocal
 
 # Import the batch_geocode_api router from scripts
 # Keep this sys.path logic for now, although it's not ideal
@@ -151,6 +152,10 @@ async def startup_event():
         )
     )
     print("Started architecture metrics monitoring")
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # For direct uvicorn execution
 if __name__ == "__main__":

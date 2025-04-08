@@ -5,7 +5,7 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 # Relative imports
-from ..core.exceptions import BaseAppException, NotFoundException, ValidationError, StorageException
+from ..core.exceptions import APIException, NotFoundException, ValidationError, StorageException
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         content={"detail": exc.errors()},
     )
 
-async def base_app_exception_handler(request: Request, exc: BaseAppException):
+async def base_app_exception_handler(request: Request, exc: APIException):
     logger.error(f"{exc.__class__.__name__}: {exc.status_code} - {exc.message} - Details: {exc.details}")
     return JSONResponse(
         status_code=exc.status_code,
@@ -40,5 +40,5 @@ async def generic_exception_handler(request: Request, exc: Exception):
 def add_error_handlers(app: FastAPI):
     app.add_exception_handler(StarletteHTTPException, http_exception_handler)
     app.add_exception_handler(RequestValidationError, validation_exception_handler)
-    app.add_exception_handler(BaseAppException, base_app_exception_handler)
+    app.add_exception_handler(APIException, base_app_exception_handler)
     app.add_exception_handler(Exception, generic_exception_handler) 

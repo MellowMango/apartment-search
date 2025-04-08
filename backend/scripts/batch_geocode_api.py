@@ -29,10 +29,10 @@ logging.basicConfig(
 )
 logger = logging.getLogger("batch_geocode_api")
 
-# Revert to absolute imports starting with backend
+# Correct absolute imports based on actual structure
 from backend.data_enrichment.property_researcher import PropertyResearcher
-from backend.services.geocoding_service import GeocodingService
-from backend.core.config import settings
+from backend.app.services.geocoding_service import GeocodingService
+from backend.app.core.config import settings
 from backend.data_enrichment.database_extensions import EnrichmentDatabaseOps
 from backend.data_enrichment.cache_manager import ResearchCacheManager
 
@@ -367,5 +367,5 @@ async def get_geocoding_stats(
         logger.error(f"Error getting geocoding stats: {e}")
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error getting geocoding stats: {str(e)}"
+            detail="Error retrieving geocoding statistics"
         ) 

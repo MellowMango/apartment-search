@@ -2,8 +2,8 @@ from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.security import OAuth2PasswordBearer
 
-from app.schemas.user import User, UserCreate, UserUpdate
-from app.services.user_service import UserService
+from ....schemas.user import User, UserCreate, UserUpdate
+from ....services.user_service import UserService
 
 router = APIRouter()
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
