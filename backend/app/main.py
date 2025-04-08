@@ -34,16 +34,16 @@ from .db.session import engine, SessionLocal
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # TODO: Consider a better way to integrate script-based routers if needed
 # Maybe move the geocoding API into the main app structure?
-from scripts.batch_geocode_api import router as geocoding_router
+# from scripts.batch_geocode_api import router as geocoding_router
 
 # Initialize Sentry if DSN is provided
-if settings.SENTRY_DSN:
-    sentry_sdk.init(
-        dsn=settings.SENTRY_DSN,
-        environment=settings.SENTRY_ENVIRONMENT,
-        traces_sample_rate=settings.SENTRY_TRACES_SAMPLE_RATE,
-        integrations=[FastApiIntegration()]
-    )
+# if settings.SENTRY_DSN:
+#     sentry_sdk.init(
+#         dsn=settings.SENTRY_DSN,
+#         environment=settings.SENTRY_ENVIRONMENT,
+#         traces_sample_rate=settings.SENTRY_TRACES_SAMPLE_RATE,
+#         integrations=[FastApiIntegration()]
+#     )
 
 # Setup CORS for Socket.IO
 sio_origins_list: List[str] = []
