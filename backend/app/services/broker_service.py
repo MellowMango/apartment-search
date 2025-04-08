@@ -9,40 +9,46 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 import socketio
 import logging
+from uuid import UUID
 
-from app.core.config import settings
-from app.schemas.broker import BrokerCreate, BrokerUpdate, Broker
-from backend.app.models.broker_model import BrokerBase
-from app.db.supabase import get_supabase_client
-from app.db.neo4j_client import Neo4jClient
-from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
-from backend.app.interfaces.api import DataProvider
-from backend.app.interfaces.storage import PaginationParams, QueryResult
-from backend.app.db.repository_factory import get_repository_factory
-from backend.app.adapters.broker_adapter import BrokerAdapter
-from backend.app.db.unit_of_work import get_unit_of_work
+# Relative imports
+from ..core.config import settings
+from ..schemas import Broker, BrokerCreate, BrokerUpdate
+from ..models.broker_model import BrokerBase
+from ..core.exceptions import NotFoundException, StorageException
+from ..utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from ..interfaces.api import DataProvider
+from ..interfaces.storage import PaginationParams, QueryResult
+from ..interfaces.repository import BrokerRepository
+from ..db.repository_factory import get_repository_factory
+from ..adapters.broker_adapter import BrokerAdapter
+from ..db.unit_of_work import get_unit_of_work
+from ..db.supabase_client import get_supabase_client
+from ..db.neo4j_client import Neo4jClient
 
 logger = logging.getLogger(__name__)
 
 
-@layer(ArchitectureLayer.API)
+@layer(ArchitectureLayer.PROCESSING)
 class BrokerService(DataProvider):
     """Service for broker-related operations."""
     
-    def __init__(self, repository_factory=None):
+    def __init__(self):
         """
         Initialize the broker service.
-        
-        Args:
-            repository_factory: Factory for creating repositories
         """
-        factory = repository_factory or get_repository_factory()
-        self.broker_repository = factory.create_broker_repository()
+        # Always create repository using the factory
+        self.repository: BrokerRepository = get_repository_factory().create_broker_repository()
+        self.adapter = BrokerAdapter()
         
         # For backward compatibility
         self.supabase = get_supabase_client()
-        self.sio = socketio.AsyncClient()
-        self.broker_adapter = BrokerAdapter()
+        
+        # Initialize sio only if needed
+        if settings.ENABLE_REAL_TIME_UPDATES:
+            self.sio = socketio.AsyncClient()
+        else:
+            self.sio = None
     
     @log_cross_layer_call(ArchitectureLayer.API, ArchitectureLayer.STORAGE)
     async def get_brokers(
@@ -70,11 +76,11 @@ class BrokerService(DataProvider):
         pagination = PaginationParams(page=skip // limit + 1, page_size=limit)
         
         # Query brokers using repository
-        query_result = await self.broker_repository.list(filters, pagination)
+        query_result = await self.repository.list(filters, pagination)
         
         # Convert to Broker objects for API
         brokers = [
-            self.broker_adapter.to_schema(item, Broker)
+            self.adapter.to_schema(item, Broker)
             for item in query_result.items
         ]
         
@@ -91,13 +97,13 @@ class BrokerService(DataProvider):
         Returns:
             Broker if found, None otherwise
         """
-        broker = await self.broker_repository.get(broker_id)
+        broker = await self.repository.get(broker_id)
         
         if not broker:
             return None
         
         # Convert to Broker schema for API
-        return self.broker_adapter.to_schema(broker, Broker)
+        return self.adapter.to_schema(broker, Broker)
     
     @log_cross_layer_call(ArchitectureLayer.API, ArchitectureLayer.STORAGE)
     async def create_broker(self, broker_data: BrokerCreate) -> Broker:
@@ -122,7 +128,7 @@ class BrokerService(DataProvider):
             })
             
             # Convert to standardized model
-            broker_model = self.broker_adapter.to_standardized_model(broker_dict)
+            broker_model = self.adapter.to_standardized_model(broker_dict)
             
             # Create broker using repository
             result = await uow.broker_repository.create(broker_model)
@@ -134,14 +140,14 @@ class BrokerService(DataProvider):
             await self._sync_broker_to_neo4j(result.entity_id)
             
             # Notify clients about new broker
-            if settings.ENABLE_REAL_TIME_UPDATES:
-                broker_dict = self.broker_adapter.from_standardized_model(result.entity)
+            if self.sio and settings.ENABLE_REAL_TIME_UPDATES:
+                broker_dict = self.adapter.from_standardized_model(result.entity)
                 await self.sio.emit("broker_created", broker_dict)
             
             await uow.commit()
             
             # Convert to Broker schema for API
-            return self.broker_adapter.to_schema(result.entity, Broker)
+            return self.adapter.to_schema(result.entity, Broker)
     
     @log_cross_layer_call(ArchitectureLayer.API, ArchitectureLayer.STORAGE)
     async def update_broker(self, broker_id: str, broker_data: BrokerUpdate) -> Optional[Broker]:
@@ -180,14 +186,14 @@ class BrokerService(DataProvider):
             await self._sync_broker_to_neo4j(broker_id)
             
             # Notify clients about updated broker
-            if settings.ENABLE_REAL_TIME_UPDATES:
-                broker_dict = self.broker_adapter.from_standardized_model(result.entity)
+            if self.sio and settings.ENABLE_REAL_TIME_UPDATES:
+                broker_dict = self.adapter.from_standardized_model(result.entity)
                 await self.sio.emit("broker_updated", broker_dict)
             
             await uow.commit()
             
             # Convert to Broker schema for API
-            return self.broker_adapter.to_schema(result.entity, Broker)
+            return self.adapter.to_schema(result.entity, Broker)
     
     @log_cross_layer_call(ArchitectureLayer.API, ArchitectureLayer.STORAGE)
     async def delete_broker(self, broker_id: str) -> bool:
@@ -227,7 +233,7 @@ class BrokerService(DataProvider):
                 neo4j_client.close()
             
             # Notify clients about deleted broker
-            if settings.ENABLE_REAL_TIME_UPDATES:
+            if self.sio and settings.ENABLE_REAL_TIME_UPDATES:
                 await self.sio.emit("broker_deleted", {"id": broker_id})
             
             await uow.commit()
@@ -242,12 +248,12 @@ class BrokerService(DataProvider):
             broker_id: ID of the broker to sync
         """
         # Get broker data
-        broker_data = await self.broker_repository.get(broker_id)
+        broker_data = await self.repository.get(broker_id)
         if not broker_data:
             return
         
         # Convert to dict
-        broker_dict = self.broker_adapter.from_standardized_model(broker_data)
+        broker_dict = self.adapter.from_standardized_model(broker_data)
         
         # Convert datetime objects to strings
         if broker_dict.get("created_at"):

@@ -2,9 +2,10 @@ from typing import List, Optional, Dict, Any
 import jwt
 from datetime import datetime, timedelta
 
-from app.core.config import settings
-from app.schemas.user import UserCreate, UserUpdate, User
-from app.db.supabase import get_supabase_client
+# Relative imports
+from ..core.config import settings
+from ..schemas.user import UserCreate, UserUpdate, User
+from ..db.supabase_client import get_supabase_client
 
 class UserService:
     def __init__(self):

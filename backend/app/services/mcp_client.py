@@ -13,8 +13,10 @@ import json
 import aiohttp
 import asyncio
 from typing import Dict, Any, List, Optional, Union
-from backend.app.core.config import settings
 import httpx
+
+# Relative import
+from ..core.config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -29,8 +31,13 @@ class MCPClient:
         
         if self.server_type == "firecrawl":
             self.base_url = settings.MCP_FIRECRAWL_URL
+            self.headers = {
+                "Authorization": f"Bearer {settings.FIRECRAWL_API_KEY}",
+                "Content-Type": "application/json"
+            } if settings.FIRECRAWL_API_KEY else {"Content-Type": "application/json"}
         elif self.server_type == "playwright":
             self.base_url = settings.MCP_PLAYWRIGHT_URL
+            self.headers = {"Content-Type": "application/json"}
         else:
             raise ValueError(f"Unsupported MCP server type: {self.server_type}")
         
@@ -38,7 +45,7 @@ class MCPClient:
         self.max_concurrent_sessions = settings.MCP_MAX_CONCURRENT_SESSIONS
         self.semaphore = asyncio.Semaphore(self.max_concurrent_sessions)
         
-        logger.info(f"Initialized MCP client with server type: {self.server_type}")
+        logger.info(f"Initialized MCP client with server type: {self.server_type} at {self.base_url}")
     
     async def create_session(self) -> str:
         """

@@ -1,6 +1,9 @@
 from typing import Optional, List, Dict, Any
 from datetime import datetime
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, Field, HttpUrl, validator
+
+# Relative import
+from .base import BaseSchema, BaseCreateSchema, BaseUpdateSchema, BaseDBModel
 
 class PropertyBase(BaseModel):
     """Base Property model with common attributes."""
@@ -73,6 +76,17 @@ class Property(PropertyBase):
         """Pydantic configuration."""
         from_attributes = True
 
-class PropertyInDB(Property):
+class PropertyInDBBase(PropertyBase):
+    """Base property model as stored in DB (used for inheritance)."""
+    id: str
+    created_at: datetime
+    updated_at: datetime
+    date_first_appeared: datetime
+    
+    class Config:
+        orm_mode = True
+        from_attributes = True
+
+class PropertyInDB(PropertyInDBBase):
     """Property model as stored in the database."""
     pass 

@@ -1,14 +1,24 @@
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordRequestForm
+from datetime import timedelta
+from typing import Any
 
-from app.schemas.token import Token
-from app.schemas.user import UserCreate
-from app.services.auth_service import AuthService
-from app.services.user_service import UserService
+from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordRequestForm
+# Remove Session import if not used directly
+# from sqlalchemy.orm import Session
+
+# Relative imports - remove crud and models, keep schemas
+# from app import crud, models, schemas
+from .... import schemas # 4 dots to reach app level
+# from app.api import deps # Assuming deps is no longer needed with direct service injection
+# from app.core import security # Security functions likely moved to AuthService
+from ....core.config import settings # 4 dots to reach app/core
+from ....services.user_service import UserService # 4 dots to reach app/services
+from ....services.auth_service import AuthService # 4 dots to reach app/services
+from ....schemas.api import APIResponse # 4 dots to reach app/schemas
 
 router = APIRouter()
 
-@router.post("/token", response_model=Token)
+@router.post("/token", response_model=schemas.Token)
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     auth_service: AuthService = Depends()
@@ -25,9 +35,9 @@ async def login_for_access_token(
         )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.post("/register", response_model=Token)
+@router.post("/register", response_model=schemas.Token)
 async def register(
-    user_data: UserCreate,
+    user_data: schemas.UserCreate,
     auth_service: AuthService = Depends(),
     user_service: UserService = Depends()
 ):
@@ -42,7 +52,7 @@ async def register(
     
     return {"access_token": access_token, "token_type": "bearer"}
 
-@router.post("/refresh-token", response_model=Token)
+@router.post("/refresh-token", response_model=schemas.Token)
 async def refresh_token(
     token: str,
     auth_service: AuthService = Depends()

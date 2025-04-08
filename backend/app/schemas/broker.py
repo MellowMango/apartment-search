@@ -2,6 +2,9 @@ from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel, EmailStr, HttpUrl, Field
 
+# Relative import from within the same package
+from .base import BaseSchema, BaseCreateSchema, BaseUpdateSchema, BaseDBModel
+
 
 class BrokerBase(BaseModel):
     """Base Broker model with common attributes."""

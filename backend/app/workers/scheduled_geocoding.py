@@ -16,18 +16,22 @@ import asyncio
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional, Tuple
+import random
 
-from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
-from backend.app.interfaces.scheduled import ScheduledTask, TaskResult, TaskSchedule
+# Use relative imports within the app structure
+from app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from app.interfaces.scheduled import ScheduledTask, TaskResult, TaskSchedule
+from app.db.supabase_client import get_supabase_client
+from app.core.config import settings
 
 # Add directories to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-# Import required modules
-from backend.data_enrichment.property_researcher import PropertyResearcher
-from backend.data_enrichment.database_extensions import EnrichmentDatabaseOps
-from backend.data_enrichment.geocoding_service import GeocodingService
-from backend.data_enrichment.cache_manager import ResearchCacheManager
+# Commenting out imports outside the 'app' structure for now
+# from backend.data_enrichment.property_researcher import PropertyResearcher
+# from backend.data_enrichment.database_extensions import EnrichmentDatabaseOps
+# from backend.data_enrichment.geocoding_service import GeocodingService
+# from backend.data_enrichment.cache_manager import ResearchCacheManager
 
 # Configure logging
 logging.basicConfig(

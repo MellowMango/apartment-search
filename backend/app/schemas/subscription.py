@@ -1,6 +1,9 @@
-from typing import Optional
+from typing import Optional, List, Dict, Any
 from datetime import datetime
 from pydantic import BaseModel, Field
+
+# Relative import
+from .base import BaseSchema, BaseCreateSchema, BaseUpdateSchema, BaseDBModel
 
 class SubscriptionBase(BaseModel):
     """Base Subscription model with common attributes."""

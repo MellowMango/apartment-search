@@ -9,9 +9,13 @@ external API formats.
 from typing import Dict, Any, List, Optional, Type, TypeVar, Union
 from pydantic import BaseModel
 import logging
+from datetime import datetime
 
-from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
-from backend.app.models.property_model import PropertyBase, from_legacy_dict, to_legacy_dict
+# Relative imports
+from ..schemas import Property, PropertyCreate, PropertyUpdate
+# from ..models import Property as PropertyModel # This seems unused, PropertyBase is imported below
+from ..utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from ..models.property_model import PropertyBase, from_legacy_dict, to_legacy_dict
 
 logger = logging.getLogger(__name__)
 

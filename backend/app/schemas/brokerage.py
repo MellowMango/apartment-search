@@ -1,6 +1,10 @@
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from pydantic import BaseModel, HttpUrl
+
+# Relative imports
+from .base import BaseSchema, BaseCreateSchema, BaseUpdateSchema, BaseDBModel
+from .broker import Broker  # Import Broker for relationship
 
 class BrokerageBase(BaseModel):
     """Base Brokerage model with common attributes."""

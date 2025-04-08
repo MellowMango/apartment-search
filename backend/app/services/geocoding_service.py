@@ -16,14 +16,18 @@ import hashlib
 from datetime import datetime
 from typing import Dict, Any, List, Tuple, Optional, Union
 
-from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
-from backend.app.interfaces.repository import PropertyRepository
-from backend.app.interfaces.storage import StorageResult
-from backend.app.db.repository_factory import get_repository_factory
-from backend.app.db.unit_of_work import get_unit_of_work
-from backend.app.core.exceptions import GeocodingError, StorageException, NotFoundException
-from backend.app.core.config import settings
-from backend.app.utils.monitoring import record_external_api_call
+import httpx
+from sqlalchemy.orm import Session
+
+# Use relative imports
+from ..utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from ..interfaces.repository import PropertyRepository
+from ..interfaces.storage import StorageResult
+from ..db.repository_factory import get_repository_factory
+from ..db.unit_of_work import get_unit_of_work
+from ..core.exceptions import GeocodingError, StorageException, NotFoundException
+from ..core.config import settings
+from ..utils.monitoring import record_external_api_call
 
 logger = logging.getLogger(__name__)
 

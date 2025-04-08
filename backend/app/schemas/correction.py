@@ -1,6 +1,10 @@
 from typing import Dict, Any, List, Optional
 from datetime import datetime
-from pydantic import BaseModel, EmailStr, validator
+from pydantic import BaseModel, EmailStr, validator, Field
+from enum import Enum
+
+# Relative import
+from .base import BaseSchema, BaseCreateSchema, BaseUpdateSchema, BaseDBModel
 
 
 class CorrectionBase(BaseModel):
@@ -46,6 +50,24 @@ class CorrectionInDB(CorrectionBase):
     
     class Config:
         orm_mode = True
+
+
+class Correction(CorrectionInDB):
+    """Schema for representing a correction in API responses."""
+    pass
+
+
+class CorrectionUpdate(BaseModel):
+    """Schema for updating a correction, e.g., during review."""
+    status: Optional[str] = None
+    review_notes: Optional[str] = None
+    applied: Optional[bool] = None
+    
+    @validator('status', pre=True, always=True)
+    def validate_status(cls, v):
+        if v is not None and v not in ["pending", "approved", "rejected"]:
+            raise ValueError('Status must be one of: pending, approved, rejected')
+        return v
 
 
 class PropertyCorrectionResponse(CorrectionInDB):

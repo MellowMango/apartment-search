@@ -4,9 +4,10 @@ Celery tasks for syncing data from Supabase to Neo4j.
 import logging
 from datetime import datetime
 
-from app.workers.celery_app import celery_app
-from app.db.supabase import get_supabase_client
-from app.db.neo4j_client import Neo4jClient
+# Relative imports
+from ..celery_app import celery_app
+from ...db.supabase_client import get_supabase_client
+from ...db.neo4j_client import Neo4jClient
 
 logger = logging.getLogger(__name__)
 

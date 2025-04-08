@@ -5,8 +5,8 @@ This module provides standardized response models for all API endpoints.
 These models ensure consistent response formats across the API.
 """
 
-from typing import TypeVar, Generic, Optional, List, Dict, Any
 from pydantic import BaseModel, Field
+from typing import Generic, TypeVar, Optional, List, Dict, Any
 from pydantic.generics import GenericModel
 
 T = TypeVar('T')  # Generic type for the data field

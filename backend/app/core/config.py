@@ -3,9 +3,10 @@ Core configuration for the application.
 """
 
 import os
-from typing import List, Union, Dict, Set
-from pydantic_settings import BaseSettings
-from pydantic import AnyHttpUrl, validator
+from typing import List, Union, Dict, Set, Optional, Tuple, Type
+from pydantic_settings import BaseSettings, SettingsConfigDict
+import pydantic_settings
+from pydantic import AnyHttpUrl, validator, EmailStr, Field
 
 class Settings(BaseSettings):
     """Application settings."""
@@ -15,16 +16,17 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     ENVIRONMENT: str = os.getenv("ENVIRONMENT", "development")
     
-    # CORS
-    CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8080", "http://127.0.0.1:*"]
+    # CORS - Read as plain string, parse later
+    CORS_ORIGINS: str = "http://localhost:3000,http://localhost:8080,http://127.0.0.1:*"
     
-    @validator("CORS_ORIGINS", pre=True)
-    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
-        if isinstance(v, str) and not v.startswith("["):
-            return [i.strip() for i in v.split(",")]
-        elif isinstance(v, (list, str)):
-            return v
-        raise ValueError(v)
+    # Comment out validator (no longer needed for string)
+    # @validator("CORS_ORIGINS", pre=True, always=True)
+    # def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
+    #     if isinstance(v, str):
+    #         # If it's a string, assume comma-separated
+    #         return [i.strip() for i in v.split(",") if i.strip()]
+    #     # If it's already a list (e.g., from default), return as is
+    #     return v
         
     # API Security
     SENSITIVE_HEADERS: Set[str] = {
@@ -108,15 +110,15 @@ class Settings(BaseSettings):
     
     # Socket.IO
     SOCKETIO_PATH: str = "/socket.io"
-    SOCKETIO_CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://127.0.0.1:*"]
+    SOCKETIO_CORS_ORIGINS: str = "http://localhost:3000,http://localhost:3002"
     
-    @validator("SOCKETIO_CORS_ORIGINS", pre=True)
-    def assemble_socketio_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
-        if isinstance(v, str) and not v.startswith("["):
-            return [i.strip() for i in v.split(",")]
-        elif isinstance(v, (list, str)):
-            return v
-        raise ValueError(v)
+    # @validator("SOCKETIO_CORS_ORIGINS", pre=True)
+    # def assemble_socketio_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
+    #     if isinstance(v, str) and not v.startswith("["):
+    #         return [i.strip() for i in v.split(",")]
+    #     elif isinstance(v, (list, str)):
+    #         return v
+    #     raise ValueError(v)
     
     # Sentry
     SENTRY_DSN: str = ""
@@ -150,8 +152,26 @@ class Settings(BaseSettings):
     DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///./app.db")
     
     class Config:
-        env_file = ".env"
+        # Explicitly set env_file path relative to this config file
+        # Go up one level (core -> app) then to backend/.env
+        env_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env') 
         case_sensitive = True
+        extra = 'ignore'
+        _env_file_encoding = 'utf-8'
+
+    @classmethod
+    def settings_customise_sources(
+        cls,
+        settings_cls: Type[BaseSettings],
+        init_settings: pydantic_settings.sources.InitSettingsSource,
+        env_settings: pydantic_settings.sources.EnvSettingsSource,
+        dotenv_settings: pydantic_settings.sources.DotEnvSettingsSource,
+        file_secret_settings: pydantic_settings.sources.SecretsSettingsSource,
+    ) -> Tuple[pydantic_settings.sources.DotEnvSettingsSource, pydantic_settings.sources.InitSettingsSource]:
+        """Explicitly use only DotEnv and Init sources."""
+        # Ensure the .env file path is correct relative to the execution context
+        # Since we run from `backend`, it should find `.env`
+        return dotenv_settings, init_settings
 
 # Create settings instance
 settings = Settings() 

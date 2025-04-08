@@ -2,8 +2,9 @@ from typing import Optional
 import jwt
 from datetime import datetime, timedelta
 
-from app.core.config import settings
-from app.db.supabase import get_supabase_client
+# Relative imports
+from ..core.config import settings
+from ..db.supabase_client import get_supabase_client
 
 class AuthService:
     def __init__(self):

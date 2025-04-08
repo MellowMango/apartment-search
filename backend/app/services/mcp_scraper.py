@@ -11,11 +11,14 @@ from typing import Dict, Any, List, Optional
 from datetime import datetime
 import json
 from bs4 import BeautifulSoup
+import random
+import httpx
 
-from backend.app.services.mcp_client import mcp_client
-from backend.app.db.supabase import get_supabase_client
-from backend.app.core.config import settings
-from backend.app.models.data_models import PropertyDict
+# Use relative imports
+from .mcp_client import mcp_client
+from ..db.supabase_client import get_supabase_client
+from ..core.config import settings
+from ..models.data_models import PropertyDict
 
 logger = logging.getLogger(__name__)
 

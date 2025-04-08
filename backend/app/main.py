@@ -2,25 +2,37 @@
 Main FastAPI application module.
 """
 
+import asyncio
+import logging
+import os
+import sys
+import time
+from typing import List
+
+import sentry_sdk
+import socketio
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-import socketio
-import sentry_sdk
 from sentry_sdk.integrations.fastapi import FastApiIntegration
-import time
-import asyncio
+from starlette.middleware.sessions import SessionMiddleware
 
-from app.core.config import settings
-from app.api.api import api_router
-from backend.app.utils.monitoring import record_api_call, start_metrics_monitoring
-from backend.app.middleware.exception_handler import ExceptionHandlerMiddleware
-from backend.app.middleware.request_tracker import RequestTrackerMiddleware
-from backend.app.middleware.rate_limiter import RateLimiterMiddleware
+# Relative imports for app components
+from .core.config import settings
+from .api.api_v1.api import api_router
+from .core.dependencies import get_current_user
+from .schemas import User
+from .utils.error_handling import add_error_handlers
+from .utils.auth_session import AuthSessionMiddleware
+from .utils.monitoring import record_api_call, start_metrics_monitoring
+from .middleware.exceptions import ExceptionHandlerMiddleware
+from .middleware.request_tracker import RequestTrackerMiddleware
+from .middleware.rate_limiter import RateLimiterMiddleware
 
-# Import the batch_geocode_api router
-import sys
-import os
+# Import the batch_geocode_api router from scripts
+# Keep this sys.path logic for now, although it's not ideal
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+# TODO: Consider a better way to integrate script-based routers if needed
+# Maybe move the geocoding API into the main app structure?
 from scripts.batch_geocode_api import router as geocoding_router
 
 # Initialize Sentry if DSN is provided
@@ -32,26 +44,41 @@ if settings.SENTRY_DSN:
         integrations=[FastApiIntegration()]
     )
 
-# Create Socket.IO server
+# Setup CORS for Socket.IO
+sio_origins_list: List[str] = []
+if settings.SOCKETIO_CORS_ORIGINS:
+    sio_origins_list = [origin.strip() for origin in settings.SOCKETIO_CORS_ORIGINS.split(',')]
 sio = socketio.AsyncServer(
-    async_mode='asgi',
-    cors_allowed_origins=settings.CORS_ORIGINS
+    async_mode='asgi', 
+    cors_allowed_origins=sio_origins_list
 )
 
-# Create FastAPI app
+# Setup CORS for FastAPI
+app_origins_list: List[str] = []
+if settings.CORS_ORIGINS:
+    app_origins_list = [origin.strip() for origin in settings.CORS_ORIGINS.split(',')]
+
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f"{settings.API_V1_STR}/openapi.json"
 )
-
-# Set up CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[str(origin) for origin in settings.CORS_ORIGINS],
+    allow_origins=app_origins_list,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Add session middleware
+app.add_middleware(
+    SessionMiddleware, 
+    secret_key=settings.SECRET_KEY, 
+    max_age=settings.SESSION_EXPIRY_DAYS * 24 * 60 * 60
+)
+
+# Add custom AuthSessionMiddleware
+app.add_middleware(AuthSessionMiddleware)
 
 # Add middleware components in the correct order
 # Exception handling should be the first (outermost) middleware to catch all exceptions
@@ -83,6 +110,9 @@ app.add_middleware(
     ]
 )
 
+# Mount Socket.IO app
+socket_app = socketio.ASGIApp(sio, other_asgi_app=app)
+
 # Include API router
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
@@ -93,8 +123,8 @@ app.include_router(
     tags=["geocoding"]
 )
 
-# Create Socket.IO app
-socket_app = socketio.ASGIApp(sio, app)
+# Add error handlers
+add_error_handlers(app)
 
 # Socket.IO events
 @sio.event
@@ -125,4 +155,8 @@ async def startup_event():
 # For direct uvicorn execution
 if __name__ == "__main__":
     import uvicorn
+    # Adjust the run command to use the relative path if needed when run directly
+    # This depends on how you execute this script.
+    # If run from the `backend` directory: uvicorn app.main:socket_app ...
+    # If run from the workspace root: uvicorn backend.app.main:socket_app ...
     uvicorn.run("app.main:socket_app", host="0.0.0.0", port=8000, reload=True) 

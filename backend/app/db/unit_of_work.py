@@ -5,35 +5,37 @@ This module provides the UnitOfWork class that coordinates transactions
 across multiple repositories, ensuring data consistency and proper error handling.
 """
 
-from typing import Optional, Dict, Any, List
 import logging
+from abc import ABC, abstractmethod
+from typing import TypeVar, Generic, Optional, Dict, Any, List
 from contextlib import asynccontextmanager
 
-from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
-from backend.app.db.repository_factory import get_repository_factory
-from backend.app.interfaces.repository import PropertyRepository, BrokerRepository
-from backend.app.db.supabase_client import get_supabase_client
+from sqlalchemy.orm import Session
+from supabase import Client
+
+# Relative imports
+from ..utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from .repository_factory import get_repository_factory, RepositoryFactory
+from ..interfaces.repository import PropertyRepository, BrokerRepository
+from .supabase_client import get_supabase_client # Keep this for direct access if needed by UoW logic
 
 logger = logging.getLogger(__name__)
 
+T = TypeVar('T') # Generic type for context (e.g., Session or Client)
 
-@layer(ArchitectureLayer.STORAGE)
-class UnitOfWork:
-    """
-    Unit of Work for coordinating transactions across repositories.
+class UnitOfWork(ABC, Generic[T]):
+    """Abstract base class for Unit of Work pattern."""
     
-    This class manages transaction boundaries and ensures consistency
-    when operations span multiple repositories.
-    """
-    
-    def __init__(self, factory=None):
+    def __init__(self, context: T, repository_factory: Optional[RepositoryFactory] = None):
         """
         Initialize the unit of work.
         
         Args:
-            factory: Repository factory to use (optional)
+            context: The context object (e.g., Session or Client)
+            repository_factory: Repository factory to use (optional)
         """
-        self.factory = factory or get_repository_factory()
+        self.context = context
+        self.factory = repository_factory or get_repository_factory()
         self.property_repository = None
         self.broker_repository = None
         self.supabase = get_supabase_client()

@@ -11,8 +11,9 @@ from pydantic import BaseModel
 import logging
 from datetime import datetime
 
-from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
-from backend.app.models.broker_model import BrokerBase, from_legacy_dict, to_legacy_dict
+# Relative imports
+from ..utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from ..models.broker_model import BrokerBase, from_legacy_dict, to_legacy_dict
 
 logger = logging.getLogger(__name__)
 

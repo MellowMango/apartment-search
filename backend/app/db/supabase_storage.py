@@ -6,21 +6,28 @@ that follows the architecture's layered design.
 """
 
 import time
+import logging
 from typing import Dict, Any, List, Optional, Generic, TypeVar, Union
 from datetime import datetime
+from uuid import UUID
 
 from supabase import Client
+from postgrest.exceptions import APIError
 
-from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
-from backend.app.interfaces.storage import StorageReader, StorageWriter, PaginationParams, QueryResult, StorageResult
-from backend.app.utils.monitoring import record_storage_operation
-from backend.app.db.supabase_client import get_supabase_client
+# Relative imports
+from app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from app.interfaces.storage import StorageReader, StorageWriter, PaginationParams, QueryResult, StorageResult
+from app.utils.monitoring import record_storage_operation
+from app.db.supabase_client import get_supabase_client
+from app.core.exceptions import StorageException
+
+logger = logging.getLogger(__name__)
 
 T = TypeVar('T')  # Generic type for the entity
 K = TypeVar('K')  # Generic type for the entity key/ID
 
 @layer(ArchitectureLayer.STORAGE)
-class SupabaseStorage(StorageReader[Dict[str, Any], str], StorageWriter[Dict[str, Any], str]):
+class SupabaseStorage(StorageReader[T], StorageWriter[T], Generic[T]):
     """
     Supabase storage implementation that follows the standard storage interfaces.
     

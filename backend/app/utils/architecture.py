@@ -21,6 +21,11 @@ import functools
 import logging
 import time
 import inspect
+import asyncio
+import sys
+
+# Relative import
+from .monitoring import record_cross_layer_call
 
 logger = logging.getLogger(__name__)
 
@@ -77,15 +82,13 @@ def get_all_tagged_classes() -> Dict[ArchitectureLayer, List[str]]:
     Returns:
         A dictionary mapping layers to lists of class names
     """
-    import sys
-    import inspect
-    
     result = {layer: [] for layer in ArchitectureLayer}
     
     # This is a simplified approach - in a real implementation,
     # we would use a more sophisticated module discovery mechanism
     for module_name, module in sys.modules.items():
-        if not module_name.startswith('backend.app'):
+        # Adjust check for relative imports within the app
+        if not module_name.startswith(('app.', 'backend.app.')): # Check both possibilities depending on run context
             continue
             
         for name, obj in inspect.getmembers(module):

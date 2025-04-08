@@ -5,22 +5,28 @@ This module provides concrete implementations of broker repository methods
 using Supabase as the storage backend.
 """
 
-from typing import Dict, Any, List, Optional, Union, cast
-from datetime import datetime
 import logging
+from typing import List, Dict, Optional, Any
+from uuid import UUID
+from datetime import datetime
 
-from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
-from backend.app.interfaces.storage import StorageResult, QueryResult, PaginationParams
-from backend.app.interfaces.repository import BrokerRepository
-from backend.app.schemas.broker import BrokerBase, Broker
-from backend.app.db.supabase_client import get_supabase_client
-from backend.app.adapters.broker_adapter import BrokerAdapter
+from supabase import Client
+from postgrest.exceptions import APIError
+
+# Relative imports
+from ..utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from ..interfaces.storage import StorageResult, QueryResult, PaginationParams
+from ..interfaces.repository import BrokerRepository
+from ..schemas.broker import BrokerBase, Broker
+from ..db.supabase_client import get_supabase_client
+from ..adapters.broker_adapter import BrokerAdapter
+from ..core.exceptions import StorageException
 
 logger = logging.getLogger(__name__)
 
 
 @layer(ArchitectureLayer.STORAGE)
-class SupabaseBrokerRepository(BrokerRepository[BrokerBase]):
+class SupabaseBrokerRepository(BrokerRepository):
     """
     Supabase implementation of the broker repository interface.
     
@@ -74,9 +80,9 @@ class SupabaseBrokerRepository(BrokerRepository[BrokerBase]):
             
             # Ensure timestamps
             now = datetime.utcnow()
-            if "created_at" not in broker_dict:
+            if "created_at" not in broker_dict or not broker_dict["created_at"]:
                 broker_dict["created_at"] = now
-            if "updated_at" not in broker_dict:
+            if "updated_at" not in broker_dict or not broker_dict["updated_at"]:
                 broker_dict["updated_at"] = now
             
             # Insert into database
@@ -143,7 +149,7 @@ class SupabaseBrokerRepository(BrokerRepository[BrokerBase]):
             if not response.data or len(response.data) == 0:
                 return StorageResult(
                     success=False,
-                    error=f"Broker with ID {id} not found",
+                    error=f"Broker with ID {id} not found after update attempt",
                     entity_id=id
                 )
             
@@ -248,27 +254,26 @@ class SupabaseBrokerRepository(BrokerRepository[BrokerBase]):
             # Execute query
             response = query.execute()
             
-            # Convert to standardized models
-            standardized_brokers = [
+            # Convert results to standardized models
+            items = [
                 self.broker_adapter.to_standardized_model(item) 
                 for item in response.data
             ]
             
             return QueryResult(
-                success=True,
-                items=standardized_brokers,
+                items=items,
                 total_count=total_count,
                 page=pagination.page,
                 page_size=pagination.page_size
             )
         except Exception as e:
             logger.error(f"Error listing brokers: {str(e)}")
+            # Return empty result on error
             return QueryResult(
-                success=False,
-                error=f"Error listing brokers: {str(e)}",
+                items=[],
                 total_count=0,
                 page=pagination.page if pagination else 1,
-                page_size=pagination.page_size if pagination else 100
+                page_size=pagination.page_size if pagination else 0
             )
     
     @log_cross_layer_call(ArchitectureLayer.STORAGE, ArchitectureLayer.STORAGE)

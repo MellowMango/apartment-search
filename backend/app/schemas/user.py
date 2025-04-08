@@ -2,6 +2,9 @@ from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel, EmailStr, Field
 
+# Relative import
+from .base import BaseSchema, BaseDBModel
+
 class UserBase(BaseModel):
     """Base User model with common attributes."""
     email: EmailStr

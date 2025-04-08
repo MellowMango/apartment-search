@@ -9,18 +9,21 @@ the specific implementation details.
 from typing import Dict, Any, List, Optional, Type
 import logging
 import os
+from abc import ABC, abstractmethod
 
-from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
-from backend.app.interfaces.repository import (
+# Relative imports
+from ..utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from ..interfaces.repository import (
     RepositoryFactory as IRepositoryFactory,
     PropertyRepository,
     BrokerRepository,
     GraphRepository
 )
-from backend.app.db.supabase_repository import SupabasePropertyRepository
-from backend.app.db.supabase_broker_repository import SupabaseBrokerRepository
+from .supabase_repository import SupabasePropertyRepository
+from .supabase_broker_repository import SupabaseBrokerRepository
 # This will be imported once implemented
-# from backend.app.db.neo4j_repository import Neo4jPropertyRepository
+# from .neo4j_repository import Neo4jPropertyRepository
+from ..core.config import settings
 
 logger = logging.getLogger(__name__)
 

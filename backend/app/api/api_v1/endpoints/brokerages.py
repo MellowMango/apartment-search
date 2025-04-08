@@ -1,12 +1,15 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 
-from app.schemas.brokerage import Brokerage, BrokerageCreate, BrokerageUpdate
+# Relative imports
+from app import schemas
 from app.services.brokerage_service import BrokerageService
+from app.core.dependencies import get_current_active_user
+from app.schemas.api import APIResponse
 
 router = APIRouter()
 
-@router.get("/", response_model=List[Brokerage])
+@router.get("/", response_model=APIResponse[List[schemas.Brokerage]])
 async def get_brokerages(
     skip: int = 0,
     limit: int = 100,
@@ -16,13 +19,22 @@ async def get_brokerages(
     """
     Get all brokerages with optional filtering.
     """
-    return await brokerage_service.get_brokerages(
+    brokerages = await brokerage_service.get_brokerages(
         skip=skip,
         limit=limit,
         name=name
     )
+    # Assuming get_brokerages returns a list that can be wrapped
+    # Need total count for proper pagination if BrokerageService provides it
+    total_count = len(brokerages) # Placeholder
+    return APIResponse.paginated_response(
+        data=brokerages, 
+        page=(skip // limit) + 1, 
+        page_size=limit, 
+        total_items=total_count # Replace with actual total count if available
+    )
 
-@router.get("/{brokerage_id}", response_model=Brokerage)
+@router.get("/{brokerage_id}", response_model=APIResponse[schemas.Brokerage])
 async def get_brokerage(
     brokerage_id: str,
     brokerage_service: BrokerageService = Depends()
@@ -32,51 +44,46 @@ async def get_brokerage(
     """
     brokerage_data = await brokerage_service.get_brokerage(brokerage_id)
     if brokerage_data is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Brokerage not found"
-        )
-    return brokerage_data
+        raise NotFoundException(f"Brokerage with ID {brokerage_id} not found")
+    return APIResponse.success_response(data=brokerage_data)
 
-@router.post("/", response_model=Brokerage, status_code=status.HTTP_201_CREATED)
+@router.post("/", response_model=APIResponse[schemas.Brokerage], status_code=status.HTTP_201_CREATED)
 async def create_brokerage(
-    brokerage_data: BrokerageCreate,
-    brokerage_service: BrokerageService = Depends()
+    brokerage_data: schemas.BrokerageCreate,
+    brokerage_service: BrokerageService = Depends(),
+    current_user: schemas.User = Depends(get_current_active_user) # Require auth to create
 ):
     """
     Create a new brokerage.
     """
-    return await brokerage_service.create_brokerage(brokerage_data)
+    created_brokerage = await brokerage_service.create_brokerage(brokerage_data)
+    return APIResponse.success_response(data=created_brokerage, message="Brokerage created successfully")
 
-@router.put("/{brokerage_id}", response_model=Brokerage)
+@router.put("/{brokerage_id}", response_model=APIResponse[schemas.Brokerage])
 async def update_brokerage(
     brokerage_id: str,
-    brokerage_data: BrokerageUpdate,
-    brokerage_service: BrokerageService = Depends()
+    brokerage_data: schemas.BrokerageUpdate,
+    brokerage_service: BrokerageService = Depends(),
+    current_user: schemas.User = Depends(get_current_active_user) # Require auth to update
 ):
     """
     Update a brokerage.
     """
     updated_brokerage = await brokerage_service.update_brokerage(brokerage_id, brokerage_data)
     if updated_brokerage is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Brokerage not found"
-        )
-    return updated_brokerage
+        raise NotFoundException(f"Brokerage with ID {brokerage_id} not found")
+    return APIResponse.success_response(data=updated_brokerage, message="Brokerage updated successfully")
 
 @router.delete("/{brokerage_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_brokerage(
     brokerage_id: str,
-    brokerage_service: BrokerageService = Depends()
+    brokerage_service: BrokerageService = Depends(),
+    current_user: schemas.User = Depends(get_current_active_user) # Require auth to delete
 ):
     """
     Delete a brokerage.
     """
     deleted = await brokerage_service.delete_brokerage(brokerage_id)
     if not deleted:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="Brokerage not found"
-        )
-    return None 
+        raise NotFoundException(f"Brokerage with ID {brokerage_id} not found")
+    return None # Return None for 204 No Content 

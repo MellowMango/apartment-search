@@ -3,30 +3,37 @@ from datetime import datetime
 import socketio
 import logging
 
-from app.core.config import settings
-from app.schemas.property import PropertyCreate, PropertyUpdate, Property
-from app.db.supabase import get_supabase_client
-from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
-from backend.app.interfaces.api import DataProvider, ApiResponse
-from backend.app.interfaces.storage import PaginationParams, QueryResult, StorageResult
-from backend.app.interfaces.repository import PropertyRepository
-from backend.app.models.property_model import PropertyBase
-from backend.app.adapters.property_adapter import PropertyAdapter
-from backend.app.db.repository_factory import get_repository_factory
+# Relative imports
+from ..core.config import settings
+from ..schemas import Property, PropertyCreate, PropertyUpdate
+from ..core.exceptions import NotFoundException, StorageException
+from ..utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from ..interfaces.api import DataProvider, ApiResponse # ApiResponse seems unused
+from ..interfaces.storage import PaginationParams, QueryResult, StorageResult
+from ..interfaces.repository import PropertyRepository
+from ..models.property_model import PropertyBase # This is the standardized model
+from ..adapters.property_adapter import PropertyAdapter
+from ..db.repository_factory import get_repository_factory
+from ..db.unit_of_work import get_unit_of_work
+from ..db.supabase_client import get_supabase_client # Added for Supabase client
 
 logger = logging.getLogger(__name__)
 
-@layer(ArchitectureLayer.API)
+@layer(ArchitectureLayer.PROCESSING)
 class PropertyService(DataProvider):
-    def __init__(self, repository_factory=None):
-        # Get repository through factory
-        factory = repository_factory or get_repository_factory()
-        self.property_repository = factory.create_property_repository()
+    def __init__(self):
+        # Always create repository using the factory
+        self.repository: PropertyRepository = get_repository_factory().create_property_repository()
+        self.adapter = PropertyAdapter()
         
-        # Legacy client for backward compatibility and real-time updates
+        # Supabase client instance
         self.supabase = get_supabase_client()
-        self.sio = socketio.AsyncClient()
-        self.property_adapter = PropertyAdapter()
+        
+        # SocketIO client (consider initializing only if needed)
+        if settings.ENABLE_REAL_TIME_UPDATES:
+            self.sio = socketio.AsyncClient()
+        else:
+            self.sio = None
     
     @log_cross_layer_call(ArchitectureLayer.API, ArchitectureLayer.STORAGE)
     async def get_by_id(self, entity_id: str) -> Optional[PropertyBase]:
@@ -42,7 +49,7 @@ class PropertyService(DataProvider):
             Standardized property model if found, None otherwise
         """
         # Use repository instead of direct database access
-        return await self.property_repository.get(entity_id)
+        return await self.repository.get(entity_id)
     
     @log_cross_layer_call(ArchitectureLayer.API, ArchitectureLayer.STORAGE)
     async def query(
@@ -63,7 +70,7 @@ class PropertyService(DataProvider):
             QueryResult containing matching properties and metadata
         """
         # Use repository list method with filters and pagination
-        return await self.property_repository.list(filters, pagination)
+        return await self.repository.list(filters, pagination)
     
     # Legacy methods for backward compatibility
     async def get_properties(
@@ -110,7 +117,7 @@ class PropertyService(DataProvider):
         # Convert standardized models to legacy Property objects
         properties = []
         for standardized_property in result.items:
-            legacy_dict = self.property_adapter.from_standardized_model(standardized_property)
+            legacy_dict = self.adapter.from_standardized_model(standardized_property)
             properties.append(Property(**legacy_dict))
         
         return properties
@@ -129,7 +136,7 @@ class PropertyService(DataProvider):
             return None
         
         # Convert standardized model to legacy Property object
-        legacy_dict = self.property_adapter.from_standardized_model(standardized_property)
+        legacy_dict = self.adapter.from_standardized_model(standardized_property)
         return Property(**legacy_dict)
     
     @log_cross_layer_call(ArchitectureLayer.API, ArchitectureLayer.STORAGE)
@@ -144,13 +151,13 @@ class PropertyService(DataProvider):
             StorageResult containing the created property or error information
         """
         # Use repository to create property
-        result = await self.property_repository.create(property_data)
+        result = await self.repository.create(property_data)
         
         # Handle real-time notifications if needed
-        if result.success and settings.ENABLE_REAL_TIME_UPDATES:
+        if result.success and self.sio and settings.ENABLE_REAL_TIME_UPDATES:
             try:
                 # Convert to legacy format for notification
-                legacy_dict = self.property_adapter.from_standardized_model(result.entity)
+                legacy_dict = self.adapter.from_standardized_model(result.entity)
                 await self.sio.emit("property_created", legacy_dict)
             except Exception as e:
                 logger.warning(f"Failed to send real-time update: {str(e)}")
@@ -165,7 +172,7 @@ class PropertyService(DataProvider):
         New code should use the create_standardized_property() method instead.
         """
         # Convert to standardized model
-        standardized_data = self.property_adapter.from_schema(property_data)
+        standardized_data = self.adapter.from_schema(property_data)
         
         # Use the new create method
         result = await self.create_standardized_property(standardized_data)
@@ -174,7 +181,7 @@ class PropertyService(DataProvider):
             raise ValueError(result.error)
             
         # Convert back to legacy format
-        legacy_dict = self.property_adapter.from_standardized_model(result.entity)
+        legacy_dict = self.adapter.from_standardized_model(result.entity)
         return Property(**legacy_dict)
     
     @log_cross_layer_call(ArchitectureLayer.API, ArchitectureLayer.STORAGE)
@@ -190,13 +197,13 @@ class PropertyService(DataProvider):
             StorageResult containing the updated property or error information
         """
         # Use repository to update property
-        result = await self.property_repository.update(entity_id, property_data)
+        result = await self.repository.update(entity_id, property_data)
         
         # Handle real-time notifications if needed
-        if result.success and settings.ENABLE_REAL_TIME_UPDATES:
+        if result.success and self.sio and settings.ENABLE_REAL_TIME_UPDATES:
             try:
                 # Convert to legacy format for notification
-                legacy_dict = self.property_adapter.from_standardized_model(result.entity)
+                legacy_dict = self.adapter.from_standardized_model(result.entity)
                 await self.sio.emit("property_updated", legacy_dict)
             except Exception as e:
                 logger.warning(f"Failed to send real-time update: {str(e)}")
@@ -226,7 +233,7 @@ class PropertyService(DataProvider):
             return None
             
         # Convert back to legacy model
-        legacy_dict = self.property_adapter.from_standardized_model(result.entity)
+        legacy_dict = self.adapter.from_standardized_model(result.entity)
         return Property(**legacy_dict)
     
     @log_cross_layer_call(ArchitectureLayer.API, ArchitectureLayer.STORAGE)
@@ -241,10 +248,10 @@ class PropertyService(DataProvider):
             StorageResult indicating success or failure
         """
         # Use repository to delete property
-        result = await self.property_repository.delete(entity_id)
+        result = await self.repository.delete(entity_id)
         
         # Handle real-time notifications if needed
-        if result.success and settings.ENABLE_REAL_TIME_UPDATES:
+        if result.success and self.sio and settings.ENABLE_REAL_TIME_UPDATES:
             try:
                 await self.sio.emit("property_deleted", {"id": entity_id})
             except Exception as e:
@@ -277,7 +284,7 @@ class PropertyService(DataProvider):
         Returns:
             List of properties within the radius
         """
-        return await self.property_repository.get_by_coordinates(
+        return await self.repository.get_by_coordinates(
             latitude=latitude, 
             longitude=longitude, 
             radius=radius
@@ -297,7 +304,7 @@ class PropertyService(DataProvider):
         Returns:
             Property if found, None otherwise
         """
-        return await self.property_repository.get_by_address(
+        return await self.repository.get_by_address(
             street=street,
             city=city,
             state=state
@@ -316,7 +323,7 @@ class PropertyService(DataProvider):
         Returns:
             StorageResult containing the updated property or error information
         """
-        return await self.property_repository.mark_as_verified(
+        return await self.repository.mark_as_verified(
             id=property_id,
             verified=verified
         )

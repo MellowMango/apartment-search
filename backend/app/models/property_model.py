@@ -6,10 +6,14 @@ representation of property data throughout the system. This model can be used
 in all layers with appropriate adapters for compatibility with legacy code.
 """
 
-from datetime import datetime
 from typing import Optional, List, Dict, Any, Union
+from datetime import datetime
 from pydantic import BaseModel, Field, validator
+from enum import Enum
 import uuid
+
+# Relative imports
+from ..utils.parsing import try_parse_float, try_parse_int, safe_parse_date
 
 class Address(BaseModel):
     """Address representation for properties"""
@@ -155,14 +159,14 @@ class PropertyUpdate(BaseModel):
 
 
 # Legacy adapter functions
-def from_legacy_dict(legacy_data: Dict[str, Any]) -> PropertyBase:
+def from_legacy_dict(data: Dict[str, Any]) -> PropertyBase:
     """Convert legacy property format to standardized model
     
     This function handles differences between the old property format
     and the new standardized model, ensuring smooth migration.
     """
     # Create a copy to avoid modifying the original
-    data = legacy_data.copy()
+    data = data.copy()
     
     # Handle address conversion
     if "address" in data and isinstance(data["address"], str):
@@ -214,14 +218,14 @@ def from_legacy_dict(legacy_data: Dict[str, Any]) -> PropertyBase:
         # Fall back to allowing extra fields if there are validation errors
         return PropertyBase.construct(**data)
 
-def to_legacy_dict(property_data: PropertyBase) -> Dict[str, Any]:
+def to_legacy_dict(model: PropertyBase) -> Dict[str, Any]:
     """Convert standardized model to legacy format
     
     This function converts the standardized property model back to the
     format expected by legacy code, ensuring backward compatibility.
     """
     # Start with the model as a dict
-    data = property_data.dict(exclude_none=True)
+    data = model.dict(exclude_none=True)
     
     # Extract nested address
     if "address" in data and isinstance(data["address"], dict):

@@ -18,12 +18,19 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional, Tuple, Set
+import random
 
 # Add parent directory to path to allow imports
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
 # Import required modules
-from backend.data_enrichment.database_extensions import EnrichmentDatabaseOps
+from app.db.supabase_client import get_supabase_client
+from app.core.config import settings
+from app.services.property_service import PropertyService
+from app.services.broker_service import BrokerService
+
+# Commenting out imports outside the 'app' structure for now
+# from backend.data_enrichment.database_extensions import EnrichmentDatabaseOps
 
 # Configure logging
 logging.basicConfig(

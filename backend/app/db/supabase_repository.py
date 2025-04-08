@@ -5,22 +5,27 @@ This module implements the repository interfaces using Supabase as the
 storage backend, providing concrete data access methods.
 """
 
-from typing import Dict, Any, List, Optional, Union, cast
-from datetime import datetime
 import logging
+from typing import List, Dict, Optional, Any
+from uuid import UUID
+from datetime import datetime
 
-from backend.app.utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
-from backend.app.interfaces.storage import StorageResult, QueryResult, PaginationParams
-from backend.app.interfaces.repository import Repository, PropertyRepository
-from backend.app.models.property_model import PropertyBase, from_legacy_dict
-from backend.app.db.supabase_client import get_supabase_client
-from backend.app.adapters.property_adapter import PropertyAdapter
+from supabase import Client
+from postgrest.exceptions import APIError
+
+from ..utils.architecture import layer, ArchitectureLayer, log_cross_layer_call
+from ..interfaces.storage import StorageResult, QueryResult, PaginationParams
+from ..interfaces.repository import Repository, PropertyRepository
+from ..models.property_model import PropertyBase, from_legacy_dict
+from .supabase_client import get_supabase_client
+from ..adapters.property_adapter import PropertyAdapter
+from ..core.exceptions import StorageException
 
 logger = logging.getLogger(__name__)
 
 
 @layer(ArchitectureLayer.STORAGE)
-class SupabasePropertyRepository(PropertyRepository[PropertyBase]):
+class SupabasePropertyRepository(PropertyRepository):
     """
     Supabase implementation of the property repository interface.
     
@@ -74,9 +79,9 @@ class SupabasePropertyRepository(PropertyRepository[PropertyBase]):
             
             # Ensure timestamps
             now = datetime.utcnow()
-            if "date_first_appeared" not in property_dict:
+            if "date_first_appeared" not in property_dict or not property_dict["date_first_appeared"]:
                 property_dict["date_first_appeared"] = now
-            if "date_updated" not in property_dict:
+            if "date_updated" not in property_dict or not property_dict["date_updated"]:
                 property_dict["date_updated"] = now
             
             # Insert into database
@@ -128,11 +133,26 @@ class SupabasePropertyRepository(PropertyRepository[PropertyBase]):
                 )
             
             # Convert to legacy format for database
-            property_dict = self.property_adapter.from_standardized_model(entity)
+            # Make sure not to overwrite existing fields unintentionally
+            update_data = entity.dict(exclude_unset=True) 
+            # Convert nested models if necessary
+            if 'address' in update_data and isinstance(update_data['address'], dict):
+                update_data['address_street'] = update_data['address'].get('street')
+                # ... map other address fields ...
+                del update_data['address']
+            if 'coordinates' in update_data and isinstance(update_data['coordinates'], dict):
+                update_data['latitude'] = update_data['coordinates'].get('latitude')
+                # ... map other coordinate fields ...
+                del update_data['coordinates']
+
+            property_dict = self.property_adapter.from_standardized_model(PropertyBase(**update_data)) 
+
             
             # Remove ID from update data if present
             if "id" in property_dict:
                 del property_dict["id"]
+            if "property_id" in property_dict:
+                 del property_dict["property_id"]
             
             # Update timestamp
             property_dict["date_updated"] = datetime.utcnow()
@@ -143,7 +163,7 @@ class SupabasePropertyRepository(PropertyRepository[PropertyBase]):
             if not response.data or len(response.data) == 0:
                 return StorageResult(
                     success=False,
-                    error=f"Property with ID {id} not found",
+                    error=f"Property with ID {id} not found after update attempt",
                     entity_id=id
                 )
             
@@ -156,7 +176,7 @@ class SupabasePropertyRepository(PropertyRepository[PropertyBase]):
                 entity_id=updated_property.property_id
             )
         except Exception as e:
-            logger.error(f"Error updating property {id}: {str(e)}")
+            logger.error(f"Error updating property {id}: {str(e)}", exc_info=True)
             return StorageResult(
                 success=False,
                 error=f"Error updating property: {str(e)}",
@@ -219,42 +239,48 @@ class SupabasePropertyRepository(PropertyRepository[PropertyBase]):
             query = self.supabase.table("properties").select("*")
             
             # Apply filters
-            if "status" in filters:
-                query = query.eq("status", filters["status"])
-            if "min_units" in filters:
-                query = query.gte("num_units", filters["min_units"])
-            if "max_units" in filters:
-                query = query.lte("num_units", filters["max_units"])
-            if "min_year_built" in filters:
-                query = query.gte("year_built", filters["min_year_built"])
-            if "max_year_built" in filters:
-                query = query.lte("year_built", filters["max_year_built"])
-            if "brokerage" in filters:
-                query = query.eq("brokerage_id", filters["brokerage"])
-            if "broker" in filters:
-                query = query.eq("broker_id", filters["broker"])
-            if "is_multifamily" in filters:
-                query = query.eq("is_multifamily", filters["is_multifamily"])
-            if "city" in filters:
-                query = query.eq("city", filters["city"])
-            if "state" in filters:
-                query = query.eq("state", filters["state"])
-            
-            # Get count (using a separate query)
+            # Map standardized filter keys to legacy database column names
+            filter_mapping = {
+                "status": "status",
+                "min_units": "units_count",
+                "max_units": "units_count",
+                "min_year_built": "year_built",
+                "max_year_built": "year_built",
+                "brokerage": "brokerage_id",
+                "broker": "broker_id",
+                "is_multifamily": "is_multifamily",
+                "city": "city",
+                "state": "state",
+                "zip_code": "zip_code"
+            }
+
+            for filter_key, filter_value in filters.items():
+                db_column = filter_mapping.get(filter_key)
+                if db_column:
+                    if filter_key == "min_units" or filter_key == "min_year_built":
+                        query = query.gte(db_column, filter_value)
+                    elif filter_key == "max_units" or filter_key == "max_year_built":
+                        query = query.lte(db_column, filter_value)
+                    elif filter_key == "brokerage" or filter_key == "broker": # Assuming these are IDs
+                         query = query.eq(db_column, filter_value)
+                    else:
+                        query = query.eq(db_column, filter_value)
+                else:
+                     logger.warning(f"Unsupported filter key: {filter_key}")
+
+            # Get count (using a separate query with the same filters)
             count_query = self.supabase.table("properties").select("id", count="exact")
             for filter_key, filter_value in filters.items():
-                if filter_key == "min_units":
-                    count_query = count_query.gte("num_units", filter_value)
-                elif filter_key == "max_units":
-                    count_query = count_query.lte("num_units", filter_value)
-                elif filter_key == "min_year_built":
-                    count_query = count_query.gte("year_built", filter_value)
-                elif filter_key == "max_year_built":
-                    count_query = count_query.lte("year_built", filter_value)
-                else:
-                    # Apply other filters if applicable
-                    if filter_key in ["status", "brokerage", "broker", "is_multifamily", "city", "state"]:
-                        count_query = count_query.eq(filter_key, filter_value)
+                db_column = filter_mapping.get(filter_key)
+                if db_column:
+                    if filter_key == "min_units" or filter_key == "min_year_built":
+                        count_query = count_query.gte(db_column, filter_value)
+                    elif filter_key == "max_units" or filter_key == "max_year_built":
+                        count_query = count_query.lte(db_column, filter_value)
+                    elif filter_key == "brokerage" or filter_key == "broker":
+                         count_query = count_query.eq(db_column, filter_value)
+                    else:
+                        count_query = count_query.eq(db_column, filter_value)
             
             count_response = count_query.execute()
             total_count = count_response.count if hasattr(count_response, 'count') else 0
@@ -268,27 +294,26 @@ class SupabasePropertyRepository(PropertyRepository[PropertyBase]):
             # Execute query
             response = query.execute()
             
-            # Convert to standardized models
-            standardized_properties = [
+            # Convert results to standardized models
+            items = [
                 self.property_adapter.to_standardized_model(item) 
                 for item in response.data
             ]
             
             return QueryResult(
-                success=True,
-                items=standardized_properties,
+                items=items,
                 total_count=total_count,
                 page=pagination.page,
                 page_size=pagination.page_size
             )
         except Exception as e:
-            logger.error(f"Error listing properties: {str(e)}")
+            logger.error(f"Error listing properties: {str(e)}", exc_info=True)
+            # Return empty result on error
             return QueryResult(
-                success=False,
-                error=f"Error listing properties: {str(e)}",
+                items=[],
                 total_count=0,
                 page=pagination.page if pagination else 1,
-                page_size=pagination.page_size if pagination else 100
+                page_size=pagination.page_size if pagination else 0
             )
     
     @log_cross_layer_call(ArchitectureLayer.STORAGE, ArchitectureLayer.STORAGE)

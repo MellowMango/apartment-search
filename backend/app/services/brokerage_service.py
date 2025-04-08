@@ -2,15 +2,20 @@ from typing import List, Optional, Dict, Any
 from datetime import datetime
 import socketio
 
-from app.core.config import settings
-from app.schemas.brokerage import BrokerageCreate, BrokerageUpdate, Brokerage
-from app.db.supabase import get_supabase_client
-from app.db.neo4j_client import Neo4jClient
+# Relative imports
+from ..core.config import settings
+from ..schemas.brokerage import BrokerageCreate, BrokerageUpdate, Brokerage
+from ..db.supabase_client import get_supabase_client
+from ..db.neo4j_client import Neo4jClient
 
 class BrokerageService:
     def __init__(self):
         self.supabase = get_supabase_client()
-        self.sio = socketio.AsyncClient()
+        # Initialize sio only if needed
+        if settings.ENABLE_REAL_TIME_UPDATES:
+            self.sio = socketio.AsyncClient()
+        else:
+            self.sio = None
     
     async def get_brokerages(
         self,
@@ -69,7 +74,7 @@ class BrokerageService:
         await self._sync_brokerage_to_neo4j(brokerage_id)
         
         # Notify clients about new brokerage
-        if settings.ENABLE_REAL_TIME_UPDATES:
+        if self.sio and settings.ENABLE_REAL_TIME_UPDATES:
             await self.sio.emit("brokerage_created", response.data[0])
         
         return Brokerage(**response.data[0])
@@ -97,7 +102,7 @@ class BrokerageService:
         await self._sync_brokerage_to_neo4j(brokerage_id)
         
         # Notify clients about updated brokerage
-        if settings.ENABLE_REAL_TIME_UPDATES:
+        if self.sio and settings.ENABLE_REAL_TIME_UPDATES:
             await self.sio.emit("brokerage_updated", response.data[0])
         
         return Brokerage(**response.data[0])
@@ -128,7 +133,7 @@ class BrokerageService:
             neo4j_client.close()
         
         # Notify clients about deleted brokerage
-        if settings.ENABLE_REAL_TIME_UPDATES:
+        if self.sio and settings.ENABLE_REAL_TIME_UPDATES:
             await self.sio.emit("brokerage_deleted", {"id": brokerage_id})
         
         return True

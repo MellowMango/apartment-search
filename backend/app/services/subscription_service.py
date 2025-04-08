@@ -1,8 +1,9 @@
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 
-from app.schemas.subscription import SubscriptionCreate, SubscriptionUpdate, Subscription
-from app.db.supabase import get_supabase_client
+# Relative imports
+from ..schemas.subscription import SubscriptionCreate, SubscriptionUpdate, Subscription
+from ..db.supabase_client import get_supabase_client
 
 class SubscriptionService:
     def __init__(self):

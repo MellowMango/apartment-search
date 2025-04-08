@@ -1,25 +1,18 @@
 # Import schemas
-from .user import User, UserCreate, UserUpdate, UserInDB
 from .token import Token, TokenPayload
-from .property import Property, PropertyCreate, PropertyUpdate, PropertyInDB
-from .broker import Broker, BrokerCreate, BrokerUpdate, BrokerInDB
-from .brokerage import Brokerage, BrokerageCreate, BrokerageUpdate, BrokerageInDB
-from .subscription import Subscription, SubscriptionCreate, SubscriptionUpdate, SubscriptionInDB
+from .user import User, UserCreate, UserInDB, UserUpdate
+from .property import Property, PropertyCreate, PropertyUpdate, PropertyInDBBase
+from .broker import Broker, BrokerCreate, BrokerUpdate
+from .brokerage import Brokerage, BrokerageCreate, BrokerageUpdate
+from .subscription import Subscription, SubscriptionCreate, SubscriptionUpdate
+from .correction import Correction, CorrectionCreate, CorrectionUpdate
+from .api import APIResponse
 from .missing_info import (
     PropertyWithMissingInfo, 
     MissingInfoReport, 
     MissingInfoReportDetail, 
     BrokerEmailInfo, 
     MissingInfoEmailResult
-)
-from .correction import (
-    CorrectionBase,
-    CorrectionCreate,
-    CorrectionReview,
-    CorrectionInDB,
-    PropertyCorrectionResponse,
-    PendingCorrectionsCount,
-    PropertyCorrectionsListResponse
 )
 from .architecture import (
     ArchitectureMetrics,
@@ -43,17 +36,18 @@ __all__ = [
     # Property schemas
     "Property", "PropertyCreate", "PropertyUpdate", "PropertyInDB",
     # Broker schemas
-    "Broker", "BrokerCreate", "BrokerUpdate", "BrokerInDB",
+    "Broker", "BrokerCreate", "BrokerUpdate",
     # Brokerage schemas
-    "Brokerage", "BrokerageCreate", "BrokerageUpdate", "BrokerageInDB",
+    "Brokerage", "BrokerageCreate", "BrokerageUpdate",
     # Subscription schemas
-    "Subscription", "SubscriptionCreate", "SubscriptionUpdate", "SubscriptionInDB",
+    "Subscription", "SubscriptionCreate", "SubscriptionUpdate",
+    # Correction schemas
+    "Correction", "CorrectionCreate", "CorrectionUpdate",
+    # API schemas
+    "APIResponse",
     # Missing info schemas
     "PropertyWithMissingInfo", "MissingInfoReport", "MissingInfoReportDetail",
     "BrokerEmailInfo", "MissingInfoEmailResult",
-    # Correction schemas
-    "CorrectionBase", "CorrectionCreate", "CorrectionReview", "CorrectionInDB",
-    "PropertyCorrectionResponse", "PendingCorrectionsCount", "PropertyCorrectionsListResponse",
     # Architecture schemas
     "ArchitectureMetrics", "CrossLayerMetrics", "LayerComponentCount", "ArchitectureInfo",
     "DiagnosticResult", "AllDiagnosticsResult", "DiagnosticHistory", "DiagnosticSummary",

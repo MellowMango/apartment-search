@@ -24,13 +24,15 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta
 from typing import Dict, Any, List, Optional, Tuple
+import random
+from collections import Counter
 
 # Add root directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 # Import required modules
-from backend.data_enrichment.database_extensions import EnrichmentDatabaseOps
-from backend.tests.geocoding.test_geocoding_validation import GeocodingValidator
+# from backend.data_enrichment.database_extensions import EnrichmentDatabaseOps
+# from backend.tests.geocoding.test_geocoding_validation import GeocodingValidator
 
 # Configure logging
 logging.basicConfig(
@@ -63,8 +65,8 @@ class GeocodingMonitor:
             sample_size: Number of properties to sample for monitoring
             email_recipients: List of email addresses to receive alerts
         """
-        self.db_ops = EnrichmentDatabaseOps()
-        self.validator = GeocodingValidator()
+        # self.db_ops = EnrichmentDatabaseOps()
+        # self.validator = GeocodingValidator()
         self.alert_threshold = alert_threshold
         self.sample_size = sample_size
         self.email_recipients = email_recipients or []

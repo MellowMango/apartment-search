@@ -15,6 +15,7 @@ from functools import wraps
 import threading
 import asyncio
 from collections import defaultdict
+import sentry_sdk
 
 logger = logging.getLogger(__name__)
 
@@ -238,54 +239,39 @@ def log_cross_layer_calls(logger_instance=None) -> Callable:
             start_time = time.time()
             source = kwargs.pop('source_layer', 'unknown')
             target = kwargs.pop('target_layer', 'unknown')
+            error_occurred = False
             
             try:
                 log.debug(f"Cross-layer call: {source} -> {target} | Function: {func.__name__}")
                 result = await func(*args, **kwargs)
-                duration_ms = (time.time() - start_time) * 1000
-                
-                # Record metrics
-                record_cross_layer_call(source, target, duration_ms)
-                
-                log.debug(f"Cross-layer call completed: {source} -> {target} | "
-                          f"Duration: {duration_ms:.2f}ms")
                 return result
             except Exception as e:
-                duration_ms = (time.time() - start_time) * 1000
-                
-                # Record error metrics
-                record_cross_layer_call(source, target, duration_ms, error=True)
-                
-                log.error(f"Cross-layer call failed: {source} -> {target} | Error: {str(e)}")
+                error_occurred = True
+                log.error(f"Error in cross-layer call {source} -> {target}: {e}")
                 raise
-                
+            finally:
+                duration_ms = (time.time() - start_time) * 1000
+                record_cross_layer_call(source, target, duration_ms, error=error_occurred)
+        
         @wraps(func)
         def sync_wrapper(*args, **kwargs):
             start_time = time.time()
             source = kwargs.pop('source_layer', 'unknown')
             target = kwargs.pop('target_layer', 'unknown')
+            error_occurred = False
             
             try:
                 log.debug(f"Cross-layer call: {source} -> {target} | Function: {func.__name__}")
                 result = func(*args, **kwargs)
-                duration_ms = (time.time() - start_time) * 1000
-                
-                # Record metrics
-                record_cross_layer_call(source, target, duration_ms)
-                
-                log.debug(f"Cross-layer call completed: {source} -> {target} | "
-                          f"Duration: {duration_ms:.2f}ms")
                 return result
             except Exception as e:
-                duration_ms = (time.time() - start_time) * 1000
-                
-                # Record error metrics
-                record_cross_layer_call(source, target, duration_ms, error=True)
-                
-                log.error(f"Cross-layer call failed: {source} -> {target} | Error: {str(e)}")
+                error_occurred = True
+                log.error(f"Error in cross-layer call {source} -> {target}: {e}")
                 raise
+            finally:
+                duration_ms = (time.time() - start_time) * 1000
+                record_cross_layer_call(source, target, duration_ms, error=error_occurred)
         
-        # Choose the appropriate wrapper based on whether the function is async
         if asyncio.iscoroutinefunction(func):
             return async_wrapper
         else:
@@ -293,38 +279,28 @@ def log_cross_layer_calls(logger_instance=None) -> Callable:
             
     return decorator
 
-# Initialize the metrics directory if configured
-METRICS_DIR = os.getenv("ARCHITECTURE_METRICS_DIR")
-if METRICS_DIR:
-    os.makedirs(METRICS_DIR, exist_ok=True)
-
-# Function to periodically save metrics if enabled
 async def start_metrics_monitoring(
     interval_seconds: int = 3600,
     filepath_template: str = "architecture_metrics_{timestamp}.json"
 ) -> None:
     """
-    Start a background task to periodically save metrics.
+    Start background task to periodically save metrics.
     
     Args:
-        interval_seconds: How often to save metrics (default: hourly)
-        filepath_template: Template for the output filename (uses {timestamp})
+        interval_seconds: How often to save metrics (in seconds)
+        filepath_template: Template for the metrics filename
     """
+    logger.info(f"Starting periodic metrics monitoring (interval: {interval_seconds}s)")
+    
     while True:
+        await asyncio.sleep(interval_seconds)
+        
         try:
-            # Generate filename with timestamp
-            timestamp = datetime.utcnow().strftime("%Y%m%d_%H%M%S")
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
             filepath = filepath_template.format(timestamp=timestamp)
-            
-            # If metrics directory is configured, save there
-            if METRICS_DIR:
-                filepath = os.path.join(METRICS_DIR, filepath)
-                
-            # Save metrics
             await save_metrics_to_file(filepath)
             
+            # Optionally, reset metrics after saving
+            # reset_metrics()
         except Exception as e:
-            logger.error(f"Error in metrics monitoring: {e}")
-            
-        # Wait for next interval
-        await asyncio.sleep(interval_seconds)
+            logger.error(f"Error during periodic metrics saving: {e}")

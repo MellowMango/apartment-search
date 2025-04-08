@@ -4,9 +4,10 @@ import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-from app.workers.celery_app import celery_app
-from app.db.supabase import get_supabase_client
-from app.core.config import settings
+# Relative imports
+from ..celery_app import celery_app
+from ...db.supabase_client import get_supabase_client
+from ...core.config import settings
 
 logger = logging.getLogger(__name__)
 

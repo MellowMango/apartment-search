@@ -6,10 +6,13 @@ representation of broker data throughout the system. This model can be used
 in all layers with appropriate adapters for compatibility with legacy code.
 """
 
+from typing import Optional, List, Dict, Any
 from datetime import datetime
-from typing import Optional, Dict, Any
 from pydantic import BaseModel, Field, EmailStr, HttpUrl, validator
 import uuid
+
+# Relative imports
+from ..utils.parsing import try_parse_float, try_parse_int, safe_parse_date
 
 class BrokerBase(BaseModel):
     """Base model for broker data throughout the system"""
