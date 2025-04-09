@@ -34,7 +34,7 @@ from .db.session import engine, SessionLocal
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # TODO: Consider a better way to integrate script-based routers if needed
 # Maybe move the geocoding API into the main app structure?
-# from scripts.batch_geocode_api import router as geocoding_router
+from scripts.batch_geocode_api import router as geocoding_router
 
 # Initialize Sentry if DSN is provided
 # if settings.SENTRY_DSN:
@@ -74,8 +74,8 @@ app.add_middleware(
 # Add session middleware
 app.add_middleware(
     SessionMiddleware, 
-    secret_key=settings.SECRET_KEY, 
-    max_age=settings.SESSION_EXPIRY_DAYS * 24 * 60 * 60
+    secret_key=settings.AUTH_SECRET_KEY,
+    max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 24 * 60 * 60
 )
 
 # Add custom AuthSessionMiddleware
