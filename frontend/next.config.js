@@ -6,7 +6,6 @@ const nextConfig = {
   pageExtensions: ['tsx', 'ts', 'jsx', 'js'],
   // Use src directory to correctly detect pages
   experimental: {
-    appDir: false,  // Keep using pages directory
   },
   images: {
     domains: ['images.unsplash.com'],
