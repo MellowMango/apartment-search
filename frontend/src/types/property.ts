@@ -33,7 +33,7 @@ export interface Property {
   images?: string[];
   image_url?: string;
   broker_id?: string;
-  broker?: string;
+  broker?: Broker;
   is_multifamily?: boolean;
   created_at?: string;
   updated_at?: string;
