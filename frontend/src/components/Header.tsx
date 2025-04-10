@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import AuthContext, { useAuth } from '../contexts/AuthContext';
-import { Button } from '../../components/ui/button';
+import { Button } from '@components/ui/button';
 import { cn } from '../utils/utils';
 
 interface NavLinkProps {
