@@ -368,23 +368,27 @@ const MapSearch: FC<{
   }, []);
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-    setShowResults(true);
-  };
-
-  const filteredProperties = useMemo(() => {
-    if (!searchTerm) return [];
+    const term = e.target.value;
+    setSearchTerm(term);
     
-    const searchLower = searchTerm.toLowerCase();
-    return properties
+    if (term.length < 2) {
+      setFilteredResults([]);
+      return;
+    }
+
+    const searchLower = term.toLowerCase();
+    const results = properties
       .filter(property => {
         const matchName = property.name?.toLowerCase().includes(searchLower);
         const matchAddress = property.address?.toLowerCase().includes(searchLower);
-        const matchBroker = property.broker?.toLowerCase().includes(searchLower);
+        const matchBroker = property.broker?.name?.toLowerCase().includes(searchLower);
         return matchName || matchAddress || matchBroker;
       })
       .slice(0, 5); // Limit to 5 results for better performance
-  }, [properties, searchTerm]);
+
+    setFilteredResults(results);
+    setShowResults(true);
+  };
 
   const handleSelect = (property: Property) => {
     onPropertySelect(property);
@@ -424,9 +428,9 @@ const MapSearch: FC<{
         )}
       </div>
       
-      {showResults && filteredProperties.length > 0 && (
+      {showResults && filteredResults.length > 0 && (
         <div className="absolute w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg overflow-hidden">
-          {filteredProperties.map((property) => (
+          {filteredResults.map((property) => (
             <button
               key={property.id}
               onClick={() => handleSelect(property)}
@@ -462,7 +466,7 @@ const MapSearch: FC<{
         </div>
       )}
       
-      {showResults && searchTerm && filteredProperties.length === 0 && (
+      {showResults && searchTerm && filteredResults.length === 0 && (
         <div className="absolute w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg">
           <div className="px-4 py-3 text-sm text-gray-500 dark:text-gray-400 text-center">
             No properties found matching "{searchTerm}"
@@ -539,7 +543,7 @@ const PropertiesList: FC<{
           return (
             property.name?.toLowerCase().includes(searchLower) ||
             property.address?.toLowerCase().includes(searchLower) ||
-            property.broker?.toLowerCase().includes(searchLower)
+            property.broker?.name?.toLowerCase().includes(searchLower)
           );
         }
 
