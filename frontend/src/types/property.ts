@@ -39,6 +39,14 @@ export interface Property {
   updated_at?: string;
   _highlight?: boolean;
 
+  // Financials (flattened)
+  noi?: number;
+  occupancy?: number; // Or occupancy_rate?
+  avg_rent?: number; // Or market_rent?
+  year_renovated?: number;
+  lot_size?: number;
+  building_size?: number;
+
   // Location and geocoding fields
   latitude?: number;
   longitude?: number;

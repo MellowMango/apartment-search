@@ -122,7 +122,7 @@ const PropertyDetails: FC<PropertyDetailsProps> = ({ property, onClose }) => {
           <h1 className="text-2xl font-bold mt-3">{property.name}</h1>
           <p className="text-gray-600">{property.address}</p>
           <div className="mt-2">
-            <span className={`inline-block px-3 py-1 rounded-full text-sm ${getStatusClass(property.status)}`}>
+            <span className={`inline-block px-3 py-1 rounded-full text-sm ${getStatusClass(property.status ?? '')}`}>
               {property.status}
             </span>
             {property.created_at && (
