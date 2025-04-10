@@ -353,6 +353,7 @@ const MapSearch: FC<{
 }> = ({ properties, onPropertySelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showResults, setShowResults] = useState(false);
+  const [filteredResults, setFilteredResults] = useState<Property[]>([]);
   const searchRef = useRef<HTMLDivElement>(null);
 
   // Close search results when clicking outside
