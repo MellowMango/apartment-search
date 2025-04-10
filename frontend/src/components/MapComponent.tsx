@@ -1312,124 +1312,129 @@ const MapComponent: FC<MapComponentProps> = ({
               showCoverageOnHover={false}  // Disable coverage display which can be distracting
               disableClusteringAtZoom={18} // Disable clustering at maximum zoom
             >
-              {filteredProperties.map((property) => {
-                // Find properties at same location
-                const sameLocationProperties = findPropertiesAtSameLocation(property);
-                const hasMultipleProperties = sameLocationProperties.length > 0;
-                
-                return (
-                <Marker
-                  key={property.id}
-                  position={[property.latitude, property.longitude]}
-                  icon={getMarkerIcon(property)}
-                  eventHandlers={{
-                    click: () => {
-                      // Find the original property in the properties array to make sure we have the latest data
-                      const originalProperty = properties.find(p => p.id === property.id) || property;
-                      setSelectedProperty(originalProperty);
-                    },
-                  }}
-                >
-                  <Popup>
-                    <div className="min-w-[220px]">
-                      <div className="flex items-start justify-between">
-                        <h3 className="font-bold text-lg">{property.name}</h3>
-                        {/* Normalize and display status */}
-                        <span className={`px-2 py-1 rounded-full text-xs ${
-                          property.status?.toLowerCase().includes('available') || 
-                          property.status?.toLowerCase().includes('active') || 
-                          property.status === 'Actively Marketed'
-                            ? 'bg-green-100 text-green-800' 
-                            : property.status?.toLowerCase().includes('contract') || 
-                              property.status?.toLowerCase().includes('pending')
-                            ? 'bg-yellow-100 text-yellow-800' 
-                            : 'bg-red-100 text-red-800'
-                        }`}>
-                          {property.status?.toLowerCase().includes('available') || 
-                           property.status?.toLowerCase().includes('active') 
-                            ? 'Available'
-                            : property.status?.toLowerCase().includes('contract')
-                            ? 'Under Contract'
-                            : property.status || 'Unknown'}
-                        </span>
-                      </div>
-                      
-                      {/* Address with verification */}
-                      <div className="mt-2">
-                        <p className="text-gray-600 flex items-center">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                          </svg>
-                          {property.verified_address || property.address}
-                          {property.verified_address && (
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1 text-green-500" viewBox="0 0 20 20" fill="currentColor">
-                              <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              {filteredProperties
+                .filter(property => 
+                  typeof property.latitude === 'number' && 
+                  typeof property.longitude === 'number'
+                )
+                .map((property) => {
+                  // Find properties at same location
+                  const sameLocationProperties = findPropertiesAtSameLocation(property);
+                  const hasMultipleProperties = sameLocationProperties.length > 0;
+                  
+                  return (
+                  <Marker
+                    key={property.id}
+                    position={[property.latitude as number, property.longitude as number]}
+                    icon={getMarkerIcon(property)}
+                    eventHandlers={{
+                      click: () => {
+                        // Find the original property in the properties array to make sure we have the latest data
+                        const originalProperty = properties.find(p => p.id === property.id) || property;
+                        setSelectedProperty(originalProperty);
+                      },
+                    }}
+                  >
+                    <Popup>
+                      <div className="min-w-[220px]">
+                        <div className="flex items-start justify-between">
+                          <h3 className="font-bold text-lg">{property.name}</h3>
+                          {/* Normalize and display status */}
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            property.status?.toLowerCase().includes('available') || 
+                            property.status?.toLowerCase().includes('active') || 
+                            property.status === 'Actively Marketed'
+                              ? 'bg-green-100 text-green-800' 
+                              : property.status?.toLowerCase().includes('contract') || 
+                                property.status?.toLowerCase().includes('pending')
+                              ? 'bg-yellow-100 text-yellow-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {property.status?.toLowerCase().includes('available') || 
+                             property.status?.toLowerCase().includes('active') 
+                              ? 'Available'
+                              : property.status?.toLowerCase().includes('contract')
+                              ? 'Under Contract'
+                              : property.status || 'Unknown'}
+                          </span>
+                        </div>
+                        
+                        {/* Address with verification */}
+                        <div className="mt-2">
+                          <p className="text-gray-600 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                             </svg>
-                          )}
-                        </p>
-                      </div>
+                            {property.verified_address || property.address}
+                            {property.verified_address && (
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                              </svg>
+                            )}
+                          </p>
+                        </div>
 
-                      {/* Property details grid */}
-                      <div className="grid grid-cols-2 gap-3 mt-3">
-                        <div className="bg-gray-50 p-2 rounded">
-                          <span className="text-gray-500 text-xs block">Units</span>
-                          <p className="font-medium">{property.num_units || property.units || 'N/A'}</p>
-                        </div>
-                        <div className="bg-gray-50 p-2 rounded">
-                          <span className="text-gray-500 text-xs block">Year Built</span>
-                          <p className="font-medium">{property.year_built || 'N/A'}</p>
-                        </div>
-                        {property.square_feet && (
+                        {/* Property details grid */}
+                        <div className="grid grid-cols-2 gap-3 mt-3">
                           <div className="bg-gray-50 p-2 rounded">
-                            <span className="text-gray-500 text-xs block">Square Feet</span>
-                            <p className="font-medium">{property.square_feet.toLocaleString()}</p>
+                            <span className="text-gray-500 text-xs block">Units</span>
+                            <p className="font-medium">{property.num_units || property.units || 'N/A'}</p>
+                          </div>
+                          <div className="bg-gray-50 p-2 rounded">
+                            <span className="text-gray-500 text-xs block">Year Built</span>
+                            <p className="font-medium">{property.year_built || 'N/A'}</p>
+                          </div>
+                          {property.square_feet && (
+                            <div className="bg-gray-50 p-2 rounded">
+                              <span className="text-gray-500 text-xs block">Square Feet</span>
+                              <p className="font-medium">{property.square_feet.toLocaleString()}</p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Multiple properties indicator */}
+                        {hasMultipleProperties && (
+                          <div className="mt-3 bg-blue-50 p-2 rounded">
+                            <p className="text-sm text-blue-700 font-medium">
+                              {sameLocationProperties.length + 1} properties at this location
+                            </p>
+                            <div className="mt-1 max-h-32 overflow-y-auto">
+                              {sameLocationProperties.map((relatedProperty) => (
+                                <div 
+                                  key={relatedProperty.id}
+                                  className="text-xs p-1 hover:bg-blue-100 rounded cursor-pointer"
+                                  onClick={() => {
+                                    const originalRelatedProperty = properties.find(p => p.id === relatedProperty.id) || relatedProperty;
+                                    setSelectedProperty(originalRelatedProperty);
+                                  }}
+                                >
+                                  <div className="font-medium">{relatedProperty.name}</div>
+                                  <div className="text-blue-600">{relatedProperty.num_units || relatedProperty.units} units</div>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         )}
-                      </div>
 
-                      {/* Multiple properties indicator */}
-                      {hasMultipleProperties && (
-                        <div className="mt-3 bg-blue-50 p-2 rounded">
-                          <p className="text-sm text-blue-700 font-medium">
-                            {sameLocationProperties.length + 1} properties at this location
-                          </p>
-                          <div className="mt-1 max-h-32 overflow-y-auto">
-                            {sameLocationProperties.map((relatedProperty) => (
-                              <div 
-                                key={relatedProperty.id}
-                                className="text-xs p-1 hover:bg-blue-100 rounded cursor-pointer"
-                                onClick={() => {
-                                  const originalRelatedProperty = properties.find(p => p.id === relatedProperty.id) || relatedProperty;
-                                  setSelectedProperty(originalRelatedProperty);
-                                }}
-                              >
-                                <div className="font-medium">{relatedProperty.name}</div>
-                                <div className="text-blue-600">{relatedProperty.num_units || relatedProperty.units} units</div>
-                              </div>
-                            ))}
-                          </div>
+                        {/* Property link */}
+                        <div className="mt-3 pt-3 border-t border-gray-200">
+                          <a 
+                            href={`/properties/${property.id}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:text-blue-800 text-sm flex items-center"
+                          >
+                            View Full Details
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                          </a>
                         </div>
-                      )}
-
-                      {/* Property link */}
-                      <div className="mt-3 pt-3 border-t border-gray-200">
-                        <a 
-                          href={`/properties/${property.id}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-800 text-sm flex items-center"
-                        >
-                          View Full Details
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                          </svg>
-                        </a>
                       </div>
-                    </div>
-                  </Popup>
-                </Marker>
-              )})}
+                    </Popup>
+                  </Marker>
+                )})}
             </CustomMarkerClusterGroup>
           )}
           
