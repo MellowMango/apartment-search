@@ -24,7 +24,7 @@
       "@contexts/*": ["src/contexts/*"],
       "@types/*": ["src/types/*"],
       "@utils/*": ["src/utils/*"],
-      "@styles/*": ["src/styles/*", "styles/*"],
+      "@styles/*": ["src/styles/*"],
       "@lib/*": ["lib/*"]
     }
   },
