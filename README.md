@@ -1,210 +1,316 @@
-# Acquire Apartments
+# Lynnapse
 
-A comprehensive web application for tracking multifamily property listings in Austin, Texas.
+A comprehensive web scraping system for university programs, faculty, and research lab websites.
 
 ## Project Overview
 
-Acquire Apartments is a web-based application designed to aggregate and display active listings of multifamily properties for sale in Austin, Texas. This tool aims to provide real estate investors, brokers, and other industry professionals with a comprehensive, up-to-date view of the Austin multifamily market.
+Lynnapse is a Python-based web scraping application designed to systematically collect and organize information about university academic programs, faculty members, and their associated research laboratories. This tool provides researchers, academic administrators, and data analysts with a comprehensive view of university research landscapes.
 
 ## Features
 
-- Interactive map showing all active multifamily property listings
-- Detailed property information (units, year built, status, etc.)
-- Automated data aggregation from broker emails and websites
-- Search and filter functionality
-- Real-time updates for property status changes
-- User accounts and subscription management
-- Admin interface for managing data
+- **Three-layer scraping strategy** for robust data collection:
+  - Playwright-based HTML scraper for dynamic content
+  - Fallback requests + BeautifulSoup scraper
+  - Firecrawl API integration (max 3 tries)
+- **Config-driven scraping** using YAML seed files
+- **MongoDB storage** with optimized schemas
+- **Prefect 2 orchestration** for workflow management
+- **Command-line interface** with rich progress indicators
+- **Comprehensive data models** for programs, faculty, lab sites, and scrape jobs
+- **Real-time job tracking** and status monitoring
+- **Built-in retry logic** and error handling
 
 ## Architecture
 
 This project follows a layered architecture with the following components:
 
-- **API Layer**: Handles HTTP requests, authentication, and routing
-- **Processing Layer**: Contains business logic and data transformation
-- **Storage Layer**: Abstracts database operations using the Repository pattern
-- **Collection Layer**: Handles data collection from external sources
-- **Scheduled Layer**: Contains scheduled tasks and background jobs
-
-See the [Architecture Migration Plan](./docs/architecture/architecture-migration-plan.md) for details on our architectural vision and implementation.
-
-## Data Access Patterns
-
-We use the Repository pattern to standardize database access. Key patterns include:
-
-- **Repository Interfaces**: Define consistent contracts for data access
-- **Repository Implementations**: Concrete implementations for different storage backends
-- **Factory Pattern**: Creates appropriate repository instances
-
-See the [Repository Pattern Guide](./docs/architecture/repository-pattern.md) and [Data Access Patterns Guide](./docs/architecture/data-access-patterns.md) for details.
+- **Scraping Layer**: Three-tier web scraping system (Playwright → Requests → Firecrawl)
+- **Data Layer**: MongoDB with async Motor driver and Pydantic models
+- **Orchestration Layer**: Prefect 2 workflows for job scheduling and monitoring
+- **Configuration Layer**: YAML-based university and program definitions
+- **CLI Layer**: Typer-based command-line interface with Rich output
 
 ## Tech Stack
 
-### Frontend
-- Next.js (React-based framework)
-- React Context API for state management
-- Tailwind CSS for styling
-- react-leaflet for the interactive map
-- Socket.IO client for real-time updates
+### Core Technologies
+- **Python 3.9+** - Primary programming language
+- **MongoDB** - Document database for storing scraped data
+- **Prefect 2** - Modern workflow orchestration
+- **Playwright** - Browser automation for dynamic content
+- **Pydantic** - Data validation and settings management
 
-### Backend
-- FastAPI (Python)
-- Supabase for authentication and database
-- Neo4j Aura for graph database
-- Celery with Redis for background tasks
-- SendGrid for email notifications
-- Stripe for payment processing
+### Web Scraping
+- **Playwright** - Primary scraper for JavaScript-heavy sites
+- **Requests + BeautifulSoup** - Fallback scraper for static content
+- **Goose3** - Article text extraction
+- **Firecrawl** - AI-powered scraping API fallback
+
+### CLI & UI
+- **Typer** - Command-line interface framework
+- **Rich** - Terminal formatting and progress bars
+- **YAML** - Configuration file format
+
+## Data Models
+
+### Program
+University academic programs with metadata:
+- University name, program name, department, college
+- Program URLs and faculty directory links
+- Degree types and specializations
+- Contact information
+
+### Faculty
+Faculty member profiles:
+- Basic information (name, title, department)
+- Contact details and office location
+- Research interests and specializations
+- Academic profiles (Google Scholar, ORCID, etc.)
+- Lab information and recent publications
+
+### LabSite
+Research laboratory websites:
+- Lab details (name, PI, members)
+- Research areas and current projects
+- Equipment and facilities
+- Publications and software/datasets
+- Student and collaboration opportunities
+- Full page content analysis
+
+### ScrapeJob
+Job tracking and monitoring:
+- Job identification and configuration
+- Status tracking with progress indicators
+- Timing and performance metrics
+- Error tracking and retry logic
+- Resource usage monitoring
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (v16+)
-- Python (v3.9+)
-- Redis
-- PostgreSQL (via Supabase)
-- Neo4j (via Neo4j Aura)
+- Python 3.9 or higher
+- MongoDB (local or cloud instance)
+- Git
 
 ### Installation
 
 1. Clone the repository:
-   ```
-   git clone https://github.com/yourusername/austin-multifamily-map.git
-   cd austin-multifamily-map
+   ```bash
+   git clone https://github.com/yourusername/lynnapse-scraper.git
+   cd lynnapse-scraper
    ```
 
-2. Set up the backend:
-   ```
-   cd backend
+2. Create and activate a virtual environment:
+   ```bash
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
+
+3. Install dependencies:
+   ```bash
    pip install -r requirements.txt
    ```
 
-3. Set up the frontend:
-   ```
-   cd frontend
-   npm install
-   ```
-
-4. Create a `.env` file in the root directory based on `.env.example`
-
-5. Start the development servers:
-   
-   Backend:
-   ```
-   cd backend
-   uvicorn app.main:app --reload
-   ```
-   
-   Frontend:
-   ```
-   cd frontend
-   npm run dev
+4. Install Playwright browsers:
+   ```bash
+   playwright install
    ```
 
-6. Open [http://localhost:3000](http://localhost:3000) in your browser
+5. Set up environment variables:
+   ```bash
+   cp .env.template .env
+   # Edit .env with your configuration
+   ```
+
+6. Initialize the database:
+   ```bash
+   python -m lynnapse.cli init-db
+   ```
+
+### Quick Start
+
+1. **List available universities:**
+   ```bash
+   python -m lynnapse.cli list-universities
+   ```
+
+2. **Create a new university seed:**
+   ```bash
+   python -m lynnapse.cli create-seed "Your University"
+   # Edit the generated seed file in seeds/
+   ```
+
+3. **Test database connection:**
+   ```bash
+   python -m lynnapse.cli test-db
+   ```
+
+4. **Run a scraping job:**
+   ```bash
+   python -m lynnapse.cli scrape "University of Arizona" --program "Psychology" --verbose
+   ```
+
+### Docker Setup
+
+1. **Using Docker Compose:**
+   ```bash
+   docker-compose up -d
+   ```
+
+This will start:
+- MongoDB instance
+- Lynnapse application container
+
+## Configuration
+
+### Environment Variables
+
+Create a `.env` file with the following variables:
+
+```env
+# Database
+MONGODB_URL=mongodb://localhost:27017
+MONGODB_DATABASE=lynnapse
+
+# Scraping
+PLAYWRIGHT_HEADLESS=true
+PLAYWRIGHT_TIMEOUT=30000
+MAX_CONCURRENT_REQUESTS=3
+REQUEST_DELAY=1.0
+
+# Firecrawl (optional)
+FIRECRAWL_API_KEY=your_api_key_here
+
+# Prefect (optional)
+PREFECT_API_URL=your_prefect_url
+PREFECT_API_KEY=your_prefect_key
+
+# Logging
+LOG_LEVEL=INFO
+DEBUG=false
+```
+
+### University Seed Files
+
+Create YAML configuration files in the `seeds/` directory:
+
+```yaml
+name: University of Arizona
+base_url: https://arizona.edu
+programs:
+  - name: Psychology
+    department: Psychology
+    college: College of Science
+    program_url: https://psychology.arizona.edu/graduate
+    faculty_directory_url: https://psychology.arizona.edu/people/faculty
+    program_type: graduate
+    selectors:
+      faculty_links: ".faculty-list a, .people-list a"
+      faculty_name: "h1, .name, .faculty-name"
+      faculty_title: ".title, .position"
+      faculty_email: "a[href^='mailto:']"
+      research_interests: ".research-interests, .interests"
+
+scraping_config:
+  user_agent: "Mozilla/5.0 (compatible; LynnapseBot/1.0)"
+  wait_for_selector: ".content, .main"
+  timeout: 30
+
+rate_limit_delay: 2.0
+max_concurrent_requests: 2
+max_retries: 3
+retry_delay: 5.0
+```
+
+## Usage Examples
+
+### CLI Commands
+
+```bash
+# List available universities
+python -m lynnapse.cli list-universities
+
+# Scrape a specific university
+python -m lynnapse.cli scrape "University of Arizona" --verbose
+
+# Scrape a specific program
+python -m lynnapse.cli scrape "University of Arizona" --program "Psychology"
+
+# Create new seed file
+python -m lynnapse.cli create-seed "Stanford University"
+
+# Test database connection
+python -m lynnapse.cli test-db
+
+# Initialize database indexes
+python -m lynnapse.cli init-db
+
+# Show version
+python -m lynnapse.cli version
+```
+
+### Python API
+
+```python
+import asyncio
+from lynnapse.scrapers import ScraperOrchestrator
+from lynnapse.config import get_seed_loader
+
+async def main():
+    # Load configuration
+    seed_loader = get_seed_loader()
+    university_config = seed_loader.get_university_config("University of Arizona")
+    
+    # Run scraper
+    orchestrator = ScraperOrchestrator()
+    result = await orchestrator.scrape_university(university_config)
+    
+    print(f"Scraped {result['faculty_count']} faculty members")
+
+asyncio.run(main())
+```
+
+## Testing
+
+Run the test suite:
+
+```bash
+# Run all tests
+pytest
+
+# Run with coverage
+pytest --cov=lynnapse
+
+# Run specific test category
+pytest tests/scrapers/
+pytest tests/models/
+```
 
 ## Project Structure
 
 ```
-├── backend/                # FastAPI backend
-│   ├── app/                # Application code
-│   │   ├── api/            # API endpoints
-│   │   ├── core/           # Core functionality
-│   │   ├── db/             # Database repositories and connections
-│   │   ├── interfaces/     # Interface definitions
-│   │   ├── models/         # Pydantic models
-│   │   ├── schemas/        # Pydantic schemas
-│   │   ├── services/       # Business logic
-│   │   ├── adapters/       # Adapters for data conversion
-│   │   ├── utils/          # Utilities including architecture helpers
-│   │   └── workers/        # Celery tasks
-│   ├── scrapers/           # Scraper architecture
-│   │   ├── core/           # Shared scraper utilities
-│   │   ├── brokers/        # Broker-specific scrapers
-│   │   ├── helpers/        # Helper utilities
-│   │   └── run_scraper.py  # Command-line interface
-│   ├── data_cleaning/      # Data cleaning components
-│   ├── data_enrichment/    # Data enrichment components
-│   ├── scripts/            # Utility scripts
-│   │   ├── architecture/   # Architecture test scripts
-│   └── requirements.txt    # Python dependencies
-├── frontend/               # Next.js frontend
-│   ├── public/             # Static files
-│   ├── src/                # Source code
-│   │   ├── components/     # React components
-│   │   ├── contexts/       # React contexts
-│   │   ├── pages/          # Next.js pages
-│   │   └── styles/         # CSS styles
-│   └── package.json        # Node.js dependencies
-├── data/                   # Generated data
-├── docs/                   # Documentation
-│   ├── architecture/       # Architecture documentation
-├── .env.example            # Example environment variables
-└── README.md               # Project documentation
+lynnapse-scraper/
+├── lynnapse/                 # Main package
+│   ├── models/              # Pydantic data models
+│   ├── scrapers/            # Three-layer scraping system
+│   ├── db/                  # MongoDB connection and repositories
+│   ├── config/              # Settings and seed loading
+│   ├── flows/               # Prefect workflow definitions
+│   └── cli.py               # Command-line interface
+├── seeds/                   # University configuration files
+├── tests/                   # Test suite
+├── docker-compose.yml       # Docker setup
+├── requirements.txt         # Python dependencies
+└── README.md               # This file
 ```
 
-## Documentation
+## Contributing
 
-For more detailed documentation, see the [docs](./docs) directory:
-
-- [Project Overview](./docs/project-overview.md)
-- [Tech Stack](./docs/tech-stack.md)
-- [Sprint Plan](./docs/sprint.md)
-- [Architecture Migration Plan](./docs/architecture/architecture-migration-plan.md)
-- [Repository Pattern Guide](./docs/architecture/repository-pattern.md)
-- [Data Access Patterns](./docs/architecture/data-access-patterns.md)
-- [Scraper Architecture](./docs/scraper-architecture.md)
-- [Scraper Usage Guide](./docs/scraper-usage-guide.md)
-
-## TypeScript Migration
-
-The codebase is currently in the process of being migrated from JavaScript to TypeScript. Currently, approximately 85% of the codebase has been migrated. The migration uses a feature flag system to allow for graceful transition between JavaScript and TypeScript implementations.
-
-### Development Mode
-
-During development, you can choose which implementation to use:
-
-```bash
-# Run with JavaScript implementation (default)
-npm run dev
-
-# Run with TypeScript implementation
-npm run dev:ts
-```
-
-### Testing Both Implementations
-
-To test both implementations side by side, you can use the provided script:
-
-```bash
-# From the project root
-./scripts/test-ts-migration.sh
-```
-
-This will launch both versions in separate terminals and open your browser to both versions for testing.
-
-### Migration Documentation
-
-For more information about the TypeScript migration, see these documents:
-
-- [TypeScript Migration Progress](./docs/ts-migration-progress.md) - Current status and progress tracking
-- [TypeScript Migration Guide](./docs/typescript-migration-guide.md) - Comprehensive guide for the migration process
-- [TypeScript Migration Tests](./docs/ts-migration-tests.md) - Test cases for verifying TypeScript implementations
-- [TypeScript Cleanup Plan](./docs/typescript-cleanup-plan.md) - Process for removing JavaScript files after migration
-
-### Migration Status
-
-The following components have been migrated to TypeScript:
-- ✅ Authentication workflow (Login, Signup, Reset Password)
-- ✅ All contexts (Auth, Filter, Theme)
-- ✅ Map page and MapComponent
-- ✅ Index page
-- ✅ Property List component
-- ✅ UI Components (Button, Card, etc.)
-- 🚧 Admin pages (partially completed)
-- 🚧 Filter components (in progress)
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
 ## License
 
@@ -212,7 +318,8 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ## Acknowledgements
 
-- [OpenStreetMap](https://www.openstreetmap.org/) for map data
-- [Leaflet](https://leafletjs.com/) for the interactive map library
-- [Supabase](https://supabase.io/) for authentication and database services
-- [Neo4j](https://neo4j.com/) for graph database services
+- [Playwright](https://playwright.dev/) for browser automation
+- [Prefect](https://prefect.io/) for workflow orchestration
+- [MongoDB](https://mongodb.com/) for document storage
+- [Pydantic](https://pydantic-docs.helpmanual.io/) for data validation
+- [Typer](https://typer.tiangolo.com/) for CLI framework

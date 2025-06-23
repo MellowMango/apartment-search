@@ -1,0 +1,42 @@
+name: University of Arizona
+base_url: https://arizona.edu
+programs:
+  - name: Psychology
+    department: Psychology
+    college: College of Science
+    program_url: https://psychology.arizona.edu/graduate
+    faculty_directory_url: https://psychology.arizona.edu/people/faculty
+    program_type: graduate
+    selectors:
+      faculty_links: ".faculty-list a, .people-list a, .directory-entry a"
+      faculty_name: "h1, .name, .faculty-name, .person-name"
+      faculty_title: ".title, .position, .rank"
+      faculty_email: "a[href^='mailto:']"
+      research_interests: ".research-interests, .interests, .research-areas"
+      lab_links: "a[href*='lab'], a[href*='research']"
+      bio: ".bio, .biography, .about"
+  - name: Computer Science
+    department: Computer Science
+    college: College of Science
+    program_url: https://cs.arizona.edu/graduate
+    faculty_directory_url: https://cs.arizona.edu/people/faculty
+    program_type: graduate
+    selectors:
+      faculty_links: ".faculty-list a, .people-list a"
+      faculty_name: "h1, .name"
+      faculty_title: ".title, .position"
+      faculty_email: "a[href^='mailto:']"
+      research_interests: ".research-interests, .research-areas"
+
+scraping_config:
+  user_agent: "Mozilla/5.0 (compatible; LynnapseBot/1.0; +https://lynnapse.ai/bot)"
+  wait_for_selector: ".content, .main, .page-content"
+  timeout: 30
+  headers:
+    Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+    Accept-Language: "en-US,en;q=0.5"
+
+rate_limit_delay: 2.0
+max_concurrent_requests: 2
+max_retries: 3
+retry_delay: 5.0 

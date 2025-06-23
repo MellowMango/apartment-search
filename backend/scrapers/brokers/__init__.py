@@ -1,3 +1,0 @@
-"""
-Scrapers for broker websites.
-""" 
