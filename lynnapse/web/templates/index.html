@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-4 mb-3">
+                    <i class="bi bi-mortarboard-fill me-3"></i>
+                    Lynnapse
+                </h1>
+                <p class="lead mb-4">
+                    Intelligent university faculty and research data scraping platform. 
+                    Extract faculty profiles, research interests, lab information, and more.
+                </p>
+                <div class="d-flex gap-3">
+                    <a href="/scrape" class="btn btn-light btn-lg">
+                        <i class="bi bi-search me-2"></i>Start Scraping
+                    </a>
+                    <a href="/results" class="btn btn-outline-light btn-lg">
+                        <i class="bi bi-table me-2"></i>View Results
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="text-center">
+                    <i class="bi bi-diagram-3 display-1 opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-5">
+                <h2>Features</h2>
+                <p class="text-muted">Comprehensive university data extraction capabilities</p>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-body">
+                        <i class="bi bi-people-fill display-4 text-primary mb-3"></i>
+                        <h5 class="card-title">Faculty Profiles</h5>
+                        <p class="card-text">
+                            Extract detailed faculty information including names, titles, 
+                            contact details, research interests, and academic backgrounds.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-body">
+                        <i class="bi bi-globe display-4 text-success mb-3"></i>
+                        <h5 class="card-title">Lab Websites</h5>
+                        <p class="card-text">
+                            Discover and crawl research lab websites to capture 
+                            equipment, projects, publications, and team information.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card h-100 text-center p-4">
+                    <div class="card-body">
+                        <i class="bi bi-bar-chart-fill display-4 text-warning mb-3"></i>
+                        <h5 class="card-title">Smart Analytics</h5>
+                        <p class="card-text">
+                            Intelligent data cleaning, research area detection, 
+                            and comprehensive statistics on scraping success rates.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Quick Stats Section -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 text-center mb-4">
+                <h3>Current Statistics</h3>
+                <p class="text-muted">Live data from the database</p>
+            </div>
+        </div>
+        
+        <div class="row g-4" id="stats-container">
+            <div class="col-md-3">
+                <div class="card stats-card text-center p-3">
+                    <div class="card-body">
+                        <i class="bi bi-building display-4 mb-2"></i>
+                        <h4 id="programs-count">-</h4>
+                        <p class="mb-0">Programs</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card stats-card text-center p-3">
+                    <div class="card-body">
+                        <i class="bi bi-people display-4 mb-2"></i>
+                        <h4 id="faculty-count">-</h4>
+                        <p class="mb-0">Faculty</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card stats-card text-center p-3">
+                    <div class="card-body">
+                        <i class="bi bi-envelope display-4 mb-2"></i>
+                        <h4 id="email-rate">-</h4>
+                        <p class="mb-0">Email Rate</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card stats-card text-center p-3">
+                    <div class="card-body">
+                        <i class="bi bi-globe display-4 mb-2"></i>
+                        <h4 id="website-rate">-</h4>
+                        <p class="mb-0">Website Rate</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Getting Started Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h3 class="mb-4">Getting Started</h3>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <span class="fw-bold">1</span>
+                            </div>
+                            <h6>Choose University</h6>
+                            <p class="text-muted small">Select University of Arizona or enter custom URL</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="bg-success text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <span class="fw-bold">2</span>
+                            </div>
+                            <h6>Start Scraping</h6>
+                            <p class="text-muted small">Configure options and begin data extraction</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center">
+                            <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;">
+                                <span class="fw-bold">3</span>
+                            </div>
+                            <h6>View Results</h6>
+                            <p class="text-muted small">Analyze captured data and export results</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <a href="/scrape" class="btn btn-primary btn-lg">
+                        <i class="bi bi-arrow-right me-2"></i>Start Your First Scrape
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Load statistics on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        loadStats();
+    });
+    
+    async function loadStats() {
+        try {
+            const response = await fetch('/api/stats');
+            const data = await response.json();
+            
+            if (data.success && data.stats) {
+                const stats = data.stats;
+                document.getElementById('programs-count').textContent = stats.programs || 0;
+                document.getElementById('faculty-count').textContent = stats.faculty || 0;
+                document.getElementById('email-rate').textContent = (stats.email_capture_rate || 0).toFixed(1) + '%';
+                document.getElementById('website-rate').textContent = (stats.website_detection_rate || 0).toFixed(1) + '%';
+            }
+        } catch (error) {
+            console.error('Failed to load stats:', error);
+            // Keep default values
+        }
+    }
+</script>
+{% endblock %} 

@@ -26,20 +26,23 @@ services:
     depends_on:
       - mongodb
     environment:
-      MONGODB_URL: mongodb://admin:password@mongodb:27017/lynnapse?authSource=admin
-      MONGODB_DATABASE: lynnapse
-      PLAYWRIGHT_HEADLESS: "true"
-      LOG_LEVEL: INFO
+      - MONGODB_URL=mongodb://admin:password@mongodb:27017/lynnapse?authSource=admin
+      - LYNNAPSE_ENV=docker
+      - PLAYWRIGHT_HEADLESS=true
     volumes:
-      - ./seeds:/app/seeds:ro
       - ./output:/app/output
       - ./logs:/app/logs
+      - ./data:/app/data
+      - ./seeds:/app/seeds
     networks:
       - lynnapse-network
-    command: python -m lynnapse.cli scrape "University of Arizona" --verbose
+    # Keep container running for manual commands
+    stdin_open: true
+    tty: true
+    command: tail -f /dev/null
 
   mongo-express:
-    image: mongo-express:latest
+    image: mongo-express
     container_name: lynnapse-mongo-express
     restart: unless-stopped
     ports:
@@ -49,7 +52,7 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: password
       ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongodb:27017/
       ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: password
+      ME_CONFIG_BASICAUTH_PASSWORD: admin
     depends_on:
       - mongodb
     networks:
@@ -57,6 +60,7 @@ services:
 
 volumes:
   mongodb_data:
+    driver: local
 
 networks:
   lynnapse-network:

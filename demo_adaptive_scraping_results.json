@@ -1,0 +1,16 @@
+{
+  "demo_name": "Adaptive University Scraping Demo",
+  "total_universities": 3,
+  "successful_scrapes": 0,
+  "total_faculty_extracted": 0,
+  "crawler_stats": {
+    "universities_processed": 0,
+    "departments_discovered": 0,
+    "faculty_extracted": 0,
+    "lab_links_found": 0,
+    "external_searches": 0,
+    "adaptation_successes": 0,
+    "adaptation_failures": 0
+  },
+  "results": []
+}

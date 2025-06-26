@@ -1,0 +1,490 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="text-center mb-5">
+                <h2><i class="bi bi-search me-2"></i>Start Scraping</h2>
+                <p class="text-muted">Configure and launch a university faculty scraping job</p>
+            </div>
+            
+            <!-- Scraping Form -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-gear me-2"></i>Scraping Configuration</h5>
+                </div>
+                <div class="card-body">
+                    <form id="scrapeForm">
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">University Selection</label>
+                            <select class="form-select form-select-lg" id="universitySelect" name="university_name" required>
+                                <option value="">Select a university...</option>
+                                <!-- Universities will be loaded here -->
+                            </select>
+                            <input type="hidden" id="selectedUniversityWebsite" name="university_website">
+                            <small class="text-muted">Choose from 25+ major US universities</small>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Department Selection</label>
+                            <div class="position-relative">
+                                <input type="text" class="form-control" id="departmentSearch" 
+                                       placeholder="Enter department (e.g., Psychology, Computer Science, Biology...)" 
+                                       autocomplete="off" required>
+                                <input type="hidden" id="selectedDepartment" name="department_name">
+                                <div class="dropdown-menu w-100" id="departmentDropdown" style="display: none;">
+                                    <!-- Department suggestions will appear here -->
+                                </div>
+                            </div>
+                            <small class="text-muted">Choose from common academic departments or type your own</small>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Filter by State (Optional)</label>
+                                    <select class="form-select" id="stateFilter" name="state_filter">
+                                        <option value="">All States</option>
+                                        <!-- States will be loaded dynamically -->
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-bold">Max Faculty to Extract</label>
+                                    <select class="form-select" id="maxFaculty" name="max_faculty">
+                                        <option value="50">50 Faculty</option>
+                                        <option value="100" selected>100 Faculty</option>
+                                        <option value="200">200 Faculty</option>
+                                        <option value="500">500 Faculty</option>
+                                        <option value="0">All Faculty</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Scraping Options</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="include_profiles" name="include_profiles">
+                                <label class="form-check-label" for="include_profiles">
+                                    <strong>Include Detailed Profiles</strong>
+                                    <br><small class="text-muted">Scrape individual faculty profile pages (slower but more complete)</small>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg" id="startScrapeBtn">
+                                <i class="bi bi-play-fill me-2"></i>Start Scraping
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Progress Section -->
+            <div class="card mt-4" id="progressCard" style="display: none;">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="bi bi-clock me-2"></i>Scraping Progress</h5>
+                </div>
+                <div class="card-body">
+                    <div class="progress mb-3">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                             role="progressbar" style="width: 0%" id="progressBar"></div>
+                    </div>
+                    <div id="progressText" class="text-center">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        Initializing scraper...
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <div class="card mt-4" id="resultsCard" style="display: none;">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i class="bi bi-check-circle me-2"></i>Scraping Results</h5>
+                    <span class="badge bg-success" id="resultsBadge">Completed</span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h4 class="text-primary mb-1" id="totalCount">0</h4>
+                                <small class="text-muted">Total Faculty</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h4 class="text-success mb-1" id="emailCount">0</h4>
+                                <small class="text-muted">With Email</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h4 class="text-info mb-1" id="websiteCount">0</h4>
+                                <small class="text-muted">With Website</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="text-center">
+                                <h4 class="text-warning mb-1" id="labCount">0</h4>
+                                <small class="text-muted">With Lab</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>File saved:</strong> <span id="outputFile">-</span>
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary" onclick="viewResults()">
+                            <i class="bi bi-table me-2"></i>View All Results
+                        </button>
+                        <button class="btn btn-outline-success" onclick="startNewScrape()">
+                            <i class="bi bi-arrow-repeat me-2"></i>Start New Scrape
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Error Section -->
+            <div class="card mt-4" id="errorCard" style="display: none;">
+                <div class="card-header text-bg-danger">
+                    <h5 class="mb-0"><i class="bi bi-exclamation-triangle me-2"></i>Scraping Error</h5>
+                </div>
+                <div class="card-body">
+                    <p id="errorMessage" class="text-danger mb-3"></p>
+                    <div id="suggestionBox" class="alert alert-info" style="display: none;">
+                        <i class="bi bi-lightbulb me-2"></i>
+                        <strong>Suggestion:</strong> <span id="suggestionText"></span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-primary" onclick="startNewScrape()">
+                            <i class="bi bi-arrow-repeat me-2"></i>Try Again
+                        </button>
+                        <button class="btn btn-success" onclick="tryStanford()" id="tryStanfordBtn" style="display: none;">
+                            <i class="bi bi-star me-2"></i>Try Stanford Psychology
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let departmentDropdownVisible = false;
+    
+    // Load states and universities on page load
+    document.addEventListener('DOMContentLoaded', async function() {
+        await loadStates();
+        await loadDefaultDepartments();
+        await loadUniversities();
+    });
+    
+    async function loadStates() {
+        try {
+            const response = await fetch('/api/states');
+            const data = await response.json();
+            const stateFilter = document.getElementById('stateFilter');
+            
+            data.states.forEach(state => {
+                const option = document.createElement('option');
+                option.value = state.code;
+                option.textContent = `${state.name} (${state.code})`;
+                stateFilter.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Failed to load states:', error);
+        }
+    }
+    
+    async function loadDefaultDepartments() {
+        try {
+            const response = await fetch('/api/departments');
+            const data = await response.json();
+            // Store departments for quick access
+            window.allDepartments = data.departments;
+        } catch (error) {
+            console.error('Failed to load departments:', error);
+        }
+    }
+    
+    async function loadUniversities() {
+        try {
+            // Load all universities (empty query returns all)
+            const response = await fetch('/api/universities?limit=50');
+            const data = await response.json();
+            const universitySelect = document.getElementById('universitySelect');
+            
+            // Sort universities alphabetically
+            const sortedUniversities = data.universities.sort((a, b) => a.name.localeCompare(b.name));
+            
+            sortedUniversities.forEach(uni => {
+                const option = document.createElement('option');
+                option.value = uni.name;
+                option.setAttribute('data-website', uni.website);
+                option.textContent = `${uni.name} (${uni.location})`;
+                universitySelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Failed to load universities:', error);
+        }
+    }
+    
+    // University dropdown change handler
+    document.getElementById('universitySelect').addEventListener('change', function(e) {
+        const selectedOption = e.target.selectedOptions[0];
+        if (selectedOption && selectedOption.value) {
+            const website = selectedOption.getAttribute('data-website');
+            document.getElementById('selectedUniversityWebsite').value = website || '';
+        } else {
+            document.getElementById('selectedUniversityWebsite').value = '';
+        }
+    });
+    
+    // Department autocomplete
+    document.getElementById('departmentSearch').addEventListener('input', async function(e) {
+        const query = e.target.value.trim();
+        
+        if (query.length === 0) {
+            showAllDepartments();
+            return;
+        }
+        
+        if (query.length < 2) {
+            hideDepartmentDropdown();
+            return;
+        }
+        
+        try {
+            const response = await fetch(`/api/departments?q=${encodeURIComponent(query)}&limit=10`);
+            const data = await response.json();
+            showDepartmentDropdown(data.departments);
+        } catch (error) {
+            console.error('Department search failed:', error);
+            hideDepartmentDropdown();
+        }
+    });
+    
+    function showAllDepartments() {
+        if (window.allDepartments) {
+            showDepartmentDropdown(window.allDepartments.slice(0, 8));
+        }
+    }
+    
+    function showDepartmentDropdown(departments) {
+        const dropdown = document.getElementById('departmentDropdown');
+        
+        if (departments.length === 0) {
+            hideDepartmentDropdown();
+            return;
+        }
+        
+        dropdown.innerHTML = '';
+        
+        departments.forEach(dept => {
+            const item = document.createElement('a');
+            item.className = 'dropdown-item';
+            item.href = '#';
+            item.innerHTML = `
+                <div class="fw-bold">${dept.name}</div>
+                <small class="text-muted">${dept.category}</small>
+            `;
+            
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                selectDepartment(dept);
+            });
+            
+            dropdown.appendChild(item);
+        });
+        
+        dropdown.style.display = 'block';
+        departmentDropdownVisible = true;
+    }
+    
+    function hideDepartmentDropdown() {
+        document.getElementById('departmentDropdown').style.display = 'none';
+        departmentDropdownVisible = false;
+    }
+    
+    function selectDepartment(department) {
+        document.getElementById('departmentSearch').value = department.name;
+        document.getElementById('selectedDepartment').value = department.name;
+        hideDepartmentDropdown();
+    }
+    
+    // Click outside to hide dropdowns
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('#departmentSearch') && !e.target.closest('#departmentDropdown')) {
+            hideDepartmentDropdown();
+        }
+    });
+    
+    // Focus handlers
+    document.getElementById('departmentSearch').addEventListener('focus', function() {
+        if (this.value.trim().length === 0) {
+            showAllDepartments();
+        }
+    });
+    
+    // Handle form submission
+    document.getElementById('scrapeForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Validate form
+        const universityName = document.getElementById('universitySelect').value;
+        const departmentName = document.getElementById('selectedDepartment').value;
+        
+        if (!universityName) {
+            alert('Please select a university');
+            return;
+        }
+        
+        if (!departmentName) {
+            alert('Please select a department');
+            return;
+        }
+        
+        // Hide previous results/errors
+        document.getElementById('resultsCard').style.display = 'none';
+        document.getElementById('errorCard').style.display = 'none';
+        
+        // Show progress
+        document.getElementById('progressCard').style.display = 'block';
+        document.getElementById('startScrapeBtn').disabled = true;
+        
+        try {
+            // Start adaptive scraping
+            updateProgress(25, 'Initializing adaptive scraper...');
+            
+            const scrapeData = {
+                university_name: universityName,
+                department_name: departmentName,
+                max_faculty: document.getElementById('maxFaculty').value,
+                include_profiles: document.getElementById('include_profiles').checked
+            };
+            
+            const response = await fetch('/api/adaptive-scrape', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(scrapeData)
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                updateProgress(100, 'Scraping completed!');
+                
+                setTimeout(() => {
+                    showResults(result);
+                }, 1000);
+            } else {
+                showError(result.message, result.suggestion);
+            }
+            
+        } catch (error) {
+            showError('Network error: ' + error.message);
+        }
+    });
+    
+    function updateProgress(percent, text) {
+        document.getElementById('progressBar').style.width = percent + '%';
+        document.getElementById('progressText').innerHTML = 
+            percent < 100 ? 
+            `<div class="spinner-border spinner-border-sm me-2" role="status"></div>${text}` :
+            `<i class="bi bi-check-circle text-success me-2"></i>${text}`;
+    }
+    
+    function showResults(result) {
+        document.getElementById('progressCard').style.display = 'none';
+        document.getElementById('resultsCard').style.display = 'block';
+        
+        // Update counts
+        document.getElementById('totalCount').textContent = result.total_count || 0;
+        
+        // Calculate stats from preview data
+        const data = result.data || [];
+        const emailCount = data.filter(f => f.email).length;
+        const websiteCount = data.filter(f => f.personal_website).length;
+        const labCount = data.filter(f => f.lab_name).length;
+        
+        document.getElementById('emailCount').textContent = emailCount;
+        document.getElementById('websiteCount').textContent = websiteCount;
+        document.getElementById('labCount').textContent = labCount;
+        document.getElementById('outputFile').textContent = result.output_file || 'Unknown';
+        
+        document.getElementById('startScrapeBtn').disabled = false;
+    }
+    
+    function showError(message, suggestion) {
+        document.getElementById('progressCard').style.display = 'none';
+        document.getElementById('errorCard').style.display = 'block';
+        document.getElementById('errorMessage').textContent = message;
+        
+        // Show suggestion if provided
+        if (suggestion) {
+            document.getElementById('suggestionText').textContent = suggestion;
+            document.getElementById('suggestionBox').style.display = 'block';
+            
+            // Show Stanford button if suggestion mentions Stanford
+            if (suggestion.toLowerCase().includes('stanford')) {
+                document.getElementById('tryStanfordBtn').style.display = 'inline-block';
+            }
+        } else {
+            document.getElementById('suggestionBox').style.display = 'none';
+            document.getElementById('tryStanfordBtn').style.display = 'none';
+        }
+        
+        document.getElementById('startScrapeBtn').disabled = false;
+    }
+    
+    function tryStanford() {
+        // Auto-select Stanford University and Psychology
+        document.getElementById('universitySelect').value = 'Stanford University';
+        
+        // Trigger the change event to set the website
+        const event = new Event('change');
+        document.getElementById('universitySelect').dispatchEvent(event);
+        
+        // Set Psychology department
+        document.getElementById('departmentSearch').value = 'Psychology';
+        document.getElementById('selectedDepartment').value = 'Psychology';
+        
+        // Hide error and reset form state
+        document.getElementById('errorCard').style.display = 'none';
+        
+        // Scroll to form
+        document.getElementById('scrapeForm').scrollIntoView({ behavior: 'smooth' });
+        
+        // Highlight the form briefly
+        document.getElementById('scrapeForm').style.backgroundColor = '#e3f2fd';
+        setTimeout(() => {
+            document.getElementById('scrapeForm').style.backgroundColor = '';
+        }, 2000);
+    }
+    
+    function viewResults() {
+        window.location.href = '/results';
+    }
+    
+    function startNewScrape() {
+        document.getElementById('resultsCard').style.display = 'none';
+        document.getElementById('errorCard').style.display = 'none';
+        document.getElementById('progressCard').style.display = 'none';
+        document.getElementById('startScrapeBtn').disabled = false;
+        
+        // Reset form
+        document.getElementById('scrapeForm').reset();
+        document.getElementById('custom-url-group').style.display = 'none';
+        document.getElementById('custom_url').disabled = true;
+    }
+</script>
+{% endblock %} 
