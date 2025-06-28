@@ -1,0 +1,18 @@
+{
+  "faculty_directory_paths": [
+    "faculty",
+    "people",
+    "directory",
+    "academics/faculty",
+    "about/faculty"
+  ],
+  "department_paths": [
+    "departments/engineering/faculty",
+    "departments/science/faculty"
+  ],
+  "confidence_score": 0.9,
+  "reasoning": "The main navigation includes a clear 'Faculty' link, and there are additional links labeled 'People' and 'Directory' which are common indicators of faculty listings. The presence of paths like 'academics/faculty' and 'about/faculty' further supports the likelihood of finding faculty information. Additionally, department-specific paths are inferred based on common university structures.",
+  "cost_estimate": 0.00014625,
+  "cached": false,
+  "discovery_timestamp": 1750987988.373353
+}

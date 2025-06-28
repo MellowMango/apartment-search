@@ -1,0 +1,23 @@
+{
+  "university_name": "University Of Vermont",
+  "department_name": "Psychology",
+  "faculty": [],
+  "metadata": {
+    "total_faculty": 0,
+    "departments_processed": 1,
+    "department_results": {
+      "Psychology": {
+        "faculty_count": 0,
+        "structure_type": "table",
+        "confidence": 0.9
+      }
+    },
+    "discovery_confidence": 0.9,
+    "scraping_strategy": "adaptive",
+    "lab_discovery_enabled": true,
+    "timestamp": 1750989015.12802
+  },
+  "timestamp": "20250626_185015",
+  "scrape_type": "adaptive",
+  "total_count": 0
+}

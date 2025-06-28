@@ -1,0 +1,153 @@
+{
+  "university_of_vermont": {
+    "university_name": "University Of Vermont",
+    "base_url": "https://www.uvm.edu",
+    "faculty_directory_paths": [
+      "directory",
+      "psychology/people",
+      "departments/psychology/faculty",
+      "psychology/faculty",
+      "faculty",
+      "people"
+    ],
+    "department_paths": [
+      "psychology",
+      "departments/[dept]/faculty",
+      "schools/[school]/people"
+    ],
+    "departments": {
+      "psychology": [
+        "psychology/people",
+        "cas/psychology/emeriti-faculty",
+        "cas/psychology/affiliated-faculty",
+        "psychology/faculty",
+        "departments/psychology/faculty",
+        "cas/psychology/staff",
+        "cas/psychology/our-faculty"
+      ]
+    },
+    "discovery_method": "llm_migrated",
+    "confidence_score": 0.9,
+    "last_updated": 1750988434.478198,
+    "discovery_count": 2
+  },
+  "mit": {
+    "university_name": "Mit",
+    "base_url": "https://web.mit.edu",
+    "faculty_directory_paths": [
+      "faculty",
+      "people",
+      "directory"
+    ],
+    "department_paths": [
+      "departments/[dept]/faculty",
+      "schools/[school]/people"
+    ],
+    "departments": {},
+    "discovery_method": "llm_migrated",
+    "confidence_score": 0.85,
+    "last_updated": 1750988328.704035,
+    "discovery_count": 1
+  },
+  "columbia_university": {
+    "university_name": "Columbia University",
+    "base_url": "https://www.columbia.edu",
+    "faculty_directory_paths": [
+      "faculty",
+      "people",
+      "directory",
+      "academics/faculty",
+      "about/faculty"
+    ],
+    "department_paths": [
+      "departments/engineering/faculty",
+      "departments/science/faculty"
+    ],
+    "departments": {},
+    "discovery_method": "llm_migrated",
+    "confidence_score": 0.9,
+    "last_updated": 1750988328.704563,
+    "discovery_count": 1
+  },
+  "carnegie_mellon_university": {
+    "university_name": "Carnegie Mellon University",
+    "base_url": "https://www.cmu.edu",
+    "faculty_directory_paths": [
+      "people/eric-ertmann",
+      "people/ben-glenn",
+      "people/vikram-mohanty",
+      "people/tony-zhang",
+      "people/nicholas-ferrara",
+      "people/debra-gladwin",
+      "people/christian-reyes",
+      "people/vera-wei",
+      "people/sriram-ramasubramanian",
+      "people/stephanie-tseng"
+    ],
+    "department_paths": [
+      "department",
+      "dept",
+      "school",
+      "college",
+      "division",
+      "program",
+      "center",
+      "institute"
+    ],
+    "departments": {},
+    "discovery_method": "sitemap",
+    "confidence_score": 0.85,
+    "last_updated": 1751059813.6774662,
+    "discovery_count": 1
+  },
+  "university_of_arizona": {
+    "university_name": "University of Arizona",
+    "base_url": "https://www.arizona.edu",
+    "faculty_directory_paths": [
+      "faculty-staff",
+      "faculty-awards-honors"
+    ],
+    "department_paths": [
+      "department",
+      "dept",
+      "school",
+      "college",
+      "division",
+      "program",
+      "center",
+      "institute"
+    ],
+    "departments": {},
+    "discovery_method": "sitemap",
+    "confidence_score": 0.85,
+    "last_updated": 1751059822.661398,
+    "discovery_count": 1
+  },
+  "stanford_university": {
+    "university_name": "Stanford University",
+    "base_url": "https://www.stanford.edu",
+    "faculty_directory_paths": [
+      "people/lecturers",
+      "people/research-staff",
+      "people/faculty",
+      "people/postdoctoral-scholars",
+      "people/administrative-staff",
+      "people/phd-students"
+    ],
+    "department_paths": [
+      "department",
+      "dept",
+      "school",
+      "college",
+      "division",
+      "program",
+      "center",
+      "institute"
+    ],
+    "departments": {},
+    "discovery_method": "sitemap",
+    "confidence_score": 0.85,
+    "last_updated": 1751059832.401183,
+    "discovery_count": 1
+  }
+}

@@ -1,16 +1,118 @@
 {
   "demo_name": "Adaptive University Scraping Demo",
-  "total_universities": 3,
-  "successful_scrapes": 0,
+  "total_universities": 4,
+  "successful_scrapes": 3,
   "total_faculty_extracted": 0,
   "crawler_stats": {
-    "universities_processed": 0,
-    "departments_discovered": 0,
+    "universities_processed": 3,
+    "departments_discovered": 10,
     "faculty_extracted": 0,
     "lab_links_found": 0,
     "external_searches": 0,
     "adaptation_successes": 0,
     "adaptation_failures": 0
   },
-  "results": []
+  "results": [
+    {
+      "university_name": "Arizona State University",
+      "base_url": "https://www.asu.edu",
+      "faculty": [],
+      "metadata": {
+        "total_faculty": 0,
+        "departments_processed": 8,
+        "department_results": {
+          "Highly prestigious awards | Arizona State University": {
+            "faculty_count": 0,
+            "structure_type": "table",
+            "confidence": 0.4
+          },
+          "New Faculty Members | Arizona State University": {
+            "faculty_count": 0,
+            "structure_type": "grid",
+            "confidence": 0.4
+          },
+          "Faculty excellence | Arizona State University": {
+            "faculty_count": 0,
+            "structure_type": "cards",
+            "confidence": 0.4
+          },
+          "Distinguished memberships | Arizona State University": {
+            "faculty_count": 0,
+            "structure_type": "table",
+            "confidence": 0.4
+          },
+          "Regents Professors | Arizona State University": {
+            "faculty_count": 0,
+            "structure_type": "cards",
+            "confidence": 0.4
+          },
+          "President's Professors | Arizona State University": {
+            "faculty_count": 0,
+            "structure_type": "cards",
+            "confidence": 0.4
+          },
+          "Fulbright program | Arizona State University": {
+            "faculty_count": 0,
+            "structure_type": "cards",
+            "confidence": 0.4
+          },
+          "Spotlight | Arizona State University": {
+            "faculty_count": 0,
+            "structure_type": "cards",
+            "confidence": 0.4
+          }
+        },
+        "discovery_confidence": 0.85,
+        "scraping_strategy": "adaptive",
+        "lab_discovery_enabled": true,
+        "timestamp": 1750987971.5437078
+      },
+      "success": true,
+      "error": null
+    },
+    {
+      "university_name": "Stanford University",
+      "base_url": "https://www.stanford.edu",
+      "faculty": [],
+      "metadata": {
+        "total_faculty": 0,
+        "departments_processed": 1,
+        "department_results": {
+          "Computer Science": {
+            "faculty_count": 0,
+            "structure_type": "cards",
+            "confidence": 1.0
+          }
+        },
+        "discovery_confidence": 0.85,
+        "scraping_strategy": "adaptive",
+        "lab_discovery_enabled": true,
+        "timestamp": 1750987975.7667599
+      },
+      "success": true,
+      "error": null
+    },
+    {
+      "university_name": "Columbia University",
+      "base_url": "https://www.columbia.edu",
+      "faculty": [],
+      "metadata": {
+        "total_faculty": 0,
+        "departments_processed": 1,
+        "department_results": {
+          "Computer Science": {
+            "faculty_count": 0,
+            "structure_type": "list",
+            "confidence": 1.0
+          }
+        },
+        "discovery_confidence": 0.9,
+        "scraping_strategy": "adaptive",
+        "lab_discovery_enabled": true,
+        "timestamp": 1750987990.575998
+      },
+      "success": true,
+      "error": null
+    }
+  ]
 }

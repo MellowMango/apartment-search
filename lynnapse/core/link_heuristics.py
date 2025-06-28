@@ -18,17 +18,22 @@ logger = logging.getLogger(__name__)
 class LinkHeuristics:
     """Fast heuristic-based lab link extraction from HTML content."""
     
-    # Core lab keywords pattern - covers most academic lab naming conventions
-    LAB_KEYWORDS = r"(lab|laboratory|center|centre|group|clinic|institute|facility|unit)"
+    # Enhanced lab keywords pattern - covers most academic lab naming conventions
+    LAB_KEYWORDS = r"(lab|laboratory|labs|center|centre|group|groups|clinic|institute|facility|unit|program)"
     
-    # Extended patterns for better matching
+    # Extended patterns for better matching (comprehensive research patterns)
     RESEARCH_PATTERNS = [
         r"research\s+(lab|laboratory|center|centre|group)",
         r"(lab|laboratory)\s+for\s+\w+",
-        r"\w+\s+(lab|laboratory|center|centre)",
+        r"\w+\s+(lab|laboratory|center|centre|group)",
         r"(institute|center|centre)\s+for\s+\w+",
-        r"computational\s+\w+\s+(lab|center|centre)",
+        r"computational\s+\w*\s*(lab|laboratory|center|centre)",
         r"cognitive\s+\w*\s*(lab|laboratory|center|centre)",
+        r"(neuroscience|psychology|behavioral|social)\s+\w*\s*(lab|laboratory|group)",
+        r"(experimental|clinical|developmental)\s+\w*\s*(lab|laboratory|center)",
+        r"(artificial\s+intelligence|machine\s+learning|data\s+science)\s+(lab|laboratory|group)",
+        r"interdisciplinary\s+\w*\s*(center|centre|institute)",
+        r"(innovation|technology|research)\s+(center|centre|lab|laboratory)"
     ]
     
     # Negative patterns to exclude non-lab links
@@ -128,63 +133,93 @@ class LinkHeuristics:
     
     def _score_link(self, url: str, text: str, anchor) -> float:
         """
-        Score a link based on multiple factors.
+        Enhanced scoring system for lab and research links.
         
         Scoring factors:
-        - Domain relevance (.edu = 0.4, .org = 0.2, others = 0.0)
-        - Keyword density in link text (0.3 per keyword)
-        - URL path patterns (0.2 for lab-like paths)
+        - Domain relevance (.edu = 0.5, .org = 0.3, .gov = 0.2, others = 0.0)
+        - Keyword density in link text (0.3 per keyword, max 0.6)
+        - URL path patterns (0.3 for lab-like paths, 0.4 for research-specific)
+        - Research field indicators (0.2 bonus)
+        - High-confidence patterns (0.3 bonus)
         - Context relevance (0.1 bonus)
         
         Returns:
-            Float score between 0.0 and 1.0+
+            Float score between 0.0 and 2.0+ (allowing higher scores for excellent matches)
         """
         score = 0.0
         text_lower = text.lower()
         url_lower = url.lower()
         
-        # Domain scoring - prefer academic domains
+        # Enhanced domain scoring - prefer academic domains
         if ".edu" in url_lower:
-            score += 0.4
+            score += 0.5
         elif ".org" in url_lower:
-            score += 0.2
+            score += 0.3
         elif ".gov" in url_lower:
-            score += 0.15
+            score += 0.2
+        elif any(domain in url_lower for domain in ['.ac.uk', '.ac.jp', '.ac.kr', '.ac.au']):
+            score += 0.45  # International academic domains
             
-        # Keyword density in link text
+        # Keyword density in link text (cap at 0.6 to avoid over-scoring)
         keyword_matches = len(re.findall(self.LAB_KEYWORDS, text_lower))
-        score += keyword_matches * 0.3
+        score += min(keyword_matches * 0.3, 0.6)
         
-        # URL path patterns that suggest lab websites
+        # Enhanced URL path patterns that suggest lab websites
         lab_url_patterns = [
-            r"/lab",
-            r"/laboratory",
-            r"/research",
-            r"/center",
-            r"/institute",
-            r"/~\w+",  # Personal pages
+            (r"/lab(?:s|oratory)?(?:/|$)", 0.4),  # Direct lab paths
+            (r"/research(?:-|/|$)", 0.35),         # Research paths
+            (r"/center|centre(?:/|$)", 0.3),       # Center paths
+            (r"/institute(?:/|$)", 0.3),           # Institute paths
+            (r"/group(?:s)?(?:/|$)", 0.25),        # Group paths
+            (r"/~\w+", 0.2),                       # Personal pages
+            (r"/faculty/\w+", 0.15),               # Faculty pages
         ]
         
-        for pattern in lab_url_patterns:
+        for pattern, pattern_score in lab_url_patterns:
             if re.search(pattern, url_lower):
-                score += 0.2
+                score += pattern_score
                 break
+        
+        # Research field indicators (psychology, neuroscience, etc.)
+        research_fields = [
+            'cognitive', 'neuroscience', 'psychology', 'behavioral', 'social',
+            'developmental', 'clinical', 'experimental', 'applied', 'computational',
+            'artificial', 'intelligence', 'machine', 'learning', 'data', 'science'
+        ]
+        
+        field_matches = sum(1 for field in research_fields if field in text_lower or field in url_lower)
+        if field_matches > 0:
+            score += min(field_matches * 0.1, 0.2)  # Cap at 0.2
                 
         # Length penalty for very long link text (likely not a lab name)
         if len(text) > 100:
-            score -= 0.1
+            score -= 0.15
+        elif len(text) > 200:
+            score -= 0.3
             
-        # Bonus for specific high-confidence patterns
+        # Bonus for high-confidence patterns
         high_confidence_patterns = [
-            r"visit\s+(our\s+)?(lab|laboratory)",
-            r"(lab|laboratory)\s+website",
-            r"(lab|laboratory)\s+homepage",
+            (r"visit\s+(our\s+)?(lab|laboratory|research)", 0.3),
+            (r"(lab|laboratory|research)\s+(website|homepage|page)", 0.3),
+            (r"welcome\s+to\s+(our\s+)?(lab|laboratory|research)", 0.25),
+            (r"(lab|laboratory|group)\s+of\s+", 0.2),
+            (r"research\s+(lab|laboratory|group|center)", 0.2),
         ]
         
-        for pattern in high_confidence_patterns:
+        for pattern, pattern_score in high_confidence_patterns:
             if re.search(pattern, text_lower):
-                score += 0.2
+                score += pattern_score
                 break
+        
+        # Penalty for non-academic indicators
+        negative_indicators = [
+            'contact', 'email', 'phone', 'address', 'cv', 'resume', 
+            'social', 'media', 'facebook', 'twitter', 'linkedin'
+        ]
+        
+        negative_matches = sum(1 for indicator in negative_indicators if indicator in text_lower)
+        if negative_matches > 0:
+            score -= negative_matches * 0.1
                 
         return max(0.0, score)  # Ensure non-negative score
     
@@ -276,24 +311,112 @@ class LinkHeuristics:
             return url if url.startswith("/") else None
     
     def _get_context(self, anchor) -> str:
-        """Extract surrounding context for a link."""
-        if not anchor.parent:
-            return ""
+        """Extract context around an anchor element."""
+        parent = anchor.parent
+        if parent:
+            context = parent.get_text(" ", strip=True)
+            return context[:200]  # Limit context length
+        return ""
+    
+    def score_faculty_link(self, dept_name: str, dept_url: str, target_department: Optional[str] = None) -> float:
+        """
+        Score how likely a department link is to contain faculty information.
+        
+        Args:
+            dept_name: Name of the department
+            dept_url: URL of the department page
+            target_department: Specific department we're looking for (optional)
             
-        # Get text from parent container
-        parent_text = anchor.parent.get_text(" ", strip=True)
+        Returns:
+            Float score between 0.0 and 1.0+ indicating faculty link likelihood
+        """
+        score = 0.0
         
-        # Limit context length
-        if len(parent_text) > 200:
-            # Try to find the most relevant part
-            anchor_text = anchor.get_text()
-            if anchor_text in parent_text:
-                start = parent_text.find(anchor_text)
-                context_start = max(0, start - 50)
-                context_end = min(len(parent_text), start + len(anchor_text) + 50)
-                return parent_text[context_start:context_end].strip()
+        if not dept_name or not dept_url:
+            return score
         
-        return parent_text[:200]
+        dept_name_lower = dept_name.lower()
+        dept_url_lower = dept_url.lower()
+        
+        # Base score for containing faculty-related terms
+        faculty_terms = ['faculty', 'people', 'staff', 'directory', 'professors', 'researchers', 'team']
+        for term in faculty_terms:
+            if term in dept_name_lower:
+                score += 0.3
+            if term in dept_url_lower:
+                score += 0.2
+        
+        # Boost score for academic department indicators
+        academic_terms = ['department', 'dept', 'school', 'college', 'division', 'program', 'center', 'institute']
+        for term in academic_terms:
+            if term in dept_name_lower:
+                score += 0.2
+            if term in dept_url_lower:
+                score += 0.1
+        
+        # Strong boost if this matches the target department
+        if target_department:
+            target_lower = target_department.lower()
+            # Exact match or contains target department name
+            if target_lower in dept_name_lower or target_lower in dept_url_lower:
+                score += 0.5
+            # Partial matches for common department variations
+            target_words = target_lower.split()
+            if len(target_words) > 1:
+                for word in target_words:
+                    if len(word) > 3 and word in dept_name_lower:
+                        score += 0.2
+        
+        # Boost for URLs that look like faculty directories
+        faculty_url_patterns = [
+            r'/faculty',
+            r'/people', 
+            r'/staff',
+            r'/directory',
+            r'/our-people',
+            r'/team',
+            r'/members'
+        ]
+        
+        for pattern in faculty_url_patterns:
+            if re.search(pattern, dept_url_lower):
+                score += 0.3
+                break
+        
+        # Penalize non-academic URLs
+        non_academic_terms = [
+            'news', 'events', 'admissions', 'alumni', 'contact', 'about',
+            'services', 'resources', 'library', 'dining', 'housing', 'parking'
+        ]
+        
+        for term in non_academic_terms:
+            if term in dept_name_lower:
+                score -= 0.2
+            if term in dept_url_lower:
+                score -= 0.1
+        
+        # Boost for academic domain
+        if '.edu' in dept_url_lower:
+            score += 0.1
+        
+        # Penalize very long department names (likely not actual department links)
+        if len(dept_name) > 100:
+            score -= 0.2
+        
+        # Boost for common academic disciplines
+        disciplines = [
+            'psychology', 'biology', 'chemistry', 'physics', 'mathematics', 'math',
+            'engineering', 'computer science', 'medicine', 'nursing', 'business',
+            'economics', 'history', 'english', 'philosophy', 'sociology', 'anthropology',
+            'political science', 'education', 'art', 'music', 'theater', 'journalism'
+        ]
+        
+        for discipline in disciplines:
+            if discipline in dept_name_lower:
+                score += 0.1
+                break
+        
+        return max(0.0, min(score, 2.0))  # Cap score at 2.0, ensure non-negative
     
     def get_stats(self) -> Dict:
         """Get statistics about the last extraction run."""

@@ -34,8 +34,8 @@ class TestUniversityAdapter:
         
         assert result.university_name == "Test University"
         assert result.base_url == "https://test.edu"
-        assert "faculty" in result.faculty_directory_patterns
-        assert "people" in result.faculty_directory_patterns
+        assert "faculty" in result.faculty_directory_paths
+        assert "people" in result.faculty_directory_paths
         assert result.confidence_score == 0.3
     
     def test_analyze_page_structure(self, adapter):

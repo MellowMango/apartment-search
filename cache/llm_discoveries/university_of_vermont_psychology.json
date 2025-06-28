@@ -1,0 +1,15 @@
+{
+  "faculty_directory_paths": [
+    "psychology/faculty",
+    "psychology/people",
+    "departments/psychology/faculty"
+  ],
+  "department_paths": [
+    "psychology"
+  ],
+  "confidence_score": 0.9,
+  "reasoning": "The analysis identified clear patterns for faculty directories specific to the Psychology department, including 'faculty' and 'people' paths. The department is explicitly mentioned in the URLs, indicating a high likelihood of these being the correct paths.",
+  "cost_estimate": 0.0002274,
+  "cached": false,
+  "discovery_timestamp": 1750987607.787332
+}

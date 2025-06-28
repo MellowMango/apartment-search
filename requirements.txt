@@ -1,6 +1,6 @@
 # Core Framework
 fastapi==0.103.1
-uvicorn==0.23.2
+uvicorn==0.30.1
 pydantic==2.4.2
 pydantic-settings==2.0.3
 python-multipart==0.0.6
@@ -17,15 +17,18 @@ prefect==2.14.10
 prefect-dask==0.2.7
 
 # Web Scraping - Three-layer strategy
-playwright==1.40.0
+playwright==1.44.0
 requests==2.31.0
-beautifulsoup4==4.12.2
+beautifulsoup4==4.12.3
 goose3==3.1.17
 firecrawl-py==0.0.16
 
 # HTTP Client
 httpx==0.24.1
 aiohttp==3.8.5
+
+# LLM Integration
+openai==1.51.2
 
 # Configuration
 pyyaml==6.0.1

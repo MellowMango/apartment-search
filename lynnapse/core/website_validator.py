@@ -55,20 +55,33 @@ class WebsiteValidator:
             'edu.au', 'edu.sg', 'edu.my', 'edu.hk', 'edu.tw', 'edu.cn'
         }
         
-        # Social media domains to filter out
+        # Enhanced social media domains to filter out (comprehensive list)
         self.social_media_domains = {
-            'facebook.com', 'twitter.com', 'linkedin.com', 'instagram.com',
-            'youtube.com', 'tiktok.com', 'snapchat.com', 'pinterest.com'
+            # Major platforms
+            'facebook.com', 'fb.com', 'twitter.com', 'x.com', 'linkedin.com', 
+            'instagram.com', 'youtube.com', 'tiktok.com', 'snapchat.com', 
+            'pinterest.com', 'reddit.com', 'tumblr.com',
+            
+            # Professional/academic social networks
+            'medium.com', 'behance.net', 'dribbble.com', 'github.io',
+            
+            # Academic-adjacent but not primary sources
+            'speakerdeck.com', 'slideshare.net', 'prezi.com',
+            
+            # Regional platforms
+            'weibo.com', 'vk.com', 'ok.ru', 'line.me'
         }
         
-        # Academic profile sites
+        # Academic profile sites (high value - should NOT be replaced)
         self.academic_profile_domains = {
             'scholar.google.com': 'google_scholar',
             'researchgate.net': 'researchgate', 
             'academia.edu': 'academia',
             'orcid.org': 'orcid',
             'publons.com': 'publons',
-            'scopus.com': 'scopus'
+            'scopus.com': 'scopus',
+            'dblp.org': 'dblp',
+            'semanticscholar.org': 'semantic_scholar'
         }
         
         # Publication/journal domains
@@ -122,6 +135,28 @@ class WebsiteValidator:
             
             # Check for university profiles
             if any(domain.endswith(f'.{ac_domain}') for ac_domain in self.academic_domains):
+                # Enhanced lab website detection (highest priority for academic domains)
+                lab_patterns = [
+                    'lab', 'laboratory', 'labs', 'group', 'groups', 'center', 'centre', 
+                    'institute', 'research', 'clinic', 'facility', 'unit', 'program'
+                ]
+                lab_indicators = [
+                    'cognitive', 'neuroscience', 'psychology', 'computational', 'behavioral',
+                    'social', 'developmental', 'clinical', 'experimental', 'applied'
+                ]
+                
+                # Check for direct lab patterns
+                if any(pattern in path for pattern in lab_patterns):
+                    confidence = 0.85
+                    # Boost confidence if combined with research indicators
+                    if any(indicator in path for indicator in lab_indicators):
+                        confidence = 0.9
+                    return LinkType.LAB_WEBSITE, confidence
+                
+                # Check for research-focused URLs even without explicit "lab" keyword
+                if any(indicator in path for indicator in lab_indicators) and ('research' in path or 'study' in path):
+                    return LinkType.LAB_WEBSITE, 0.8
+                
                 # Look for faculty/people directory patterns
                 faculty_patterns = [
                     'faculty', 'people', 'staff', 'directory', 'profile',
@@ -130,13 +165,8 @@ class WebsiteValidator:
                 if any(pattern in path for pattern in faculty_patterns):
                     return LinkType.UNIVERSITY_PROFILE, 0.85
                 
-                # Lab website patterns
-                lab_patterns = ['lab', 'group', 'center', 'institute']
-                if any(pattern in path for pattern in lab_patterns):
-                    return LinkType.LAB_WEBSITE, 0.8
-                
-                # Personal page indicators
-                personal_patterns = ['~', '/personal/', '/home/']
+                # Personal page indicators (tilde pages, personal directories)
+                personal_patterns = ['~', '/personal/', '/home/', '/users/']
                 if any(pattern in path for pattern in personal_patterns):
                     return LinkType.PERSONAL_WEBSITE, 0.9
                 

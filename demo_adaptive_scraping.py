@@ -49,6 +49,12 @@ async def demo_adaptive_scraping():
             "base_url": None  # Let system discover
         },
         {
+            "name": "Columbia University",
+            "department": "computer science",
+            "max_faculty": 3,
+            "base_url": None
+        },
+        {
             "name": "MIT",
             "department": "brain and cognitive sciences",
             "max_faculty": 3,

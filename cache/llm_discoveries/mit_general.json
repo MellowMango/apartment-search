@@ -1,0 +1,16 @@
+{
+  "faculty_directory_paths": [
+    "faculty",
+    "people",
+    "directory"
+  ],
+  "department_paths": [
+    "departments/[dept]/faculty",
+    "schools/[school]/people"
+  ],
+  "confidence_score": 0.85,
+  "reasoning": "Found clear 'Faculty' navigation link and 'People' section. The /faculty path appears in main navigation, indicating a strong likelihood of a dedicated faculty directory.",
+  "cost_estimate": 0.00017745,
+  "cached": false,
+  "discovery_timestamp": 1750988000.393326
+}

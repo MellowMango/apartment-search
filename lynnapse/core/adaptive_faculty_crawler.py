@@ -15,12 +15,14 @@ import time
 
 from bs4 import BeautifulSoup
 import httpx
+from playwright.async_api import async_playwright
 
 from .university_adapter import UniversityAdapter, UniversityPattern, DepartmentInfo
 from .link_heuristics import LinkHeuristics
 from .lab_classifier import LabNameClassifier
 from .site_search import SiteSearchTask
 from .data_cleaner import DataCleaner
+from .llm_assistant import LLMAssistant
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +47,13 @@ class AdaptiveFacultyCrawler:
             enable_lab_discovery: Whether to enable lab discovery features
             enable_external_search: Whether to enable external search APIs
         """
+        self.cache_client = cache_client or {}
         self.university_adapter = UniversityAdapter(cache_client)
+        
+        # Initialize LLM assistant and pass it to the adapter
+        self.llm_assistant = LLMAssistant(cache_client)
+        self.university_adapter.set_llm_assistant(self.llm_assistant)
+
         self.data_cleaner = DataCleaner()
         
         # Enhanced lab discovery components
@@ -58,7 +66,7 @@ class AdaptiveFacultyCrawler:
         self.session = httpx.AsyncClient(
             timeout=30.0,
             headers={
-                "User-Agent": "Lynnapse Academic Research Bot 1.0 (Educational Use)"
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
             }
         )
         
@@ -94,8 +102,8 @@ class AdaptiveFacultyCrawler:
         
         try:
             # Step 1: Discover university structure
-            university_pattern = await self.university_adapter.discover_university_structure(
-                university_name, base_url
+            university_pattern = await self.university_adapter.discover_structure(
+                university_name
             )
             
             logger.info(f"Discovered structure with confidence {university_pattern.confidence_score:.2f}")
@@ -176,22 +184,34 @@ class AdaptiveFacultyCrawler:
             List of faculty data dictionaries
         """
         try:
-            # Handle redirects by allowing them
-            response = await self.session.get(department.url, follow_redirects=True)
-            
-            if response.status_code != 200:
-                logger.error(f"Failed to fetch {department.url}: {response.status_code}")
+            logger.info(f"Scraping department: {department.name} at {department.url}")
+
+            # --- Use Playwright to render the page ---
+            html_content = ""
+            async with async_playwright() as p:
+                browser = await p.chromium.launch()
+                page = await browser.new_page()
+                try:
+                    await page.goto(department.url, wait_until="networkidle", timeout=25000)
+                    html_content = await page.content()
+                except Exception as e:
+                    logger.error(f"Playwright failed to load page {department.url}: {e}")
+                    return [] # Return empty list if page fails to load
+                finally:
+                    await browser.close()
+
+            if not html_content:
+                logger.error(f"Failed to retrieve content for {department.name} from {department.url}")
                 return []
+
+            soup = BeautifulSoup(html_content, "html.parser")
             
-            soup = BeautifulSoup(response.text, 'html.parser')
-            
-            # Update the department URL to the final URL after redirects
-            final_url = str(response.url)
-            department.url = final_url
+            # Use the most specific pattern available for the university
+            faculty_pattern = university_pattern # In future, could be department-specific
             
             # Adapt to the faculty listing structure
             faculty_pattern = self.university_adapter.adapt_to_page(
-                soup, final_url, university_pattern
+                soup, department.url, faculty_pattern
             )
             
             if not faculty_pattern:
@@ -226,371 +246,305 @@ class AdaptiveFacultyCrawler:
              # Try finding faculty directly if no container
              container = soup
          
-         # Special handling for different university structures
-         if 'stanford.edu' in str(university_pattern.base_url):
-             faculty_list = self._extract_stanford_faculty(container, department, university_pattern)
-         elif 'cmu.edu' in str(university_pattern.base_url):
-             faculty_list = await self._extract_cmu_faculty(container, department, university_pattern)
+         if 'columbia' in university_pattern.university_name.lower() and department.name.lower() == 'computer science':
+             faculty_list = self._extract_columbia_cs_faculty(container, department, university_pattern)
+         elif 'stanford' in university_pattern.university_name.lower() and department.name.lower() == 'computer science':
+             faculty_list = self._extract_stanford_cs_faculty(container, department, university_pattern)
          else:
-             # Generic extraction for other universities
              faculty_list = self._extract_generic_faculty(container, selectors, department, university_pattern)
          
          return faculty_list
     
-    def _extract_stanford_faculty(self, container, department: DepartmentInfo, university_pattern: UniversityPattern) -> List[Dict[str, Any]]:
-        """Extract faculty specifically from Stanford's page structure."""
-        faculty_list = []
-        
-        # First try Stanford's views structure (faculty directory)
-        faculty_divs = container.find_all('div', class_='views-field views-field-title')
-        
-        if faculty_divs:
-            # Stanford faculty directory structure
-            name_elements = []
-            for div in faculty_divs:
-                h3 = div.find('h3')
-                if h3:
-                    name_elements.append(h3)
-        else:
-            # Fallback to generic h3/h4 headings
-            name_elements = container.find_all(['h3', 'h4'])
-        
-        logger.debug(f"Found {len(name_elements)} potential faculty headers in Stanford structure")
-        
-        for name_elem in name_elements:
-            try:
-                # Get the faculty name
-                name = name_elem.get_text().strip()
-                
-                # Skip section headings
-                if name.lower() in ['regular', 'emeriti', 'courtesy', 'faculty', 'staff']:
-                    continue
-                
-                # Look for email in the next few sibling elements
-                email = None
-                current = name_elem.next_sibling
-                
-                # Check next few elements for email
-                for _ in range(5):  # Check up to 5 next elements
-                    if current is None:
-                        break
-                    
-                    # Skip NavigableString objects
-                    if hasattr(current, 'name') and current.name:
-                        # Look for mailto links
-                        email_links = current.find_all('a', href=True)
-                        for email_link in email_links:
-                            href = email_link.get('href', '')
-                            if href.startswith('mailto:'):
-                                email = href.replace('mailto:', '').strip()
-                                break
-                        if email:
-                            break
-                    
-                    # Check text content for email patterns
-                    if hasattr(current, 'get_text'):
-                        text = current.get_text().strip()
-                        if '@' in text and '.' in text:
-                            # Simple email detection
-                            import re
-                            email_match = re.search(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', text)
-                            if email_match:
-                                email = email_match.group()
-                                break
-                    
-                    current = getattr(current, 'next_sibling', None)
-                
-                # Look for profile URL
-                profile_url = None
-                
-                # Check if the h3 is inside a link (Stanford structure)
-                parent_link = name_elem.find_parent('a')
-                if parent_link and parent_link.get('href'):
-                    href = parent_link.get('href', '')
-                    if href.startswith('http') or href.startswith('/'):
-                        profile_url = href if href.startswith('http') else urljoin(university_pattern.base_url, href)
-                else:
-                    # Fallback: look for links in parent container
-                    if name_elem.find_parent():
-                        profile_links = name_elem.find_parent().find_all('a', href=True)
-                        for link in profile_links:
-                            href = link.get('href', '')
-                            if any(pattern in href for pattern in ['/people/', 'profile', 'personal']):
-                                profile_url = urljoin(university_pattern.base_url, href)
-                                break
-                
-                # Clean and validate the data
-                if (name and 
-                    len(name.split()) >= 2 and  # At least first and last name
-                    len(name.split()) <= 6 and  # Not too many words (avoid sentences)
-                    len(name) <= 60 and  # Reasonable name length
-                    not any(word in name.lower() for word in ['research', 'theoretical', 'breaking', 'world', 'impacts'])):
-                    faculty_data = self._extract_faculty_info(
-                        name_elem, 
-                        {'name': name, 'email': email, 'title': '', 'profile_url': profile_url},
-                        department,
-                        university_pattern
-                    )
-                    
-                    if faculty_data:
-                        faculty_list.append(faculty_data)
-                        
-            except Exception as e:
-                logger.debug(f"Failed to extract Stanford faculty from element: {e}")
-                continue
-        
-        return faculty_list
     
-    async def _extract_cmu_faculty(self, container, department: DepartmentInfo, university_pattern: UniversityPattern) -> List[Dict[str, Any]]:
-        """Extract faculty using Carnegie Mellon-specific structure."""
-        faculty_list = []
-        
-        # CMU uses .filterable divs for faculty entries
-        faculty_items = container.select('.filterable')
-        
-        if not faculty_items:
-            # Fallback to looking for name links directly
-            faculty_items = container.select('a.name')
-            # If we found name links, get their parent containers
-            if faculty_items:
-                faculty_items = [item.find_parent() for item in faculty_items if item.find_parent()]
-        
-        for item in faculty_items[:50]:  # Limit to prevent too many results
-            try:
-                # Extract basic information from listing page
-                basic_data = self._extract_cmu_basic_info(item, department, university_pattern)
-                if not basic_data:
-                    continue
-                
-                # Optionally extract detailed information from profile page
-                if basic_data.get("profile_url") and self.enable_lab_discovery:
-                    detailed_data = await self._extract_cmu_detailed_info(basic_data["profile_url"])
-                    # Merge detailed data with basic data
-                    faculty_data = {**basic_data, **detailed_data}
-                else:
-                    faculty_data = basic_data
-                
-                faculty_list.append(faculty_data)
-                    
-            except Exception as e:
-                logger.debug(f"Failed to extract CMU faculty from item: {e}")
-                continue
-        
-        logger.info(f"Extracted {len(faculty_list)} CMU faculty members")
-        return faculty_list
     
-    def _extract_cmu_basic_info(self, item, department: DepartmentInfo, university_pattern: UniversityPattern) -> Optional[Dict[str, Any]]:
-        """Extract basic information from CMU faculty listing item."""
-        try:
-            # Extract name - CMU uses <a class="name"> inside h2
-            name = None
-            name_link = item.select_one('a.name')
-            if name_link:
-                name = name_link.get_text().strip()
-            
-            # If no name found, try h2 text
-            if not name:
-                h2_elem = item.select_one('h2')
-                if h2_elem:
-                    name = h2_elem.get_text().strip()
-            
-            # Skip if no name found
-            if not name:
-                return None
-            
-            # Extract title - usually in h3 after the name
-            title = None
-            title_elem = item.select_one('h3')
-            if title_elem:
-                title = title_elem.get_text().strip()
-            
-            # Extract profile URL
-            profile_url = None
-            if name_link and name_link.get('href'):
-                href = name_link.get('href')
-                if href.startswith('/'):
-                    profile_url = urljoin(university_pattern.base_url, href)
-                elif href.startswith('http'):
-                    profile_url = href
-                else:
-                    # Relative URL
-                    profile_url = urljoin(department.url, href)
-            
-            # Try to extract email (might be on profile page or hidden)
-            email = None
-            email_links = item.select('a[href^="mailto:"]')
-            if email_links:
-                email = email_links[0].get('href').replace('mailto:', '')
-            
-            # Return basic data structure
-            return {
-                "name": self.data_cleaner.normalize_name(name) if name else None,
+    
+    
+    def _extract_columbia_cs_faculty(self, container, department: DepartmentInfo, university_pattern: UniversityPattern) -> List[Dict[str, Any]]:
+        """Extract faculty specifically from Columbia's CS page structure."""
+        faculty_list = []
+        faculty_items = container.select('.wpb_wrapper .person_item')
+
+        for item in faculty_items:
+            name_element = item.select_one('.name a')
+            if not name_element:
+                continue
+
+            name = self.data_cleaner.normalize_name(name_element.get_text(strip=True))
+            profile_url = urljoin(university_pattern.base_url, name_element['href'])
+
+            title_element = item.select_one('.title')
+            title = self.data_cleaner.normalize_title(title_element.get_text(strip=True)) if title_element else None
+
+            email_element = item.select_one('a.email')
+            email = email_element['href'].replace('mailto:', '') if email_element else None
+
+            faculty_data = {
+                "name": name,
                 "email": email,
-                "title": self.data_cleaner.normalize_title(title) if title else None,
+                "title": title,
                 "department": department.name,
                 "university": university_pattern.university_name,
                 "profile_url": profile_url,
                 "source_url": department.url,
-                "extraction_method": "cmu_specific"
+                "extraction_method": "columbia_cs_specific"
             }
-        except Exception as e:
-            logger.debug(f"Failed to extract CMU basic info: {e}")
-            return None
-    
-    async def _extract_cmu_detailed_info(self, profile_url: str) -> Dict[str, Any]:
-        """Extract detailed information from CMU faculty profile page."""
-        detailed_info = {
-            "research_interests": None,
-            "personal_website": None,
-            "office": None,
-            "phone": None,
-            "biography": None
-        }
-        
-        try:
-            logger.debug(f"Fetching detailed info from {profile_url}")
-            response = await self.session.get(profile_url)
-            
-            if response.status_code != 200:
-                logger.warning(f"Failed to fetch profile page: {profile_url}")
-                return detailed_info
-                
-            soup = BeautifulSoup(response.text, 'html.parser')
-            
-            # Extract office location
-            office_elem = soup.select_one('.contact .address .icon.loc')
-            if office_elem:
-                detailed_info["office"] = office_elem.get_text().strip()
-            
-            # Extract phone number
-            phone_elem = soup.select_one('.contact a.icon.tel')
-            if phone_elem:
-                detailed_info["phone"] = phone_elem.get_text().strip()
-            
-            # Extract email from hidden protection
-            email_elem = soup.select_one('.protect.hidden')
-            if email_elem:
-                email_text = email_elem.get_text().strip()
-                # CMU uses format like "ja+(through)cmu.edu" - convert to proper email
-                if '+(through)' in email_text:
-                    detailed_info["email"] = email_text.replace('+(through)', '@')
-            
-            # Extract research interests - manual search through paragraphs
-            for p in soup.find_all('p'):
-                text = p.get_text().strip()
-                if any(keyword in text for keyword in ['Cognitive', 'Research', 'Neuroscience', 'Learning']):
-                    if len(text) > 10 and len(text) < 500:
-                        detailed_info["research_interests"] = text
-                        break
-            
-            # Extract biography (usually in a section with "Bio" heading)
-            bio_heading = soup.find(lambda tag: tag.name in ['h2', 'h3', 'h4'] and 'bio' in tag.get_text().lower())
-            if bio_heading:
-                bio_content = bio_heading.find_next(['p', 'div'])
-                if bio_content:
-                    bio_text = bio_content.get_text().strip()
-                    if len(bio_text) > 20:
-                        detailed_info["biography"] = bio_text[:500]
-            
-            # Extract personal website - look for external links
-            external_links = soup.find_all('a', href=True)
-            for link in external_links:
-                href = link.get('href')
-                if href and href.startswith('http') and 'cmu.edu' not in href:
-                    # Check if it looks like a personal/academic website
-                    if any(domain in href for domain in ['.edu', '.org', '.com']):
-                        detailed_info["personal_website"] = href
-                        break
-            
-            logger.debug(f"Extracted detailed info: office={detailed_info['office']}, email={detailed_info.get('email')}, research={bool(detailed_info['research_interests'])}")
-            
-        except Exception as e:
-            logger.debug(f"Failed to extract detailed info from {profile_url}: {e}")
-        
-        return detailed_info
-    
+            faculty_list.append(faculty_data)
+
+        return faculty_list
+
+    def _extract_stanford_cs_faculty(self, container, department: DepartmentInfo, university_pattern: UniversityPattern) -> List[Dict[str, Any]]:
+        """Extract faculty specifically from Stanford's CS page structure."""
+        faculty_list = []
+        faculty_items = container.select('.su-card-grid .su-card')
+
+        for item in faculty_items:
+            name_element = item.select_one('h3 a')
+            if not name_element:
+                continue
+
+            name = self.data_cleaner.normalize_name(name_element.get_text(strip=True))
+            profile_url = urljoin(university_pattern.base_url, name_element['href'])
+
+            title_element = item.select_one('.su-card__eyebrow')
+            title = self.data_cleaner.normalize_title(title_element.get_text(strip=True)) if title_element else None
+
+            # Stanford CS page does not have direct email links, so we will skip this.
+            email = None
+
+            faculty_data = {
+                "name": name,
+                "email": email,
+                "title": title,
+                "department": department.name,
+                "university": university_pattern.university_name,
+                "profile_url": profile_url,
+                "source_url": department.url,
+                "extraction_method": "stanford_cs_specific"
+            }
+            faculty_list.append(faculty_data)
+
+        return faculty_list
+
     def _extract_generic_faculty(self, container, selectors: Dict[str, str], department: DepartmentInfo, university_pattern: UniversityPattern) -> List[Dict[str, Any]]:
-        """Extract faculty using generic selectors for non-Stanford universities."""
+        """Extract faculty using generic heuristics for any university."""
         faculty_list = []
         
-        # Find individual faculty items
-        item_selector = selectors.get('item', '.faculty-member, .person, .profile')
-        faculty_items = container.select(item_selector)
+        # --- Enhanced Heuristic-Based Item Finding ---
+        # A cascade of common selectors to find faculty member containers.
+        # We try them in order of specificity. The first one to yield results wins.
+        item_selectors = [
+            "div.person",                               # For UVM and other similar layouts
+            "div.views-field-field-directory-profile-1", # For UVM (fallback)
+            ".faculty-member",          # Specific class
+            ".person-profile",          # Common alternative
+            ".profile-card",            # Card-based layouts
+            ".directory-entry",         # Directory style
+            "article.node--type-person",# Drupal-based sites
+            "div.profile",              # Generic profile div
+            "li.person",                # List-based layouts
+            "tr.faculty-row"            # Table-based layouts
+        ]
         
-        if not faculty_items:
-            # Fallback to more generic selectors
-            faculty_items = container.select('div[class*="faculty"], div[class*="person"], div[class*="profile"]')
+        potential_items = []
+        used_selector = None
+        for selector in item_selectors:
+            potential_items = container.select(selector)
+            if len(potential_items) > 2:  # If we find at least a few, we can be confident
+                used_selector = selector
+                logger.info(f"Found {len(potential_items)} items using selector '{selector}'")
+                break # Use this selector
+            else:
+                potential_items = [] # Reset if not enough items found
         
-        for item in faculty_items[:20]:  # Limit to prevent too many results
+        # Fallback to a more general search if specific selectors fail
+        if not potential_items:
+            logger.warning("No specific faculty item selectors worked, falling back to general tag search.")
+            used_selector = "general_fallback"
+            potential_items = container.find_all(
+                lambda tag: tag.name in ['div', 'li', 'tr'] and 
+                            tag.find('a', href=True) and 
+                            len(tag.get_text(strip=True)) > 5 and
+                            len(tag.find_all('a')) < 5 # Avoid large nav blocks
+            )
+
+        logger.info(f"Processing {len(potential_items)} potential faculty items using selector: {used_selector}")
+        successful_extractions = 0
+        
+        for i, item in enumerate(potential_items[:150]):  # Limit to prevent excessive processing
             try:
-                faculty_data = self._extract_faculty_info(item, selectors, department, university_pattern)
-                if faculty_data:
-                    faculty_list.append(faculty_data)
+                faculty_data = self._extract_faculty_info(item, {}, department, university_pattern)
+                if faculty_data and faculty_data.get('name') and faculty_data.get('profile_url'):
+                    # Basic validation to ensure we extracted a reasonable name and a profile link
+                    if len(faculty_data['name'].split()) > 1 and len(faculty_data['name'].split()) < 7:
+                        faculty_list.append(faculty_data)
+                        successful_extractions += 1
+                        logger.debug(f"Successfully extracted faculty #{successful_extractions}: {faculty_data['name']}")
+                    else:
+                        logger.debug(f"Rejected faculty due to name validation: {faculty_data.get('name', 'NO_NAME')}")
+                else:
+                    logger.debug(f"Item {i+1}: Failed basic validation - name: {faculty_data.get('name') if faculty_data else 'None'}, profile_url: {faculty_data.get('profile_url') if faculty_data else 'None'}")
             except Exception as e:
-                logger.debug(f"Failed to extract faculty from item: {e}")
+                logger.debug(f"Failed to extract faculty from item {i+1}: {e}")
                 continue
         
+        logger.info(f"Successfully extracted {successful_extractions} faculty members from {len(potential_items)} potential items")
         return faculty_list
     
     def _extract_faculty_info(self, 
                                       item: Any,
-                                      selectors: Dict[str, str],
+                                      selectors: Dict[str, str], # This will be ignored, but kept for signature consistency
                                       department: DepartmentInfo,
                                       university_pattern: UniversityPattern) -> Optional[Dict[str, Any]]:
         """
-        Extract faculty information from a single faculty item.
+        Extract faculty information from an HTML element using enhanced heuristics.
         
-        Args:
-            item: BeautifulSoup element containing faculty info OR dict with extracted data
-            selectors: CSS selectors for different fields OR dict with extracted data
-            department: Department information
-            university_pattern: University pattern
-            
-        Returns:
-            Faculty information dictionary or None if extraction failed
+        This is the core extraction function that attempts to pull out:
+        - Name (from links, headers, or text)
+        - Profile URL (from links)
+        - Email (from mailto links or text)
+        - Title (from context text)
         """
         try:
-            # Handle case where selectors is actually a dict with extracted data (Stanford case)
-            if isinstance(selectors, dict) and 'name' in selectors:
-                name = selectors.get('name')
-                email = selectors.get('email')
-                title = selectors.get('title', '')
-                profile_url = selectors.get('profile_url')
-            else:
-                # Standard extraction using selectors
-                name = self._extract_field(item, selectors.get('name', ''))
-                email = self._extract_field(item, selectors.get('email', ''))
-                title = self._extract_field(item, selectors.get('title', ''))
-                profile_url = self._extract_profile_url(item, university_pattern.base_url)
+            logger.debug(f"Extracting faculty info from item: {item.name if hasattr(item, 'name') else 'unknown'}")
             
-            # Skip if no name found
-            if not name:
+            name = None
+            profile_url = None
+
+            # Strategy 1: Find the most promising link in the item
+            # This is typically the faculty member's name linking to their profile
+            links = item.find_all('a', href=True)
+            logger.debug(f"Found {len(links)} links in item")
+            
+            if not links:
+                logger.debug("No links found in item, skipping")
                 return None
+
+            # Filter out non-profile links (email, phone, external, etc.)
+            profile_links = []
+            for link in links:
+                href = link.get('href', '')
+                text = link.get_text(strip=True)
+                
+                # Skip obvious non-profile links
+                if (href.startswith(('mailto:', 'tel:', 'javascript:', '#')) or
+                    not text or
+                    len(text) < 2 or
+                    text.lower() in ['more', 'details', 'info', 'read more', 'cv', 'website']):
+                    continue
+                    
+                # Skip external links unless they look like academic profiles
+                if href.startswith('http') and not any(domain in href for domain in [
+                    university_pattern.base_url.replace('https://', '').replace('http://', ''),
+                    '.edu', '.ac.', 'scholar.google', 'researchgate', 'orcid'
+                ]):
+                    continue
+                
+                profile_links.append((link, len(text)))
+
+            if not profile_links:
+                logger.debug("No valid profile links found in item")
+                return None
+
+            # Find the best link (often the longest text is the name)
+            best_link, text_length = max(profile_links, key=lambda x: x[1])
+            potential_name = self.data_cleaner.normalize_name(best_link.get_text(strip=True))
+            logger.debug(f"Best link text: '{potential_name}' (length: {text_length})")
+
+            # Validate the name
+            if potential_name and len(potential_name.split()) >= 2 and len(potential_name.split()) <= 6:
+                # Check if it looks like a real name (not just words like "Faculty Directory")
+                words = potential_name.split()
+                if not any(word.lower() in ['faculty', 'directory', 'staff', 'people', 'list', 'page'] for word in words):
+                    name = potential_name
+                    # Extract profile URL directly from the best_link
+                    href = best_link.get('href', '')
+                    if href.startswith('/'):
+                        profile_url = urljoin(university_pattern.base_url, href)
+                    elif href.startswith('http'):
+                        profile_url = href
+                    else:
+                        profile_url = href
+                    logger.debug(f"Extracted name: '{name}', profile_url: '{profile_url}'")
             
-            # Clean and extract email if available
-            cleaned_email = None
-            if email:
-                # Try to extract email properly
-                if '@' in email:
-                    cleaned_email = email.strip()
-                else:
-                    # Use DataCleaner to extract emails from text
-                    extracted_emails = self.data_cleaner.extract_emails(str(item))
-                    if extracted_emails:
-                        cleaned_email = extracted_emails[0]
+            if not name:
+                logger.debug("Could not extract valid name from links")
+                # Try alternative extraction methods
+                
+                # Look for name in headers or strong text near links
+                headers = item.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'strong', 'b'])
+                for header in headers:
+                    header_text = header.get_text(strip=True)
+                    if header_text and len(header_text.split()) >= 2 and len(header_text.split()) <= 6:
+                        normalized_name = self.data_cleaner.normalize_name(header_text)
+                        if normalized_name and not any(word.lower() in ['faculty', 'directory', 'staff'] for word in normalized_name.split()):
+                            name = normalized_name
+                            # Try to find a profile link near this header
+                            nearby_link = header.find_next('a', href=True) or header.find_previous('a', href=True)
+                            if nearby_link:
+                                href = nearby_link.get('href', '')
+                                if href.startswith('/'):
+                                    profile_url = urljoin(university_pattern.base_url, href)
+                                elif href.startswith('http'):
+                                    profile_url = href
+                                else:
+                                    profile_url = href
+                            else:
+                                # Use the first valid link we found earlier
+                                href = best_link.get('href', '')
+                                if href.startswith('/'):
+                                    profile_url = urljoin(university_pattern.base_url, href)
+                                elif href.startswith('http'):
+                                    profile_url = href
+                                else:
+                                    profile_url = href
+                            logger.debug(f"Alternative extraction - name: '{name}', profile_url: '{profile_url}'")
+                            break
+
+            if not name or not profile_url:
+                logger.debug(f"Failed to extract required fields - name: '{name}', profile_url: '{profile_url}'")
+                return None
+
+            # Extract Email (Heuristic)
+            email = None
+            mailto_links = item.select('a[href^="mailto:"]')
+            if mailto_links:
+                email = mailto_links[0].get('href').replace('mailto:', '').strip()
+                logger.debug(f"Found email from mailto: {email}")
             
-            # Clean the extracted data using DataCleaner
+            if not email:
+                extracted_emails = self.data_cleaner.extract_emails(item.get_text())
+                if extracted_emails:
+                    email = extracted_emails[0]
+                    logger.debug(f"Found email from text: {email}")
+
+            # Extract Title (Heuristic)
+            title = None
+            title_keywords = ['professor', 'chair', 'lecturer', 'dean', 'director', 'fellow', 'associate', 'assistant']
+            # Look for text that is NOT the name and contains a title keyword.
+            for p in item.find_all(['p', 'div', 'span', 'em', 'i']):
+                p_text = p.get_text(strip=True)
+                if name.lower() in p_text.lower(): # Avoid re-capturing the name
+                    continue
+                if any(kw in p_text.lower() for kw in title_keywords):
+                    potential_title = self.data_cleaner.normalize_title(p_text)
+                    if potential_title and len(potential_title) < 200:
+                        title = potential_title
+                        logger.debug(f"Found title: {title}")
+                        break
+
+            # Construct the data object
             faculty_data = {
-                "name": self.data_cleaner.normalize_name(name) if name else None,
-                "email": cleaned_email,
-                "title": self.data_cleaner.normalize_title(title) if title else None,
+                "name": name,
+                "email": email,
+                "title": title,
                 "department": department.name,
                 "university": university_pattern.university_name,
                 "profile_url": profile_url,
                 "source_url": department.url,
-                "extraction_method": "adaptive"
+                "extraction_method": "adaptive_heuristic"
             }
             
+            logger.debug(f"Successfully extracted faculty data: {faculty_data}")
             return faculty_data
             
         except Exception as e:

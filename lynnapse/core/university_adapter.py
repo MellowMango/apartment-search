@@ -22,6 +22,10 @@ import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 import httpx
 
+from lynnapse.config.settings import get_settings
+from .university_structure_db import UniversityStructureDB
+from .link_heuristics import LinkHeuristics
+
 logger = logging.getLogger(__name__)
 
 
@@ -30,12 +34,14 @@ class UniversityPattern:
     """Represents a discovered pattern for a university's structure."""
     university_name: str
     base_url: str
-    faculty_directory_patterns: List[str]
-    department_patterns: List[str]
+    departments: Dict[str, List[str]]
+    faculty_directory_paths: List[str]
+    department_paths: List[str]
     faculty_profile_patterns: List[str]
     pagination_patterns: List[str]
     confidence_score: float
     last_updated: str
+    discovery_method: str = "unknown"
     success_rate: float = 0.0
     selectors: Dict[str, str] = None
     # NEW: Enhanced subdomain support
@@ -48,9 +54,9 @@ class DepartmentInfo:
     """Information about a discovered department."""
     name: str
     url: str
-    faculty_count_estimate: int
-    structure_type: str  # 'list', 'grid', 'table', 'cards'
-    confidence: float
+    faculty_count_estimate: int = 0
+    structure_type: str = 'unknown'
+    confidence: float = 0.0
     # NEW: Subdomain support
     is_subdomain: bool = False
     subdomain_base: Optional[str] = None
@@ -122,69 +128,96 @@ class UniversityAdapter:
                 "User-Agent": "Lynnapse Academic Research Bot 1.0 (Educational Use)"
             }
         )
+        self.llm_assistant = None # Will be set by the crawler
+        self.structure_db = UniversityStructureDB()
+        self.link_heuristics = LinkHeuristics()
     
-    async def discover_university_structure(self, 
-                                          university_name: str,
-                                          base_url: Optional[str] = None) -> UniversityPattern:
+    def set_llm_assistant(self, llm_assistant: Any):
+        """Set the LLM assistant for the adapter."""
+        self.llm_assistant = llm_assistant
+    
+    def _convert_structure_to_pattern(self, structure) -> UniversityPattern:
+        """Convert UniversityStructure from database to UniversityPattern."""
+        return UniversityPattern(
+            university_name=structure.university_name,
+            base_url=structure.base_url,
+            departments=structure.departments,
+            faculty_directory_paths=structure.faculty_directory_paths,
+            department_paths=structure.department_paths,
+            faculty_profile_patterns=[],  # Not stored in database
+            pagination_patterns=[],  # Not stored in database
+            confidence_score=structure.confidence_score,
+            last_updated=str(int(structure.last_updated)),
+            discovery_method=structure.discovery_method,
+            success_rate=0.0,  # Not stored in database
+            selectors={},  # Not stored in database
+            subdomain_patterns=None,  # Not stored in database
+            department_subdomains=None  # Not stored in database
+        )
+    
+    async def discover_structure(self, 
+                                 university_name: str,
+                                 use_cache: bool = True) -> Optional[UniversityPattern]:
         """
         Automatically discover a university's faculty directory structure.
-        Enhanced with subdomain discovery capabilities.
-        
-        Args:
-            university_name: Name of the university
-            base_url: Base URL if known, otherwise will search for it
-            
-        Returns:
-            UniversityPattern with discovered structure including subdomains
         """
-        logger.info(f"Discovering structure for {university_name}")
-        
-        # Check cache first
-        cached_pattern = await self._get_cached_pattern(university_name)
-        if cached_pattern and cached_pattern.confidence_score > 0.7:
-            logger.info(f"Using cached pattern for {university_name}")
-            return cached_pattern
-        
-        # Discover base URL if not provided
+        base_url = None
+        if use_cache:
+            cached_structure = self.structure_db.get_structure(university_name)
+            if cached_structure:
+                logger.info(f"Using cached structure for {university_name} from persistent database")
+                cached_pattern = self._convert_structure_to_pattern(cached_structure)
+                if cached_pattern.confidence_score > 0.8:
+                    return cached_pattern
+                base_url = cached_pattern.base_url
+
         if not base_url:
             base_url = await self._discover_university_url(university_name)
             if not base_url:
-                raise ValueError(f"Could not find base URL for {university_name}")
+                logger.error(f"Could not find base URL for {university_name}")
+                return None
         
-        # Enhanced multi-strategy discovery with subdomain support
         strategies = [
-            self._discover_via_enhanced_sitemap,  # ENHANCED
-            self._discover_via_subdomain_enumeration,  # NEW
-            self._discover_via_navigation,
-            self._discover_via_common_paths
+            (self._discover_via_enhanced_sitemap, "sitemap"),
+            (self._discover_via_navigation, "navigation"),
+            (self._discover_via_common_paths, "common_paths"),
+            (self._discover_via_llm_assistant, "llm")
         ]
         
         best_pattern = None
         best_confidence = 0.0
         
-        for strategy in strategies:
+        for strategy_func, method_name in strategies:
+            if method_name == "llm" and not self.llm_assistant:
+                continue
+            if method_name == "llm" and not hasattr(self, '_discover_via_llm_assistant'):
+                continue
             try:
-                pattern = await strategy(university_name, base_url)
+                pattern = await strategy_func(university_name, base_url)
                 if pattern and pattern.confidence_score > best_confidence:
                     best_pattern = pattern
                     best_confidence = pattern.confidence_score
                     
-                # If we get high confidence, use it
-                if best_confidence > 0.8:
+                if best_confidence > 0.9:
                     break
                     
             except Exception as e:
-                logger.warning(f"Strategy {strategy.__name__} failed: {e}")
+                logger.warning(f"Strategy {method_name} failed: {e}")
                 continue
         
         if not best_pattern:
-            # Fallback to basic pattern
             best_pattern = self._create_fallback_pattern(university_name, base_url)
         
-        # Cache the discovered pattern
-        await self._cache_pattern(best_pattern)
+        self.structure_db.store_structure(
+            university_name=best_pattern.university_name,
+            base_url=best_pattern.base_url,
+            faculty_directory_paths=best_pattern.faculty_directory_paths,
+            department_paths=best_pattern.department_paths,
+            departments=best_pattern.departments,
+            discovery_method=best_pattern.discovery_method,
+            confidence_score=best_confidence
+        )
         
-        logger.info(f"Discovered pattern for {university_name} with confidence {best_pattern.confidence_score:.2f}")
         return best_pattern
     
     async def discover_departments(self, 
@@ -202,16 +235,55 @@ class UniversityAdapter:
         """
         departments = []
         
-        # Special handling for known complex structures
-        if 'stanford' in university_pattern.university_name.lower():
-            departments = await self._discover_stanford_departments(university_pattern, target_department)
-        elif 'carnegie mellon' in university_pattern.university_name.lower() or 'cmu' in university_pattern.university_name.lower():
-            departments = await self._discover_cmu_departments(university_pattern, target_department)
+        # First, check if we have cached department-specific paths
+        if target_department and university_pattern.departments:
+            target_lower = target_department.lower()
+            logger.info(f"Found {len(university_pattern.departments)} department-specific paths for {target_department}")
+            
+            # Look for the target department in cached paths
+            for dept_name, dept_paths in university_pattern.departments.items():
+                if target_lower in dept_name.lower() or dept_name.lower() in target_lower:
+                    logger.info(f"Found {len(dept_paths)} department-specific paths for {dept_name}")
+                    
+                    # Try each department-specific path
+                    for dept_path in dept_paths:
+                        try:
+                            url = urljoin(university_pattern.base_url, dept_path)
+                            response = await self.session.get(url)
+                            logger.info(f"Trying department path: {url} - Status: {response.status_code}")
+                            
+                            if response.status_code == 200:
+                                soup = BeautifulSoup(response.text, 'html.parser')
+                                
+                                # Check if this page has faculty indicators
+                                if self._contains_faculty_indicators(soup):
+                                    faculty_count = self._estimate_faculty_count(soup)
+                                    logger.info(f"Successfully found {dept_name} department at {url} (faculty: {faculty_count})")
+                                    
+                                    departments.append(DepartmentInfo(
+                                        name=dept_name.title(),
+                                        url=url,
+                                        faculty_count_estimate=faculty_count,
+                                        structure_type=self._detect_structure_type(soup),
+                                        confidence=0.9  # High confidence for cached paths
+                                    ))
+                                    break  # Found a working path for this department
+                                    
+                        except Exception as e:
+                            logger.debug(f"Failed to check department path {dept_path}: {e}")
+                            continue
         
-        # If no departments found via special handling, try general discovery
+        # Special handling for known complex structures
+        if not departments:
+            if 'stanford' in university_pattern.university_name.lower():
+                departments = await self._discover_stanford_departments(university_pattern, target_department)
+            elif 'carnegie mellon' in university_pattern.university_name.lower() or 'cmu' in university_pattern.university_name.lower():
+                departments = await self._discover_cmu_departments(university_pattern, target_department)
+        
+        # If no departments found via special handling or cached paths, try general discovery
         if not departments:
             # Try each discovered faculty directory pattern
-            for pattern in university_pattern.faculty_directory_patterns:
+            for pattern in university_pattern.faculty_directory_paths:
                 try:
                     url = urljoin(university_pattern.base_url, pattern)
                     response = await self.session.get(url)
@@ -237,8 +309,11 @@ class UniversityAdapter:
                 unique_departments.append(dept)
                 seen_urls.add(dept.url)
         
-        logger.info(f"Discovered {len(unique_departments)} departments")
-        return unique_departments
+        # Score and sort the final list of departments
+        sorted_departments = self._score_and_sort_departments(unique_departments, target_department)
+
+        logger.info(f"Discovered {len(sorted_departments)} final department candidates.")
+        return sorted_departments
     
     async def _discover_stanford_departments(self, 
                                           university_pattern: UniversityPattern,
@@ -709,13 +784,18 @@ class UniversityAdapter:
         return UniversityPattern(
             university_name=university_pattern.university_name,
             base_url=university_pattern.base_url,
-            faculty_directory_patterns=[],
-            department_patterns=[],
-            faculty_profile_patterns=[],
-            pagination_patterns=[],
-            confidence_score=0.6,
-            last_updated=str(int(time.time())),
-            selectors=selectors
+            departments=university_pattern.departments,
+            faculty_directory_paths=university_pattern.faculty_directory_paths,
+            department_paths=university_pattern.department_paths,
+            faculty_profile_patterns=university_pattern.faculty_profile_patterns,
+            pagination_patterns=university_pattern.pagination_patterns,
+            confidence_score=university_pattern.confidence_score,
+            last_updated=university_pattern.last_updated,
+            discovery_method=university_pattern.discovery_method,
+            success_rate=university_pattern.success_rate,
+            selectors=selectors,
+            subdomain_patterns=university_pattern.subdomain_patterns,
+            department_subdomains=university_pattern.department_subdomains
         )
     
     async def _discover_university_url(self, university_name: str) -> Optional[str]:
@@ -906,12 +986,16 @@ class UniversityAdapter:
                 return UniversityPattern(
                     university_name=university_name,
                     base_url=base_url,
-                    faculty_directory_patterns=faculty_urls[:10],  # Top 10
-                    department_patterns=self.DEPARTMENT_PATTERNS,
+                    departments={},
+                    faculty_directory_paths=faculty_urls[:10],  # Top 10
+                    department_paths=self.DEPARTMENT_PATTERNS,
                     faculty_profile_patterns=[],
                     pagination_patterns=[],
                     confidence_score=0.85,  # Higher confidence for sitemap discovery
                     last_updated=str(int(time.time())),
+                    discovery_method="sitemap",
+                    success_rate=0.85,
+                    selectors={},
                     subdomain_patterns=subdomain_patterns,
                     department_subdomains=department_subdomains
                 )
@@ -1070,12 +1154,16 @@ class UniversityAdapter:
                 return UniversityPattern(
                     university_name=university_name,
                     base_url=base_url,
-                    faculty_directory_patterns=faculty_urls,
-                    department_patterns=self.DEPARTMENT_PATTERNS,
+                    departments={},
+                    faculty_directory_paths=faculty_urls,
+                    department_paths=self.DEPARTMENT_PATTERNS,
                     faculty_profile_patterns=[],
                     pagination_patterns=[],
                     confidence_score=0.75,
                     last_updated=str(int(time.time())),
+                    discovery_method="subdomain_enumeration",
+                    success_rate=0.75,
+                    selectors={},
                     subdomain_patterns=list(department_subdomains.values()),
                     department_subdomains=department_subdomains
                 )
@@ -1135,12 +1223,14 @@ class UniversityAdapter:
                 return UniversityPattern(
                     university_name=university_name,
                     base_url=base_url,
-                    faculty_directory_patterns=faculty_directories[:10],  # Limit to 10
-                    department_patterns=self.DEPARTMENT_PATTERNS,
+                    departments={},
+                    faculty_directory_paths=faculty_directories[:10],  # Limit to 10
+                    department_paths=self.DEPARTMENT_PATTERNS,
                     faculty_profile_patterns=[],  # Will be detected later
                     pagination_patterns=[],
                     confidence_score=0.7,
-                    last_updated=str(int(time.time()))
+                    last_updated=str(int(time.time())),
+                    discovery_method="navigation"
                 )
             
             return None
@@ -1179,27 +1269,46 @@ class UniversityAdapter:
             return UniversityPattern(
                 university_name=university_name,
                 base_url=base_url,
-                faculty_directory_patterns=working_paths,
-                department_patterns=[],
+                departments={},
+                faculty_directory_paths=working_paths,
+                department_paths=[],
                 faculty_profile_patterns=[],
                 pagination_patterns=[],
                 confidence_score=0.6,
-                last_updated=str(time.time())
+                last_updated=str(time.time()),
+                discovery_method="common_paths"
             )
         
         return None
+    
+    async def _discover_via_llm_assistant(self, university_name: str, base_url: str) -> Optional[UniversityPattern]:
+        """Discover university structure using LLM assistant (if available)."""
+        if not self.llm_assistant:
+            logger.debug("LLM assistant not available for discovery")
+            return None
+        
+        try:
+            # Use LLM assistant to discover structure
+            # This would be implemented when LLM assistant is properly integrated
+            logger.info(f"LLM assistant discovery not yet implemented for {university_name}")
+            return None
+        except Exception as e:
+            logger.warning(f"LLM assistant discovery failed for {university_name}: {e}")
+            return None
     
     def _create_fallback_pattern(self, university_name: str, base_url: str) -> UniversityPattern:
         """Create a basic fallback pattern when discovery fails."""
         return UniversityPattern(
             university_name=university_name,
             base_url=base_url,
-            faculty_directory_patterns=["faculty", "people", "directory"],
-            department_patterns=["department", "school"],
+            departments={},
+            faculty_directory_paths=["faculty", "people", "directory"],
+            department_paths=["department", "school"],
             faculty_profile_patterns=[],
             pagination_patterns=[],
             confidence_score=0.3,
-            last_updated=str(time.time())
+            last_updated=str(time.time()),
+            discovery_method="fallback"
         )
     
     async def _extract_departments(self, 
@@ -1572,6 +1681,34 @@ class UniversityAdapter:
         
         return True
 
+    def _score_and_sort_departments(self, departments: List[DepartmentInfo], target_department: str) -> List[DepartmentInfo]:
+        """Score and sort department links, prioritizing faculty pages."""
+        scored_departments = []
+        for dept in departments:
+            score = self.link_heuristics.score_faculty_link(dept.name, dept.url, target_department)
+            
+            # Penalize 'staff' pages and boost 'faculty' pages
+            if "staff" in dept.url.lower() and "faculty" not in dept.url.lower():
+                score *= 0.1
+            if "faculty" in dept.url.lower() and "staff" not in dept.url.lower():
+                score *= 1.5
+            
+            scored_departments.append({'department': dept, 'score': score})
+
+        # Sort by score in descending order
+        sorted_departments = sorted(scored_departments, key=lambda x: x['score'], reverse=True)
+        
+        if sorted_departments:
+            logger.info("Top 3 department candidates after scoring:")
+            for item in sorted_departments[:3]:
+                logger.info(f"  - URL: {item['department'].url}, Score: {item['score']:.2f}")
+
+        return [item['department'] for item in sorted_departments]
+
+    async def _find_best_department_url(self, base_url: str, department_name: str) -> Optional[str]:
+        """Find the best department URL from a list of potential candidates."""
+        logger.info(f"Searching for '{department_name}' department page within {base_url}")
+
 
 async def demo_university_adapter():
     """Demo the UniversityAdapter functionality."""
@@ -1583,13 +1720,13 @@ async def demo_university_adapter():
     try:
         # Demo: Discover Arizona State University structure
         print("Discovering Arizona State University structure...")
-        pattern = await adapter.discover_university_structure(
+        pattern = await adapter.discover_structure(
             "Arizona State University",
             "https://www.asu.edu"
         )
         
         print(f"Base URL: {pattern.base_url}")
-        print(f"Faculty directories found: {len(pattern.faculty_directory_patterns)}")
+        print(f"Faculty directories found: {len(pattern.faculty_directory_paths)}")
         print(f"Confidence: {pattern.confidence_score:.2f}")
         
         # Demo: Discover departments

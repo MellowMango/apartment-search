@@ -119,18 +119,17 @@ def create_app() -> FastAPI:
                 
                 logger.info(f"Scrape completed: success={scrape_result.get('success')}, faculty_count={len(scrape_result.get('faculty', []))}")
                 
+                # Case 1: Scrape was successful and found faculty
                 if scrape_result.get('success') and scrape_result.get('faculty'):
                     faculty_data = scrape_result['faculty']
                     
-                    # Format faculty data for web interface
-                    formatted_faculty = []
-                    for faculty in faculty_data[:10]:  # Show first 10 for display
-                        formatted_faculty.append({
-                            'name': faculty.get('name', 'Unknown'),
-                            'title': faculty.get('title', ''),
-                            'email': faculty.get('email', ''),
-                            'website': faculty.get('profile_url', '')
-                        })
+                    # Format faculty data for web interface (preview)
+                    formatted_faculty = [{
+                        'name': f.get('name', 'Unknown'),
+                        'title': f.get('title', ''),
+                        'email': f.get('email', ''),
+                        'website': f.get('profile_url', '')
+                    } for f in faculty_data[:10]]
                     
                     metadata = scrape_result.get('metadata', {})
                     
@@ -143,16 +142,32 @@ def create_app() -> FastAPI:
                         'departments_processed': metadata.get('departments_processed', 1),
                         'metadata': metadata
                     }
+                
+                # Case 2: Scrape was successful but found zero faculty
+                elif scrape_result.get('success'):
+                    result = {
+                        'success': True,
+                        'faculty': [],
+                        'message': f"✅ Found the department page for {department_name}, but couldn't extract any faculty. The page layout might be unusual.",
+                        'total_count': 0,
+                        'metadata': scrape_result.get('metadata', {})
+                    }
+                    # We still save the result, as the discovery was successful
+                    scrape_result['faculty'] = [] # Ensure faculty list is not None
+                
+                # Case 3: Scrape failed
                 else:
-                    # Handle failure cases
                     error_msg = scrape_result.get('error', 'Unknown error')
                     
-                    if "Could not find base URL" in error_msg or "URL discovery failed" in error_msg:
-                        suggestion = f"❌ {university_name} has a complex website structure. Try Stanford University or University of Arizona instead!"
-                    elif "No departments found" in error_msg:
-                        suggestion = f"❌ Could not find {department_name} department. Try 'Psychology' or 'Computer Science'."
+                    # Fix: Handle case where error_msg could be None
+                    if error_msg and "Could not find base URL" in error_msg:
+                        suggestion = f"❌ Could not find the official website for {university_name}. Please check the university name spelling and try again."
+                    elif error_msg and "URL discovery failed" in error_msg:
+                        suggestion = f"❌ Network error when discovering {university_name}'s website structure. Please try again."
+                    elif error_msg and "No departments found" in error_msg:
+                        suggestion = f"❌ Could not find the {department_name} department at {university_name}. Try 'Psychology', 'Computer Science', or 'Engineering'."
                     else:
-                        suggestion = f"❌ No faculty found at {university_name} {department_name}. This university may need special handling."
+                        suggestion = f"❌ Error extracting faculty data from {university_name} {department_name}: {error_msg or 'Unknown error'}"
                     
                     result = {
                         'success': False,
@@ -165,8 +180,8 @@ def create_app() -> FastAPI:
             finally:
                 await crawler.close()
             
+            # Save results to file only if the discovery was successful (even if no faculty)
             if result.get('success'):
-                # Save to organized folder structure  
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                 safe_university = university_name.replace(' ', '_').replace('/', '_')
                 safe_department = department_name.replace(' ', '_').replace('/', '_')

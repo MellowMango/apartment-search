@@ -1,0 +1,16 @@
+{
+  "faculty_directory_paths": [
+    "faculty",
+    "people",
+    "directory"
+  ],
+  "department_paths": [
+    "departments/[dept]/faculty",
+    "schools/[school]/people"
+  ],
+  "confidence_score": 0.85,
+  "reasoning": "The analysis identified common patterns for faculty directories such as 'faculty' and 'people'. The presence of these terms suggests a high likelihood of dedicated faculty listing pages. Additionally, department-specific paths are inferred based on standard academic website structures.",
+  "cost_estimate": 0.00021779999999999998,
+  "cached": false,
+  "discovery_timestamp": 1750987604.9468842
+}

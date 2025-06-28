@@ -11,7 +11,8 @@ from typing import Optional
 import typer
 from rich.console import Console
 from rich.logging import RichHandler
-from rich.progress import Progress, SpinnerColumn, TextColumn
+from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TimeElapsedColumn
+from rich.table import Table
 
 from lynnapse.config import get_settings, get_seed_loader
 from lynnapse.db import get_client
@@ -32,6 +33,18 @@ try:
 except ImportError:
     AdaptiveFacultyCrawler = None
     ADAPTIVE_AVAILABLE = False
+
+# Enhanced DAG flow components
+try:
+    from lynnapse.flows.enhanced_scraping_flow import (
+        enhanced_faculty_scraping_flow,
+        university_enhanced_scraping_flow
+    )
+    ENHANCED_FLOWS_AVAILABLE = True
+except ImportError:
+    enhanced_faculty_scraping_flow = None
+    university_enhanced_scraping_flow = None
+    ENHANCED_FLOWS_AVAILABLE = False
 
 # Legacy imports (may not exist)
 try:
@@ -675,16 +688,223 @@ def find_better_links(
 
 
 @app.command()
+def enhanced_flow(
+    seeds_file: str = typer.Argument("seeds/university_of_arizona.yml", help="Path to seeds YAML file"),
+    university: Optional[str] = typer.Option(None, "--university", "-u", help="Filter by university name"),
+    department: Optional[str] = typer.Option(None, "--department", "-d", help="Filter by department name"),
+    max_scraping: int = typer.Option(5, "--max-scraping", help="Max concurrent scraping operations"),
+    max_enrichment: int = typer.Option(3, "--max-enrichment", help="Max concurrent enrichment operations"),
+    enable_ai: bool = typer.Option(True, "--enable-ai/--disable-ai", help="Enable AI-assisted link discovery"),
+    enable_enrichment: bool = typer.Option(True, "--enable-enrichment/--disable-enrichment", help="Enable detailed link enrichment"),
+    openai_api_key: Optional[str] = typer.Option(None, "--openai-key", help="OpenAI API key (or use OPENAI_API_KEY env var)"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Validate configuration only"),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Verbose logging"),
+):
+    """
+    🚀 Run the enhanced DAG workflow with integrated link enrichment.
+    
+    This command orchestrates the complete pipeline:
+    Scraping → Link Processing → Enrichment → Storage
+    
+    Features:
+    - Adaptive faculty discovery with university structure detection
+    - Smart link processing with social media replacement
+    - Detailed academic link enrichment with metadata extraction
+    - Comprehensive error handling and retry logic
+    - Production-ready Docker compatibility
+    
+    Example usage:
+    lynnapse enhanced-flow seeds/university_of_arizona.yml -u "University of Vermont" -d Psychology
+    lynnapse enhanced-flow seeds/cmu.yml --enable-ai --max-enrichment 5 -v
+    """
+    
+    if not ENHANCED_FLOWS_AVAILABLE:
+        console.print("[red]Enhanced flows not available. Please install requirements and check lynnapse.flows module.[/red]")
+        return
+    
+    log_level = "DEBUG" if verbose else "INFO"
+    setup_logging(log_level)
+    
+    async def run_enhanced_flow():
+        try:
+            console.print("🚀 [bold]Starting Enhanced DAG Workflow[/bold]")
+            console.print(f"📁 Seeds file: {seeds_file}")
+            if university:
+                console.print(f"🏫 University filter: {university}")
+            if department:
+                console.print(f"🏛️ Department filter: {department}")
+            
+            console.print(f"🤖 AI assistance: {'[green]enabled[/green]' if enable_ai else '[red]disabled[/red]'}")
+            console.print(f"🔬 Link enrichment: {'[green]enabled[/green]' if enable_enrichment else '[red]disabled[/red]'}")
+            
+            # Show progress for enhanced flow
+            with Progress(
+                SpinnerColumn(),
+                TextColumn("[progress.description]{task.description}"),
+                BarColumn(),
+                TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+                TimeElapsedColumn(),
+                console=console,
+                transient=False
+            ) as progress:
+                
+                if dry_run:
+                    task = progress.add_task("🔍 Validating configuration...", total=100)
+                else:
+                    task = progress.add_task("🎓 Running enhanced scraping flow...", total=100)
+                
+                progress.update(task, advance=10)
+                
+                # Run the enhanced Prefect flow
+                result = await enhanced_faculty_scraping_flow(
+                    seeds_file=seeds_file,
+                    university_filter=university,
+                    department_filter=department,
+                    enable_ai_assistance=enable_ai,
+                    enable_link_enrichment=enable_enrichment,
+                    max_concurrent_scraping=max_scraping,
+                    max_concurrent_enrichment=max_enrichment,
+                    openai_api_key=openai_api_key,
+                    dry_run=dry_run
+                )
+                
+                progress.update(task, completed=100)
+            
+            if dry_run:
+                console.print("[green]✓ Enhanced configuration validation successful![/green]")
+                console.print(f"Universities: {result['configuration']['total_universities']}")
+                console.print(f"Programs: {result['configuration']['total_programs']}")
+                console.print(f"AI assistance available: {result.get('ai_assistance_available', False)}")
+                console.print(f"Link enrichment enabled: {result.get('link_enrichment_enabled', False)}")
+            else:
+                console.print("[green]✓ Enhanced DAG workflow completed successfully![/green]")
+                
+                # Display comprehensive results
+                table = Table(title="Enhanced Scraping Results", show_header=True, header_style="bold magenta")
+                table.add_column("Metric", style="cyan", no_wrap=True)
+                table.add_column("Value", style="green")
+                
+                table.add_row("Job ID", result.get('job_id', 'N/A'))
+                table.add_row("Universities Processed", str(result.get('universities_processed', 0)))
+                table.add_row("Departments Processed", str(result.get('departments_processed', 0)))
+                table.add_row("Faculty Processed", str(result.get('total_faculty_processed', 0)))
+                table.add_row("Links Processed", str(result.get('total_links_processed', 0)))
+                table.add_row("Links Enriched", str(result.get('total_links_enriched', 0)))
+                table.add_row("Execution Time", f"{result.get('execution_time_seconds', 0):.1f}s")
+                table.add_row("Throughput", f"{result.get('throughput_faculty_per_second', 0):.2f} faculty/sec")
+                
+                console.print(table)
+                
+                # Show detailed results for each university
+                if result.get('university_results'):
+                    console.print("\n📊 [bold]Detailed Results by University:[/bold]")
+                    for univ_result in result['university_results']:
+                        console.print(f"🏫 {univ_result['university_name']} - {univ_result['department_name']}")
+                        console.print(f"   Faculty: {univ_result['faculty_enriched']}")
+                        if univ_result.get('processing_report'):
+                            replacement_rate = univ_result['processing_report']['replacement_report'].get('replacement_success_rate', 0)
+                            console.print(f"   Link Replacement: {replacement_rate:.1%}")
+                        if univ_result.get('enrichment_report'):
+                            enrichment_rate = univ_result['enrichment_report'].get('enrichment_success_rate', 0)
+                            console.print(f"   Link Enrichment: {enrichment_rate:.1%}")
+            
+            return result
+            
+        except Exception as e:
+            console.print(f"[red]✗ Enhanced workflow failed: {e}[/red]")
+            if verbose:
+                import traceback
+                console.print(traceback.format_exc())
+            return None
+    
+    asyncio.run(run_enhanced_flow())
+
+
+@app.command()
+def university_enhanced(
+    university_config_file: str = typer.Argument(..., help="Path to university configuration file"),
+    department: str = typer.Option("Psychology", "--department", "-d", help="Department name"),
+    enable_ai: bool = typer.Option(True, "--enable-ai/--disable-ai", help="Enable AI-assisted link discovery"),
+    enable_enrichment: bool = typer.Option(True, "--enable-enrichment/--disable-enrichment", help="Enable detailed link enrichment"),
+    openai_api_key: Optional[str] = typer.Option(None, "--openai-key", help="OpenAI API key"),
+    verbose: bool = typer.Option(False, "--verbose", "-v", help="Verbose logging"),
+):
+    """
+    🏫 Run enhanced scraping for a single university with full DAG pipeline.
+    
+    This command processes a single university through the complete enhanced workflow.
+    Ideal for testing and debugging specific universities.
+    """
+    
+    if not ENHANCED_FLOWS_AVAILABLE:
+        console.print("[red]Enhanced flows not available. Please install requirements and check lynnapse.flows module.[/red]")
+        return
+    
+    log_level = "DEBUG" if verbose else "INFO"
+    setup_logging(log_level)
+    
+    import yaml
+    
+    async def run_university_enhanced():
+        try:
+            # Load university configuration
+            with open(university_config_file, 'r') as f:
+                university_config = yaml.safe_load(f)
+            
+            console.print(f"🏫 [bold]Starting Enhanced University Scraping[/bold]")
+            console.print(f"University: {university_config.get('name', 'Unknown')}")
+            console.print(f"Department: {department}")
+            
+            # Run the enhanced university flow
+            result = await university_enhanced_scraping_flow(
+                university_config=university_config,
+                department_name=department,
+                enable_ai_assistance=enable_ai,
+                enable_link_enrichment=enable_enrichment,
+                openai_api_key=openai_api_key
+            )
+            
+            console.print("[green]✓ Enhanced university scraping completed![/green]")
+            
+            # Display results
+            table = Table(title="University Scraping Results", show_header=True, header_style="bold magenta")
+            table.add_column("Metric", style="cyan", no_wrap=True)
+            table.add_column("Value", style="green")
+            
+            table.add_row("University", result.get('university_name', 'N/A'))
+            table.add_row("Department", result.get('department_name', 'N/A'))
+            table.add_row("Faculty Scraped", str(result.get('faculty_scraped', 0)))
+            table.add_row("Faculty Processed", str(result.get('faculty_processed', 0)))
+            table.add_row("Faculty Enriched", str(result.get('faculty_enriched', 0)))
+            table.add_row("Status", result.get('status', 'Unknown'))
+            
+            console.print(table)
+            
+            return result
+            
+        except Exception as e:
+            console.print(f"[red]✗ University enhanced scraping failed: {e}[/red]")
+            if verbose:
+                import traceback
+                console.print(traceback.format_exc())
+            return None
+    
+    asyncio.run(run_university_enhanced())
+
+
+@app.command()
 def version():
     """Show version information."""
-    console.print("🎓 [bold]Lynnapse[/bold] v2.0.0 - Modular Architecture")
-    console.print("University Program & Faculty Scraper")
-    console.print("✨ Features: Prefect orchestration, modular components, enhanced data cleaning")
+    console.print("🎓 [bold]Lynnapse[/bold] v2.0.0 - Enhanced DAG Architecture")
+    console.print("University Program & Faculty Scraper with Link Enrichment")
+    console.print("✨ Features: Prefect orchestration, smart link processing, AI-assisted discovery, comprehensive enrichment")
     console.print("📋 Available commands:")
-    console.print("  • [blue]web[/blue] - Start web interface (recommended)")
+    console.print("  • [blue]enhanced-flow[/blue] - Run enhanced DAG workflow with link enrichment (⭐ RECOMMENDED)")
+    console.print("  • [blue]university-enhanced[/blue] - Run enhanced scraping for a single university")
+    console.print("  • [blue]web[/blue] - Start web interface")
     console.print("  • [blue]flow[/blue] - Run modular scraping flow")
     console.print("  • [blue]scrape-university[/blue] - Run specialized scrapers")
-    console.print("  • [blue]scrape[/blue] - Run legacy seed-based scraper")
+    console.print("  • [blue]adaptive-scrape[/blue] - Run adaptive faculty discovery")
     console.print("  • [blue]validate-websites[/blue] - Check and categorize faculty website links")
     console.print("  • [blue]find-better-links[/blue] - Find better academic links for faculty with poor quality links")
 

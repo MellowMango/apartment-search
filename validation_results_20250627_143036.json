@@ -1,0 +1,69 @@
+{
+  "timestamp": "20250627_143036",
+  "results": [
+    {
+      "university": "Carnegie Mellon University",
+      "department": "Psychology",
+      "success": true,
+      "faculty_count": 105,
+      "quality_score": 0.3333333333333333,
+      "field_coverage": {
+        "name": 100.0,
+        "title": 0.0,
+        "email": 0.0,
+        "profile_url": 100.0,
+        "research_interests": 0.0,
+        "personal_website": 0.0
+      },
+      "error": null
+    },
+    {
+      "university": "University of Arizona",
+      "department": "Psychology",
+      "success": true,
+      "faculty_count": 195,
+      "quality_score": 0.34871794871794876,
+      "field_coverage": {
+        "name": 100.0,
+        "title": 4.615384615384616,
+        "email": 0.0,
+        "profile_url": 100.0,
+        "research_interests": 0.0,
+        "personal_website": 0.0
+      },
+      "error": null
+    },
+    {
+      "university": "University of Vermont",
+      "department": "Psychology",
+      "success": true,
+      "faculty_count": 29,
+      "quality_score": 0.5402298850574713,
+      "field_coverage": {
+        "name": 100.0,
+        "title": 62.06896551724138,
+        "email": 0.0,
+        "profile_url": 100.0,
+        "research_interests": 0.0,
+        "personal_website": 0.0
+      },
+      "error": null
+    },
+    {
+      "university": "Stanford University",
+      "department": "Psychology",
+      "success": true,
+      "faculty_count": 126,
+      "quality_score": 0.3412698412698412,
+      "field_coverage": {
+        "name": 100.0,
+        "title": 0.0,
+        "email": 2.380952380952381,
+        "profile_url": 100.0,
+        "research_interests": 0.0,
+        "personal_website": 0.0
+      },
+      "error": null
+    }
+  ]
+}

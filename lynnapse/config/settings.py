@@ -30,6 +30,19 @@ class Settings(BaseSettings):
     max_concurrent_requests: int = Field(default=3, env="MAX_CONCURRENT_REQUESTS")
     request_delay: float = Field(default=1.0, env="REQUEST_DELAY")
     
+    # OpenAI LLM Configuration
+    openai_api_key: Optional[str] = Field(default=None, env="OPENAI_API_KEY")
+    openai_model: str = Field(default="gpt-4o-mini", env="OPENAI_MODEL")
+    openai_max_tokens: int = Field(default=1000, env="OPENAI_MAX_TOKENS")
+    openai_temperature: float = Field(default=0.1, env="OPENAI_TEMPERATURE")
+    openai_timeout: int = Field(default=30, env="OPENAI_TIMEOUT")
+    
+    # LLM Configuration
+    llm_cache_enabled: bool = Field(default=True, env="LLM_CACHE_ENABLED")
+    llm_cache_ttl: int = Field(default=86400, env="LLM_CACHE_TTL")  # 24 hours
+    llm_max_retries: int = Field(default=3, env="LLM_MAX_RETRIES")
+    llm_cost_tracking: bool = Field(default=True, env="LLM_COST_TRACKING")
+    
     # Firecrawl
     firecrawl_api_key: Optional[str] = Field(default=None, env="FIRECRAWL_API_KEY")
     firecrawl_max_retries: int = Field(default=3, env="FIRECRAWL_MAX_RETRIES")
@@ -52,6 +65,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         env_file_encoding = "utf-8"
+        extra = "ignore"  # Ignore extra fields in .env file
 
 
 # Global settings instance
