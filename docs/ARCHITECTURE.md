@@ -1,91 +1,267 @@
-# 🏗️ Lynnapse Architecture Documentation
+# 🏗️ Lynnapse Comprehensive Academic Intelligence Architecture
 
 ## System Overview
 
-Lynnapse is designed as a modular, async-first web scraping system with a focus on academic faculty data extraction. The architecture emphasizes maintainability, extensibility, and performance.
+Lynnapse is designed as a modular, async-first academic intelligence platform with comprehensive faculty extraction, lab profiling, and research intelligence capabilities. The architecture emphasizes maintainability, extensibility, performance, and deep academic data insights.
 
-## Core Components
+## 🧬 Core Intelligence Components
 
-### 1. Scraper Layer (`lynnapse/scrapers/`)
+### 1. Comprehensive Faculty Extraction (`lynnapse/core/`)
 
-#### Base Architecture
-```python
-BaseUniversityScraper (ABC)
-├── async context management
-├── HTTP session handling
-├── Common parsing utilities
-├── Personal website detection
-└── Error handling & retry logic
-```
-
-#### University-Specific Scrapers
-- **Arizona Psychology Scraper**: Specialized parser for University of Arizona Psychology Department
-- **Extensible Design**: Easy to add new universities by inheriting from base class
-
-#### Key Features
-- **Async/Await Pattern**: Non-blocking I/O for high performance
-- **Rate Limiting**: Respectful scraping with configurable delays
-- **Smart Parsing**: Context-aware extraction of faculty information
-- **Personal Website Detection**: Multi-signal algorithm for identifying academic websites
-
-### 2. Data Models (`lynnapse/models/`)
-
-#### Faculty Model
+#### Enhanced Faculty Model with Multi-Link Support
 ```python
 @dataclass
-class Faculty:
+class ComprehensiveFaculty:
     # Basic Information
     name: str
     title: Optional[str]
     email: Optional[str]
     
-    # Contact Details
+    # Multi-Link Academic Presence
+    links: List[Dict[str, Any]]  # All valuable academic links
+    external_profiles: Dict[str, List[str]]  # Categorized external links
+    
+    # Research Intelligence
+    research_interests: List[str]
+    research_areas: List[str]
+    lab_associations: List[str]
+    research_initiatives: List[str]
+    
+    # Cross-Department Support
+    departments: List[str]  # Multiple department affiliations
+    dedup_key: str  # For cross-department deduplication
+    
+    # Enhanced Metadata
+    comprehensive_extraction: bool
+    extraction_method: str
+    scraped_at: datetime
+```
+
+#### Multi-Link Extraction Engine
+```python
+class AdaptiveFacultyCrawler:
+    async def _extract_comprehensive_faculty_info(self, item, department, university_pattern):
+        # Extract ALL valuable academic links per faculty member
+        all_links = self._extract_all_valuable_links(item, university_pattern)
+        
+        # Link categories: university_profile, google_scholar, personal_website, 
+        # lab_website, research_platform, social_media, cv_publications
+        
+        research_info = self._extract_research_information(item)
+        lab_info = await self._extract_lab_associations(item, university_pattern)
+        
+        # Build comprehensive faculty profile with deduplication key
+        return comprehensive_faculty_data
+```
+
+### 2. Faculty Deduplication System
+
+#### Cross-Department Intelligence
+```python
+class FacultyDeduplicationEngine:
+    def _deduplicate_and_enhance_faculty(self, faculty_list):
+        # Generate deduplication keys: "university::first_name::last_name"
+        # Merge duplicate faculty across departments
+        # Consolidate links, research interests, lab associations
+        # Maintain department cross-mapping
+        
+        # Example: 105 → 92 faculty at Carnegie Mellon University
+        return deduplicated_faculty_with_merged_data
+```
+
+#### Intelligent Merging
+- **Department Consolidation**: Faculty in multiple departments get merged profiles
+- **Link Aggregation**: All academic links from different department listings combined
+- **Research Interest Merging**: Comprehensive expertise mapping across departments
+- **Lab Association Unification**: Complete research group affiliations
+
+### 3. Lab Intelligence & Research Profiling
+
+#### Lab Association Detection Engine
+```python
+class LabAssociationDetector:
+    def _extract_lab_associations_from_faculty(self, faculty_list):
+        # Detect research groups, laboratories, centers, institutes
+        # Map faculty to shared research initiatives
+        # Identify interdisciplinary collaborations
+        # Generate lab profiles with faculty teams
+        
+        return {
+            "lab_name": "Cognitive Science Lab",
+            "faculty_members": [...],
+            "research_areas": [...],
+            "lab_websites": [...],
+            "interdisciplinary": True
+        }
+```
+
+#### Research Intelligence Features
+- **🧪 Lab Mapping**: Research groups and laboratory affiliations
+- **👥 Faculty Teams**: Collaborative research group identification
+- **🔗 Lab Websites**: Automatic laboratory website discovery
+- **📊 Research Initiatives**: Centers, institutes, and programs
+- **🌐 Interdisciplinary Detection**: Cross-department research groups
+
+### 4. Enhanced Link Processing Engine
+
+#### Comprehensive Link Categorization
+```python
+class LinkCategorizationEngine:
+    LINK_CATEGORIES = {
+        "university_profile": "Faculty directory and profile pages",
+        "google_scholar": "Google Scholar research profiles", 
+        "personal_website": "Academic homepages and CVs",
+        "lab_website": "Research group and laboratory sites",
+        "research_platform": "ResearchGate, ORCID, Academia.edu",
+        "social_media": "Facebook, Twitter, LinkedIn (for replacement)",
+        "cv_publications": "CV documents and publication lists",
+        "external_academic": "Other .edu academic profiles"
+    }
+```
+
+#### Smart Social Media Replacement
+- **Target Identification**: Only social media links are replaced
+- **Academic Preservation**: University profiles and Scholar pages preserved
+- **AI Enhancement**: GPT-4o-mini for intelligent academic source discovery
+- **Quality Scoring**: Advanced relevance and authenticity assessment
+
+### 5. Google Scholar Integration Engine
+
+#### Scholar Profile Analysis
+```python
+class ScholarProfileAnalyzer:
+    async def analyze_scholar_profile(self, url, faculty_context):
+        return {
+            "basic_metrics": {"citation_count", "h_index", "i10_index"},
+            "research_profile": {"interests", "affiliation", "publications"},
+            "impact_assessment": {"level", "indicators"},
+            "collaboration_analysis": {"network_size", "collaborators"},
+            "quality_indicators": {"completeness", "recency", "standing"}
+        }
+```
+
+## 🏗️ Enhanced Architecture Components
+
+### 1. Scraper Layer (`lynnapse/scrapers/`)
+
+#### Base Architecture (Enhanced)
+```python
+BaseUniversityScraper (ABC)
+├── async context management
+├── HTTP session handling  
+├── Comprehensive parsing utilities
+├── Multi-link academic detection
+├── Research interest extraction
+├── Lab association mining
+└── Enhanced error handling & retry logic
+```
+
+### 2. Data Models (`lynnapse/models/`)
+
+#### Enhanced Faculty Model
+```python
+@dataclass
+class Faculty:
+    # Basic Information
+    name: str
+    title: Optional[str] 
+    email: Optional[str]
+    
+    # Enhanced Academic Links (NEW)
+    links: List[Dict[str, Any]]  # Multiple categorized links
+    external_profiles: Dict[str, List[str]]  # Organized by platform
+    
+    # Research Intelligence (NEW)
+    research_interests: List[str]
+    research_areas: List[str]
+    lab_associations: List[str] 
+    research_initiatives: List[str]
+    
+    # Cross-Department Support (NEW)
+    departments: List[str]  # Multiple affiliations
+    
+    # Legacy Contact Details
     phone: Optional[str]
     office_phone: Optional[str]
     lab_phone: Optional[str]
     
-    # Academic Information
-    research_areas: List[str]
-    lab_name: Optional[str]
+    # Legacy Academic Information
+    research_areas: List[str]  # Legacy field maintained
+    lab_name: Optional[str]  # Legacy field maintained
     pronouns: Optional[str]
     
-    # Web Presence (Key Feature)
-    personal_website: Optional[str]
-    university_profile_url: Optional[str]
-    lab_website: Optional[str]
+    # Web Presence (Enhanced)
+    personal_website: Optional[str]  # Primary personal site
+    university_profile_url: Optional[str]  # Primary university profile
+    lab_website: Optional[str]  # Primary lab website
     
-    # Metadata
+    # Enhanced Metadata
+    comprehensive_extraction: bool  # NEW
     scraped_at: datetime
     university: str
     department: str
 ```
 
-#### Data Validation
-- **Pydantic Integration**: Automatic validation and serialization
-- **Type Safety**: Comprehensive type hints throughout
-- **Schema Evolution**: Flexible model updates without breaking changes
-
 ### 3. Database Layer (`lynnapse/db/`)
 
-#### MongoDB Integration
-- **Async Motor Driver**: Non-blocking database operations
-- **Connection Management**: Proper connection pooling and cleanup
-- **Health Checks**: Database availability monitoring
-
-#### Schema Design
+#### Enhanced MongoDB Schema
 ```javascript
-// Faculty Collection
+// Faculty Collection (Enhanced)
 {
   "_id": ObjectId,
   "name": "string",
-  "title": "string",
+  "title": "string", 
   "email": "string",
-  "personal_website": "string",  // Key field
+  
+  // Enhanced Multi-Link Support
+  "links": [
+    {
+      "url": "string",
+      "text": "string", 
+      "category": "string",
+      "context": "string"
+    }
+  ],
+  "external_profiles": {
+    "google_scholar": ["string"],
+    "research_platforms": ["string"],
+    "personal_websites": ["string"],
+    "lab_websites": ["string"],
+    "social_media": ["string"]
+  },
+  
+  // Research Intelligence
+  "research_interests": ["string"],
   "research_areas": ["string"],
+  "lab_associations": ["string"],
+  "research_initiatives": ["string"],
+  
+  // Cross-Department Support
+  "departments": ["string"],
+  
+  // Enhanced Metadata
+  "comprehensive_extraction": boolean,
   "university": "string",
-  "department": "string",
-  "scraped_at": ISODate,
-  // ... additional fields
+  "department": "string", 
+  "scraped_at": ISODate
+}
+
+// Lab Associations Collection (NEW)
+{
+  "_id": ObjectId,
+  "lab_name": "string",
+  "university": "string",
+  "faculty_count": number,
+  "faculty_members": [
+    {
+      "name": "string",
+      "department": "string", 
+      "departments": ["string"]
+    }
+  ],
+  "research_areas": ["string"],
+  "lab_websites": ["string"],
+  "interdisciplinary": boolean
 }
 ```
 

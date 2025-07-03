@@ -273,14 +273,21 @@ async def run_link_enrichment(input_file: str, output_file: Optional[str] = None
             else:
                 final_faculty = enriched_faculty
         
-        # Save results
+        # Always save to scrape_results/adaptive folder for easy access
+        from pathlib import Path
+        results_dir = Path("scrape_results/adaptive")
+        results_dir.mkdir(parents=True, exist_ok=True)
+        
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        auto_filename = f"enriched_data_{timestamp}.json"
+        auto_filepath = results_dir / auto_filename
+        
+        # Save to automatic location
+        save_enriched_results(final_faculty, str(auto_filepath), report if 'report' in locals() else None)
+        
+        # Also save to user-specified location if provided
         if output_file:
             save_enriched_results(final_faculty, output_file, report if 'report' in locals() else None)
-        else:
-            # Generate default output filename
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            default_output = f"enriched_faculty_{timestamp}.json"
-            save_enriched_results(final_faculty, default_output, report if 'report' in locals() else None)
         
         console.print(f"\n✅ [bold green]Link enrichment completed successfully![/bold green]")
         return True

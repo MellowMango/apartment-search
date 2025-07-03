@@ -798,6 +798,48 @@ class UniversityAdapter:
             department_subdomains=university_pattern.department_subdomains
         )
     
+    async def _discover_university_url_via_llm(self, university_name: str) -> Optional[str]:
+        """Use OpenAI to discover the correct university URL when patterns fail."""
+        try:
+            from openai import AsyncOpenAI
+            import os
+            
+            api_key = os.getenv('OPENAI_API_KEY')
+            if not api_key:
+                logger.debug("OpenAI API key not available for URL discovery")
+                return None
+                
+            client = AsyncOpenAI(api_key=api_key)
+            
+            # Very lean prompt to minimize costs
+            prompt = f"What is the official website URL for {university_name}? Respond with just the URL, no explanation."
+            
+            completion = await client.chat.completions.create(
+                model="gpt-4o-mini",  # Use the cheapest model
+                messages=[{"role": "user", "content": prompt}],
+                max_tokens=50,  # Very small limit
+                temperature=0.1
+            )
+            
+            url = completion.choices[0].message.content.strip()
+            
+            # Validate and clean the URL
+            if url.startswith('http'):
+                # Test the URL to make sure it works
+                try:
+                    response = await self.session.head(url, follow_redirects=True, timeout=10.0)
+                    if response.status_code == 200:
+                        final_url = str(response.url).rstrip('/')
+                        logger.info(f"LLM discovered URL for {university_name}: {final_url}")
+                        return final_url
+                except Exception as e:
+                    logger.debug(f"LLM-suggested URL {url} failed validation: {e}")
+                    
+        except Exception as e:
+            logger.debug(f"LLM URL discovery failed: {e}")
+            
+        return None
+
     async def _discover_university_url(self, university_name: str) -> Optional[str]:
         """Discover the base URL for a university by name."""
         # University-specific mappings
@@ -812,12 +854,19 @@ class UniversityAdapter:
             'harvard': 'https://www.harvard.edu',
             'university of california berkeley': 'https://www.berkeley.edu',
             'uc berkeley': 'https://www.berkeley.edu',
-            'university of arizona': 'https://www.arizona.edu'
+            'university of arizona': 'https://www.arizona.edu',
+            'princeton university': 'https://www.princeton.edu',
+            'princeton': 'https://www.princeton.edu',
+            'yale university': 'https://www.yale.edu',
+            'yale': 'https://www.yale.edu',
+            'columbia university': 'https://www.columbia.edu',
+            'columbia': 'https://www.columbia.edu'
         }
         
         # Check known mappings first
         name_lower = university_name.lower()
         if name_lower in known_urls:
+            logger.info(f"Found {university_name} in known URLs: {known_urls[name_lower]}")
             return known_urls[name_lower]
         
         # Common university URL patterns
@@ -844,8 +893,17 @@ class UniversityAdapter:
                 f"{base_part}u.edu"
             ])
         
+        # Handle "X College" pattern
+        if base_name.endswith(' college'):
+            base_part = base_name.replace(' college', '').replace(' ', '')
+            search_patterns.extend([
+                f"www.{base_part}.edu",
+                f"{base_part}.edu",
+                f"{base_part}college.edu"
+            ])
+        
         # Generic patterns
-        clean_name = base_name.replace(' university', '').replace(' ', '')
+        clean_name = base_name.replace(' university', '').replace(' college', '').replace(' ', '')
         search_patterns.extend([
             f"www.{clean_name}.edu",
             f"{clean_name}.edu",
@@ -874,7 +932,13 @@ class UniversityAdapter:
                 logger.debug(f"Failed to test URL pattern {pattern}: {e}")
                 continue
         
-        # If direct patterns fail, try web search (would need API)
+        # Fallback to LLM discovery if patterns fail
+        logger.info(f"Pattern matching failed for {university_name}, trying LLM discovery...")
+        llm_url = await self._discover_university_url_via_llm(university_name)
+        if llm_url:
+            return llm_url
+        
+        # If all methods fail
         logger.warning(f"Could not discover URL for {university_name} using patterns: {unique_patterns}")
         return None
     

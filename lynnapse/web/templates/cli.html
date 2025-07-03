@@ -1,0 +1,609 @@
+{% extends "base.html" %}
+
+{% block title %}CLI Commands - {{ super() }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cli-container {
+        height: 80vh;
+        display: flex;
+        gap: 1rem;
+    }
+    .terminal-section {
+        flex: 1;
+        background: #1e1e1e;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+    }
+    .terminal-header {
+        color: #ccc;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #444;
+    }
+    .terminal {
+        flex: 1;
+        background: #000;
+        color: #00ff00;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 14px;
+        padding: 1rem;
+        border-radius: 0.25rem;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        min-height: 300px;
+    }
+    .command-input {
+        display: flex;
+        margin-top: 1rem;
+        gap: 0.5rem;
+    }
+    .command-input input {
+        flex: 1;
+        background: #333;
+        border: 1px solid #555;
+        color: #fff;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        font-family: monospace;
+    }
+    .command-builder {
+        flex: 0 0 400px;
+        background: #f8f9fa;
+        border-radius: 0.5rem;
+        padding: 1rem;
+    }
+    .nav-pills .nav-link {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+    }
+    .nav-pills .nav-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .command-form {
+        margin-top: 1rem;
+    }
+    .form-control {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.6rem;
+    }
+    .btn-copy {
+        background: #007bff;
+        border: none;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.8rem;
+    }
+    .btn-execute {
+        background: #28a745;
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+    .command-preview {
+        background: #e9ecef;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+        font-family: monospace;
+        font-size: 0.85rem;
+        margin: 0.5rem 0;
+        word-break: break-all;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <h1><i class="bi bi-terminal me-3"></i>CLI Commands</h1>
+        <p class="lead text-muted">Learn and execute Lynnapse CLI commands directly from the web interface</p>
+    </div>
+
+    <!-- Command Categories -->
+    <ul class="nav nav-pills nav-fill mb-4" id="commandTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="scraping-tab" data-bs-toggle="pill" data-bs-target="#scraping" type="button" role="tab">
+                <i class="bi bi-search me-2"></i>Adaptive Scraping
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="enhancement-tab" data-bs-toggle="pill" data-bs-target="#enhancement" type="button" role="tab">
+                <i class="bi bi-stars me-2"></i>Data Enhancement <span class="badge badge-new ms-1">NEW</span>
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="validation-tab" data-bs-toggle="pill" data-bs-target="#validation" type="button" role="tab">
+                <i class="bi bi-check2-circle me-2"></i>Link Processing
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="utilities-tab" data-bs-toggle="pill" data-bs-target="#utilities" type="button" role="tab">
+                <i class="bi bi-tools me-2"></i>Utilities
+            </button>
+        </li>
+    </ul>
+
+    <!-- Command Content -->
+    <div class="tab-content" id="commandTabContent">
+        
+        <!-- Adaptive Scraping Tab -->
+        <div class="tab-pane fade show active" id="scraping" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card command-card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-robot me-2 text-primary"></i>Adaptive Faculty Scraping
+                            </h5>
+                            <p class="card-text">Intelligent university adaptation with comprehensive faculty extraction</p>
+                            
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+python3 -m lynnapse.cli.adaptive_scrape "University Name" -d department --lab-discovery -v
+                            </div>
+                            
+                            <div class="command-form">
+                                <form id="adaptiveScrapingForm">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">University Name</label>
+                                            <input type="text" class="form-control" name="university" placeholder="e.g., Carnegie Mellon University" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Department</label>
+                                            <input type="text" class="form-control" name="department" placeholder="e.g., psychology">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Max Faculty</label>
+                                            <input type="number" class="form-control" name="max_faculty" placeholder="50">
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="form-check mt-4">
+                                                <input class="form-check-input" type="checkbox" name="lab_discovery" checked>
+                                                <label class="form-check-label">Lab Discovery</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <div class="form-check mt-4">
+                                                <input class="form-check-input" type="checkbox" name="verbose" checked>
+                                                <label class="form-check-label">Verbose Output</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="execute-btn">
+                                        <i class="bi bi-play-fill me-2"></i>Execute Command
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">✨ Features</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check-circle text-success me-2"></i>Auto university detection</li>
+                                <li><i class="bi bi-check-circle text-success me-2"></i>Multi-link extraction</li>
+                                <li><i class="bi bi-check-circle text-success me-2"></i>Faculty deduplication</li>
+                                <li><i class="bi bi-check-circle text-success me-2"></i>Lab association mapping</li>
+                                <li><i class="bi bi-check-circle text-success me-2"></i>Auto-save to scrape_results/</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Enhancement Tab -->
+        <div class="tab-pane fade" id="enhancement" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="card command-card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-stars me-2 text-primary"></i>Enhanced Data Enrichment
+                                <span class="badge badge-new ms-2">NEW</span>
+                            </h5>
+                            <p class="card-text">Transform sparse data into rich faculty profiles with research interests, biographies, and contact info</p>
+                            
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+python3 -m lynnapse.cli.enhance_data faculty_data.json --verbose
+                            </div>
+                            
+                            <div class="command-form">
+                                <form id="enhanceDataForm">
+                                    <div class="row">
+                                        <div class="col-md-8 mb-3">
+                                            <label class="form-label">Input File</label>
+                                            <select class="form-control" name="input_file" required>
+                                                <option value="">Select a faculty data file...</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4 mb-3">
+                                            <label class="form-label">Concurrent Requests</label>
+                                            <input type="number" class="form-control" name="concurrent" value="3" min="1" max="10">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check mt-4">
+                                                <input class="form-check-input" type="checkbox" name="verbose" checked>
+                                                <label class="form-check-label">Verbose Output</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check mt-4">
+                                                <input class="form-check-input" type="checkbox" name="skip_validation">
+                                                <label class="form-check-label">Skip Link Validation (Faster)</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="execute-btn">
+                                        <i class="bi bi-magic me-2"></i>Enhance Data
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Best for sparse data:</strong> Use this when your scraped data lacks research interests, biographies, or contact details. It automatically visits profile pages to extract missing information.
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">🚀 Enhancement Features</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check-circle text-success me-2"></i>Research interests extraction</li>
+                                <li><i class="bi bi-check-circle text-success me-2"></i>Biography mining</li>
+                                <li><i class="bi bi-check-circle text-success me-2"></i>Contact info discovery</li>
+                                <li><i class="bi bi-check-circle text-success me-2"></i>Additional link finding</li>
+                                <li><i class="bi bi-check-circle text-success me-2"></i>Google Scholar integration</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Link Processing Tab -->
+        <div class="tab-pane fade" id="validation" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card command-card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-check2-circle me-2 text-primary"></i>Link Validation
+                            </h5>
+                            <p class="card-text">Validate and categorize faculty website links</p>
+                            
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+python3 -m lynnapse.cli.validate_websites faculty_data.json -o validated_data.json
+                            </div>
+                            
+                            <div class="command-form">
+                                <form id="validateLinksForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Input File</label>
+                                        <select class="form-control" name="input_file" required>
+                                            <option value="">Select a faculty data file...</option>
+                                        </select>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="verbose">
+                                                <label class="form-check-label">Verbose Output</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Max Concurrent</label>
+                                            <input type="number" class="form-control" name="concurrent" value="5" min="1" max="20">
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="execute-btn">
+                                        <i class="bi bi-check-all me-2"></i>Validate Links
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card command-card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-link-45deg me-2 text-primary"></i>Link Enrichment
+                            </h5>
+                            <p class="card-text">Extract rich metadata from validated academic links</p>
+                            
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+python3 -m lynnapse.cli.enrich_links validated_data.json --analysis comprehensive -v
+                            </div>
+                            
+                            <div class="command-form">
+                                <form id="enrichLinksForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Input File (Validated)</label>
+                                        <select class="form-control" name="input_file" required>
+                                            <option value="">Select a validated data file...</option>
+                                        </select>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Analysis Type</label>
+                                            <select class="form-control" name="analysis">
+                                                <option value="enrichment">Enrichment</option>
+                                                <option value="comprehensive" selected>Comprehensive</option>
+                                                <option value="analysis">Analysis Only</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check mt-4">
+                                                <input class="form-check-input" type="checkbox" name="verbose" checked>
+                                                <label class="form-check-label">Verbose Output</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="execute-btn">
+                                        <i class="bi bi-collection me-2"></i>Enrich Links
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Utilities Tab -->
+        <div class="tab-pane fade" id="utilities" role="tabpanel">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="card command-card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-arrow-repeat me-2 text-primary"></i>Social Media Link Processing
+                            </h5>
+                            <p class="card-text">Replace social media links with academic alternatives</p>
+                            
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+python3 -m lynnapse.cli.process_links --input faculty_data.json --mode social --ai-assistance
+                            </div>
+                            
+                            <div class="command-form">
+                                <form id="processLinksForm">
+                                    <div class="mb-3">
+                                        <label class="form-label">Input File</label>
+                                        <select class="form-control" name="input_file" required>
+                                            <option value="">Select a faculty data file...</option>
+                                        </select>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="ai_assistance">
+                                                <label class="form-check-label">AI Assistance (OpenAI)</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" name="verbose">
+                                                <label class="form-check-label">Verbose Output</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="execute-btn">
+                                        <i class="bi bi-arrow-clockwise me-2"></i>Process Links
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="card command-card mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-server me-2 text-primary"></i>Web Interface
+                            </h5>
+                            <p class="card-text">Start the Lynnapse web interface</p>
+                            
+                            <div class="code-block">
+                                <button class="copy-btn" onclick="copyToClipboard(this)">Copy</button>
+python3 -m lynnapse.web.run
+                            </div>
+                            
+                            <div class="mt-3">
+                                <p class="text-muted small">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    The web interface will start on <code>http://localhost:8000</code> or <code>http://localhost:8001</code> if port 8000 is in use.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Commands Reference -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="bi bi-lightning me-2 text-primary"></i>Quick Command Reference
+                    </h5>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Testing & Development</h6>
+                            <div class="code-block mb-3">
+pytest<br>
+black .<br>
+ruff check .
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Docker Deployment</h6>
+                            <div class="code-block mb-3">
+docker-compose up -d<br>
+# Access at http://localhost:8000
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Command Output Area -->
+    <div class="card mt-4" id="outputCard" style="display: none;">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h6 class="mb-0"><i class="bi bi-terminal me-2"></i>Command Output</h6>
+            <button class="btn btn-sm btn-outline-secondary" onclick="clearOutput()">
+                <i class="bi bi-x me-1"></i>Clear
+            </button>
+        </div>
+        <div class="card-body p-0">
+            <div class="command-output" id="commandOutput"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Load available files for dropdowns
+async function loadAvailableFiles() {
+    try {
+        const response = await fetch('/api/results');
+        const files = await response.json();
+        
+        const selects = document.querySelectorAll('select[name="input_file"]');
+        selects.forEach(select => {
+            select.innerHTML = '<option value="">Select a file...</option>';
+            files.forEach(file => {
+                const option = document.createElement('option');
+                option.value = file.filename;
+                option.textContent = `${file.filename} (${file.count} faculty)`;
+                select.appendChild(option);
+            });
+        });
+    } catch (error) {
+        console.error('Failed to load files:', error);
+    }
+}
+
+// Copy to clipboard functionality
+function copyToClipboard(button) {
+    const codeBlock = button.parentElement;
+    const text = codeBlock.textContent.replace('Copy', '').trim();
+    
+    navigator.clipboard.writeText(text).then(() => {
+        button.textContent = 'Copied!';
+        setTimeout(() => {
+            button.textContent = 'Copy';
+        }, 2000);
+    });
+}
+
+// Execute command functionality
+async function executeCommand(endpoint, formData) {
+    const outputCard = document.getElementById('outputCard');
+    const outputElement = document.getElementById('commandOutput');
+    
+    outputCard.style.display = 'block';
+    outputElement.style.display = 'block';
+    outputElement.textContent = 'Executing command...\n';
+    
+    try {
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            outputElement.textContent += `✅ ${result.message}\n\n`;
+            if (result.command) {
+                outputElement.textContent += `📋 Command to run:\n${result.command}\n\n`;
+            }
+            if (result.note) {
+                outputElement.textContent += `💡 Note: ${result.note}\n\n`;
+            }
+            if (result.output_file) {
+                outputElement.textContent += `💾 Results saved to: ${result.output_file}\n`;
+            }
+            // Reload file lists
+            loadAvailableFiles();
+        } else {
+            outputElement.textContent += `❌ Command failed: ${result.message}\n`;
+            if (result.error) {
+                outputElement.textContent += `Error details: ${result.error}\n`;
+            }
+        }
+    } catch (error) {
+        outputElement.textContent += `❌ Execution failed: ${error.message}\n`;
+    }
+}
+
+// Form submission handlers
+document.getElementById('adaptiveScrapingForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    await executeCommand('/api/cli/adaptive-scrape', formData);
+});
+
+document.getElementById('enhanceDataForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    await executeCommand('/api/cli/enhance-data', formData);
+});
+
+document.getElementById('validateLinksForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    await executeCommand('/api/cli/validate-links', formData);
+});
+
+document.getElementById('enrichLinksForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    await executeCommand('/api/cli/enrich-links', formData);
+});
+
+document.getElementById('processLinksForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    await executeCommand('/api/cli/process-links', formData);
+});
+
+function clearOutput() {
+    document.getElementById('outputCard').style.display = 'none';
+    document.getElementById('commandOutput').textContent = '';
+}
+
+// Load files on page load
+document.addEventListener('DOMContentLoaded', loadAvailableFiles);
+</script>
+{% endblock %}

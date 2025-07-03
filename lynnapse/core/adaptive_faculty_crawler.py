@@ -106,6 +106,10 @@ class AdaptiveFacultyCrawler:
                 university_name
             )
             
+            if university_pattern is None:
+                logger.error(f"Failed to discover university structure for {university_name}")
+                return self._create_empty_result(university_name, f"Could not find or access the website for {university_name}. Please check the university name spelling.")
+            
             logger.info(f"Discovered structure with confidence {university_pattern.confidence_score:.2f}")
             
             # Step 2: Discover departments
@@ -139,28 +143,35 @@ class AdaptiveFacultyCrawler:
                     "confidence": dept.confidence
                 }
             
+            # Step 4: Deduplicate faculty across departments and enhance with lab associations
+            deduplicated_faculty = self._deduplicate_and_enhance_faculty(all_faculty)
+            lab_associations = self._extract_lab_associations_from_faculty(deduplicated_faculty)
+            
             self.stats["universities_processed"] += 1
-            self.stats["faculty_extracted"] += len(all_faculty)
+            self.stats["faculty_extracted"] += len(deduplicated_faculty)
             
             # Create comprehensive result
             result = {
                 "university_name": university_name,
                 "base_url": university_pattern.base_url,
-                "faculty": all_faculty,
+                "faculty": deduplicated_faculty,
+                "lab_associations": lab_associations,
                 "metadata": {
-                    "total_faculty": len(all_faculty),
+                    "total_faculty": len(deduplicated_faculty),
+                    "total_faculty_before_dedup": len(all_faculty),
                     "departments_processed": len(department_results),
                     "department_results": department_results,
                     "discovery_confidence": university_pattern.confidence_score,
-                    "scraping_strategy": "adaptive",
+                    "scraping_strategy": "adaptive_comprehensive",
                     "lab_discovery_enabled": self.enable_lab_discovery,
+                    "comprehensive_extraction": True,
                     "timestamp": time.time()
                 },
                 "success": True,
                 "error": None
             }
             
-            logger.info(f"Successfully extracted {len(all_faculty)} faculty from {university_name}")
+            logger.info(f"Successfully extracted {len(deduplicated_faculty)} faculty from {university_name}")
             return result
             
         except Exception as e:
@@ -251,7 +262,7 @@ class AdaptiveFacultyCrawler:
          elif 'stanford' in university_pattern.university_name.lower() and department.name.lower() == 'computer science':
              faculty_list = self._extract_stanford_cs_faculty(container, department, university_pattern)
          else:
-             faculty_list = self._extract_generic_faculty(container, selectors, department, university_pattern)
+             faculty_list = await self._extract_generic_faculty(container, selectors, department, university_pattern)
          
          return faculty_list
     
@@ -325,7 +336,7 @@ class AdaptiveFacultyCrawler:
 
         return faculty_list
 
-    def _extract_generic_faculty(self, container, selectors: Dict[str, str], department: DepartmentInfo, university_pattern: UniversityPattern) -> List[Dict[str, Any]]:
+    async def _extract_generic_faculty(self, container, selectors: Dict[str, str], department: DepartmentInfo, university_pattern: UniversityPattern) -> List[Dict[str, Any]]:
         """Extract faculty using generic heuristics for any university."""
         faculty_list = []
         
@@ -372,7 +383,7 @@ class AdaptiveFacultyCrawler:
         
         for i, item in enumerate(potential_items[:150]):  # Limit to prevent excessive processing
             try:
-                faculty_data = self._extract_faculty_info(item, {}, department, university_pattern)
+                faculty_data = await self._extract_comprehensive_faculty_info(item, department, university_pattern)
                 if faculty_data and faculty_data.get('name') and faculty_data.get('profile_url'):
                     # Basic validation to ensure we extracted a reasonable name and a profile link
                     if len(faculty_data['name'].split()) > 1 and len(faculty_data['name'].split()) < 7:
@@ -389,6 +400,424 @@ class AdaptiveFacultyCrawler:
         
         logger.info(f"Successfully extracted {successful_extractions} faculty members from {len(potential_items)} potential items")
         return faculty_list
+    
+    async def _extract_comprehensive_faculty_info(self, 
+                                                 item: Any,
+                                                 department: DepartmentInfo,
+                                                 university_pattern: UniversityPattern) -> Optional[Dict[str, Any]]:
+        """
+        Enhanced faculty extraction that pulls ALL valuable links and comprehensive data.
+        
+        Extracts:
+        - Multiple links per faculty (profile, personal website, lab website, Google Scholar, etc.)
+        - Research interests and areas of expertise
+        - Lab associations and research initiatives
+        - Comprehensive contact and affiliation information
+        """
+        try:
+            logger.debug(f"Comprehensive extraction from item: {item.name if hasattr(item, 'name') else 'unknown'}")
+            
+            # Extract basic faculty information first
+            basic_info = self._extract_faculty_info(item, {}, department, university_pattern)
+            if not basic_info:
+                return None
+            
+            # Now enhance with comprehensive link extraction
+            all_links = self._extract_all_valuable_links(item, university_pattern)
+            research_info = self._extract_research_information(item)
+            lab_info = await self._extract_lab_associations(item, university_pattern)
+            
+            # Build comprehensive faculty data
+            faculty_data = {
+                **basic_info,
+                "links": all_links,
+                "research_interests": research_info.get("research_interests", []),
+                "research_areas": research_info.get("research_areas", []),
+                "lab_associations": lab_info.get("lab_associations", []),
+                "research_initiatives": lab_info.get("research_initiatives", []),
+                "external_profiles": self._categorize_external_links(all_links),
+                "comprehensive_extraction": True
+            }
+            
+            # Add deduplication key for cross-department matching
+            faculty_data["dedup_key"] = self._generate_dedup_key(faculty_data)
+            
+            logger.debug(f"Comprehensive extraction successful: {len(all_links)} links, {len(research_info.get('research_interests', []))} research interests")
+            return faculty_data
+            
+        except Exception as e:
+            logger.error(f"Failed comprehensive faculty extraction: {e}")
+            return basic_info  # Fallback to basic info
+    
+    def _extract_all_valuable_links(self, item: Any, university_pattern: UniversityPattern) -> List[Dict[str, Any]]:
+        """Extract ALL valuable academic links from faculty element."""
+        valuable_links = []
+        
+        # Find all links in the faculty item
+        links = item.find_all('a', href=True)
+        
+        for link in links:
+            href = link.get('href', '').strip()
+            text = link.get_text(strip=True)
+            
+            if not href or not text:
+                continue
+            
+            # Normalize URL
+            if href.startswith('/'):
+                full_url = urljoin(university_pattern.base_url, href)
+            elif href.startswith('http'):
+                full_url = href
+            else:
+                continue
+            
+            # Categorize and validate the link
+            link_category = self._categorize_link(full_url, text, university_pattern)
+            
+            if link_category != "irrelevant":
+                valuable_links.append({
+                    "url": full_url,
+                    "text": text,
+                    "category": link_category,
+                    "context": self._extract_link_context(link)
+                })
+        
+        return valuable_links
+    
+    def _categorize_link(self, url: str, text: str, university_pattern: UniversityPattern) -> str:
+        """Categorize academic links by type and value."""
+        url_lower = url.lower()
+        text_lower = text.lower()
+        
+        # University profile (highest priority for faculty pages)
+        university_domain = university_pattern.base_url.replace('https://', '').replace('http://', '')
+        if university_domain in url_lower and any(keyword in url_lower for keyword in ['faculty', 'profile', 'people', 'staff']):
+            return "university_profile"
+        
+        # Lab/Research websites 
+        if any(keyword in url_lower for keyword in ['lab', 'research', 'group', 'center', 'institute']) and university_domain in url_lower:
+            return "lab_website"
+        
+        # Google Scholar
+        if 'scholar.google' in url_lower:
+            return "google_scholar"
+        
+        # Personal academic websites
+        if any(keyword in text_lower for keyword in ['homepage', 'website', 'personal', 'cv', 'resume']) or \
+           (university_domain in url_lower and any(keyword in url_lower for keyword in ['~', 'personal', 'home'])):
+            return "personal_website"
+        
+        # Research platforms
+        if any(platform in url_lower for platform in ['researchgate', 'orcid', 'academia.edu', 'arxiv']):
+            return "research_platform"
+        
+        # Social media (for potential replacement)
+        if any(platform in url_lower for platform in ['facebook', 'twitter', 'linkedin', 'instagram']):
+            return "social_media"
+        
+        # External academic sites
+        if any(domain in url_lower for domain in ['.edu', '.ac.']) and university_domain not in url_lower:
+            return "external_academic"
+        
+        # CV/Publications
+        if any(keyword in text_lower for keyword in ['cv', 'curriculum', 'publications', 'papers']):
+            return "cv_publications"
+        
+        return "irrelevant"
+    
+    def _extract_link_context(self, link) -> str:
+        """Extract context around a link to understand its purpose."""
+        try:
+            # Get surrounding text context
+            parent = link.parent
+            if parent:
+                context = parent.get_text(strip=True)
+                # Clean and limit context
+                context = re.sub(r'\s+', ' ', context)
+                return context[:200] + "..." if len(context) > 200 else context
+            return ""
+        except:
+            return ""
+    
+    def _extract_research_information(self, item: Any) -> Dict[str, List[str]]:
+        """Extract research interests, areas of expertise, and keywords."""
+        research_info = {
+            "research_interests": [],
+            "research_areas": [],
+            "keywords": []
+        }
+        
+        # Look for research-related sections
+        research_indicators = [
+            'research interests', 'research areas', 'areas of expertise', 
+            'expertise', 'specialization', 'focus areas', 'keywords'
+        ]
+        
+        # Extract from specific elements
+        for element in item.find_all(['p', 'div', 'li', 'span']):
+            text = element.get_text(strip=True)
+            text_lower = text.lower()
+            
+            # Check if this element contains research information
+            if any(indicator in text_lower for indicator in research_indicators):
+                # Extract the research information
+                interests = self._parse_research_interests(text)
+                research_info["research_interests"].extend(interests)
+        
+        # Look for research areas in structured lists
+        lists = item.find_all(['ul', 'ol'])
+        for ul in lists:
+            list_text = ul.get_text(strip=True).lower()
+            if any(indicator in list_text for indicator in research_indicators):
+                for li in ul.find_all('li'):
+                    interest = li.get_text(strip=True)
+                    if interest and len(interest) < 100:  # Reasonable length filter
+                        research_info["research_areas"].append(interest)
+        
+        # Deduplicate and clean
+        research_info["research_interests"] = list(set(research_info["research_interests"]))
+        research_info["research_areas"] = list(set(research_info["research_areas"]))
+        
+        return research_info
+    
+    def _parse_research_interests(self, text: str) -> List[str]:
+        """Parse research interests from text."""
+        interests = []
+        
+        # Remove research interest labels
+        text = re.sub(r'research interests?:?\s*', '', text, flags=re.IGNORECASE)
+        text = re.sub(r'areas? of expertise:?\s*', '', text, flags=re.IGNORECASE)
+        
+        # Split by common delimiters
+        for delimiter in [';', ',', '•', '·', '\n']:
+            if delimiter in text:
+                parts = text.split(delimiter)
+                for part in parts:
+                    clean_part = part.strip()
+                    if clean_part and len(clean_part) > 3 and len(clean_part) < 80:
+                        interests.append(clean_part)
+                break
+        
+        # If no delimiters found, return the whole text as one interest
+        if not interests and text.strip():
+            clean_text = text.strip()
+            if len(clean_text) > 3 and len(clean_text) < 200:
+                interests.append(clean_text)
+        
+        return interests
+    
+    async def _extract_lab_associations(self, item: Any, university_pattern: UniversityPattern) -> Dict[str, List[str]]:
+        """Extract lab associations and research initiatives."""
+        lab_info = {
+            "lab_associations": [],
+            "research_initiatives": [],
+            "centers_institutes": []
+        }
+        
+        # Look for lab/center/institute mentions
+        lab_indicators = [
+            'lab', 'laboratory', 'research group', 'center', 'institute', 
+            'initiative', 'program', 'consortium', 'collaboration'
+        ]
+        
+        for element in item.find_all(['p', 'div', 'li', 'span', 'a']):
+            text = element.get_text(strip=True)
+            text_lower = text.lower()
+            
+            for indicator in lab_indicators:
+                if indicator in text_lower and len(text) < 150:
+                    # Check if this is a lab name or association
+                    if 'lab' in text_lower or 'laboratory' in text_lower:
+                        lab_info["lab_associations"].append(text)
+                    elif 'center' in text_lower or 'institute' in text_lower:
+                        lab_info["centers_institutes"].append(text)
+                    elif 'initiative' in text_lower or 'program' in text_lower:
+                        lab_info["research_initiatives"].append(text)
+        
+        # Deduplicate
+        for key in lab_info:
+            lab_info[key] = list(set(lab_info[key]))
+        
+        return lab_info
+    
+    def _categorize_external_links(self, links: List[Dict[str, Any]]) -> Dict[str, List[str]]:
+        """Categorize external profile links for easy access."""
+        categorized = {
+            "google_scholar": [],
+            "research_platforms": [],
+            "personal_websites": [],
+            "lab_websites": [],
+            "social_media": []
+        }
+        
+        for link in links:
+            category = link["category"]
+            url = link["url"]
+            
+            if category == "google_scholar":
+                categorized["google_scholar"].append(url)
+            elif category == "research_platform":
+                categorized["research_platforms"].append(url)
+            elif category == "personal_website":
+                categorized["personal_websites"].append(url)
+            elif category == "lab_website":
+                categorized["lab_websites"].append(url)
+            elif category == "social_media":
+                categorized["social_media"].append(url)
+        
+        return categorized
+    
+    def _generate_dedup_key(self, faculty_data: Dict[str, Any]) -> str:
+        """Generate a key for faculty deduplication across departments."""
+        name = faculty_data.get("name", "").lower().strip()
+        university = faculty_data.get("university", "").lower().strip()
+        
+        # Normalize name (remove titles, middle initials variations)
+        name_parts = name.split()
+        if len(name_parts) >= 2:
+            # Use first and last name for deduplication
+            first_name = name_parts[0]
+            last_name = name_parts[-1]
+            dedup_key = f"{university}::{first_name}::{last_name}"
+        else:
+            dedup_key = f"{university}::{name}"
+        
+        return dedup_key
+    
+    def _deduplicate_and_enhance_faculty(self, faculty_list: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Deduplicate faculty across departments and enhance with merged data."""
+        dedup_map = {}
+        
+        for faculty in faculty_list:
+            dedup_key = faculty.get("dedup_key")
+            if not dedup_key:
+                dedup_key = self._generate_dedup_key(faculty)
+                faculty["dedup_key"] = dedup_key
+            
+            if dedup_key in dedup_map:
+                # Merge duplicate faculty member
+                existing = dedup_map[dedup_key]
+                merged = self._merge_faculty_data(existing, faculty)
+                dedup_map[dedup_key] = merged
+            else:
+                dedup_map[dedup_key] = faculty
+        
+        # Convert back to list and clean up dedup keys for final output
+        deduplicated = list(dedup_map.values())
+        for faculty in deduplicated:
+            faculty.pop("dedup_key", None)  # Remove internal dedup key
+        
+        logger.info(f"Deduplication: {len(faculty_list)} -> {len(deduplicated)} faculty members")
+        return deduplicated
+    
+    def _merge_faculty_data(self, existing: Dict[str, Any], duplicate: Dict[str, Any]) -> Dict[str, Any]:
+        """Merge data from duplicate faculty members across departments."""
+        merged = existing.copy()
+        
+        # Merge departments list
+        existing_depts = [existing.get("department", "")]
+        if duplicate.get("department") and duplicate["department"] not in existing_depts:
+            existing_depts.append(duplicate["department"])
+        merged["departments"] = [dept for dept in existing_depts if dept]
+        merged["department"] = existing_depts[0] if existing_depts else existing.get("department")
+        
+        # Merge links (avoid duplicates)
+        existing_links = existing.get("links", [])
+        duplicate_links = duplicate.get("links", [])
+        existing_urls = {link["url"] for link in existing_links}
+        
+        for link in duplicate_links:
+            if link["url"] not in existing_urls:
+                existing_links.append(link)
+        merged["links"] = existing_links
+        
+        # Merge research interests
+        existing_interests = existing.get("research_interests", [])
+        duplicate_interests = duplicate.get("research_interests", [])
+        merged["research_interests"] = list(set(existing_interests + duplicate_interests))
+        
+        # Merge lab associations
+        existing_labs = existing.get("lab_associations", [])
+        duplicate_labs = duplicate.get("lab_associations", [])
+        merged["lab_associations"] = list(set(existing_labs + duplicate_labs))
+        
+        # Merge research initiatives
+        existing_initiatives = existing.get("research_initiatives", [])
+        duplicate_initiatives = duplicate.get("research_initiatives", [])
+        merged["research_initiatives"] = list(set(existing_initiatives + duplicate_initiatives))
+        
+        # Update external profiles
+        if "external_profiles" in existing or "external_profiles" in duplicate:
+            merged_profiles = self._merge_external_profiles(
+                existing.get("external_profiles", {}),
+                duplicate.get("external_profiles", {})
+            )
+            merged["external_profiles"] = merged_profiles
+        
+        # Keep the most complete title and email
+        if not merged.get("title") and duplicate.get("title"):
+            merged["title"] = duplicate["title"]
+        if not merged.get("email") and duplicate.get("email"):
+            merged["email"] = duplicate["email"]
+        
+        return merged
+    
+    def _merge_external_profiles(self, profiles1: Dict[str, List[str]], profiles2: Dict[str, List[str]]) -> Dict[str, List[str]]:
+        """Merge external profile dictionaries."""
+        merged = {}
+        all_keys = set(profiles1.keys()) | set(profiles2.keys())
+        
+        for key in all_keys:
+            list1 = profiles1.get(key, [])
+            list2 = profiles2.get(key, [])
+            merged[key] = list(set(list1 + list2))
+        
+        return merged
+    
+    def _extract_lab_associations_from_faculty(self, faculty_list: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+        """Extract lab associations and research groups from faculty data."""
+        lab_associations = []
+        lab_map = {}
+        
+        for faculty in faculty_list:
+            # Process lab associations
+            for lab_name in faculty.get("lab_associations", []):
+                lab_key = lab_name.lower().strip()
+                if lab_key not in lab_map:
+                    lab_map[lab_key] = {
+                        "lab_name": lab_name,
+                        "faculty_members": [],
+                        "research_areas": set(),
+                        "lab_websites": set()
+                    }
+                
+                lab_map[lab_key]["faculty_members"].append({
+                    "name": faculty.get("name"),
+                    "department": faculty.get("department"),
+                    "departments": faculty.get("departments", [faculty.get("department")])
+                })
+                
+                # Add research interests to lab
+                for interest in faculty.get("research_interests", []):
+                    lab_map[lab_key]["research_areas"].add(interest)
+                
+                # Add lab websites
+                for link in faculty.get("links", []):
+                    if link.get("category") == "lab_website":
+                        lab_map[lab_key]["lab_websites"].add(link["url"])
+        
+        # Convert to final format
+        for lab_data in lab_map.values():
+            lab_associations.append({
+                "lab_name": lab_data["lab_name"],
+                "faculty_count": len(lab_data["faculty_members"]),
+                "faculty_members": lab_data["faculty_members"],
+                "research_areas": list(lab_data["research_areas"]),
+                "lab_websites": list(lab_data["lab_websites"]),
+                "interdisciplinary": len(set(member.get("department") for member in lab_data["faculty_members"])) > 1
+            })
+        
+        return lab_associations
     
     def _extract_faculty_info(self, 
                                       item: Any,
@@ -771,13 +1200,16 @@ class AdaptiveFacultyCrawler:
             "university_name": university_name,
             "base_url": None,
             "faculty": [],
+            "lab_associations": [],
             "metadata": {
                 "total_faculty": 0,
+                "total_faculty_before_dedup": 0,
                 "departments_processed": 0,
                 "department_results": {},
                 "discovery_confidence": 0.0,
-                "scraping_strategy": "adaptive",
+                "scraping_strategy": "adaptive_comprehensive",
                 "lab_discovery_enabled": self.enable_lab_discovery,
+                "comprehensive_extraction": True,
                 "timestamp": time.time()
             },
             "success": False,

@@ -1,0 +1,422 @@
+{% extends "base.html" %}
+
+{% block title %}CLI Interface - {{ super() }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .cli-container {
+        height: 80vh;
+        display: flex;
+        gap: 1rem;
+    }
+    .terminal-section {
+        flex: 1;
+        background: #1e1e1e;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+    }
+    .terminal-header {
+        color: #ccc;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #444;
+    }
+    .terminal {
+        flex: 1;
+        background: #000;
+        color: #00ff00;
+        font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+        font-size: 14px;
+        padding: 1rem;
+        border-radius: 0.25rem;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        min-height: 300px;
+    }
+    .command-input {
+        display: flex;
+        margin-top: 1rem;
+        gap: 0.5rem;
+    }
+    .command-input input {
+        flex: 1;
+        background: #333;
+        border: 1px solid #555;
+        color: #fff;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+        font-family: monospace;
+    }
+    .command-builder {
+        flex: 0 0 400px;
+        background: #f8f9fa;
+        border-radius: 0.5rem;
+        padding: 1rem;
+    }
+    .nav-pills .nav-link {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+    }
+    .nav-pills .nav-link.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .command-form {
+        margin-top: 1rem;
+    }
+    .form-control {
+        font-size: 0.9rem;
+        padding: 0.4rem 0.6rem;
+    }
+    .btn-copy {
+        background: #007bff;
+        border: none;
+        color: white;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-size: 0.8rem;
+    }
+    .btn-execute {
+        background: #28a745;
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 0.25rem;
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+    .command-preview {
+        background: #e9ecef;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+        font-family: monospace;
+        font-size: 0.85rem;
+        margin: 0.5rem 0;
+        word-break: break-all;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid my-3">
+    <!-- Header -->
+    <div class="text-center mb-3">
+        <h4><i class="bi bi-terminal me-2"></i>CLI Interface</h4>
+        <p class="text-muted">Execute Lynnapse commands directly</p>
+    </div>
+
+    <!-- Main CLI Layout -->
+    <div class="cli-container">
+        <!-- Terminal Section (Left) -->
+        <div class="terminal-section">
+            <div class="terminal-header">
+                <i class="bi bi-terminal"></i> Lynnapse Terminal
+                <button class="btn btn-sm btn-outline-light float-end" onclick="clearTerminal()">Clear</button>
+            </div>
+            <div class="terminal" id="terminal">Welcome to Lynnapse CLI Interface!
+Type commands or use the builder on the right →
+
+$ </div>
+            <div class="command-input">
+                <input type="text" id="commandInput" placeholder="Enter command..." onkeypress="handleCommandInput(event)">
+                <button class="btn btn-success" onclick="executeCommand()">Run</button>
+            </div>
+        </div>
+
+        <!-- Command Builder Section (Right) -->
+        <div class="command-builder">
+            <h6><i class="bi bi-wrench"></i> Command Builder</h6>
+            
+            <!-- Command Tabs -->
+            <ul class="nav nav-pills nav-fill mb-3" id="builderTabs">
+                <li class="nav-item">
+                    <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#scraping-builder">Scraping</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#enhancement-builder">Enhancement</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" data-bs-toggle="pill" data-bs-target="#processing-builder">Processing</button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Adaptive Scraping Builder -->
+                <div class="tab-pane fade show active" id="scraping-builder">
+                    <form id="scrapingForm">
+                        <div class="mb-2">
+                            <label class="form-label small">University</label>
+                            <input type="text" class="form-control" name="university" placeholder="e.g., Stanford University" onchange="updateCommand('scraping')">
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small">Department</label>
+                            <input type="text" class="form-control" name="department" placeholder="e.g., psychology" onchange="updateCommand('scraping')">
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-2">
+                                <label class="form-label small">Max Faculty</label>
+                                <input type="number" class="form-control" name="max_faculty" placeholder="50" onchange="updateCommand('scraping')">
+                            </div>
+                            <div class="col-6 mb-2">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" name="lab_discovery" checked onchange="updateCommand('scraping')">
+                                    <label class="form-check-label small">Lab Discovery</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="verbose" checked onchange="updateCommand('scraping')">
+                            <label class="form-check-label small">Verbose Output</label>
+                        </div>
+                    </form>
+                    <div class="command-preview" id="scrapingPreview">python3 -m lynnapse.cli.adaptive_scrape --lab-discovery -v</div>
+                    <button class="btn btn-copy" onclick="copyCommand('scraping')">Copy</button>
+                    <button class="btn btn-execute" onclick="runBuiltCommand('scraping')">Execute</button>
+                </div>
+
+                <!-- Data Enhancement Builder -->
+                <div class="tab-pane fade" id="enhancement-builder">
+                    <form id="enhancementForm">
+                        <div class="mb-2">
+                            <label class="form-label small">Input File</label>
+                            <select class="form-control" name="input_file" onchange="updateCommand('enhancement')">
+                                <option value="">Select file...</option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-2">
+                                <label class="form-label small">Concurrent</label>
+                                <input type="number" class="form-control" name="concurrent" value="3" onchange="updateCommand('enhancement')">
+                            </div>
+                            <div class="col-6 mb-2">
+                                <div class="form-check mt-4">
+                                    <input class="form-check-input" type="checkbox" name="verbose" checked onchange="updateCommand('enhancement')">
+                                    <label class="form-check-label small">Verbose</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="skip_validation" onchange="updateCommand('enhancement')">
+                            <label class="form-check-label small">Skip Validation</label>
+                        </div>
+                    </form>
+                    <div class="command-preview" id="enhancementPreview">python3 -m lynnapse.cli.enhance_data [file] -c 3 -v</div>
+                    <button class="btn btn-copy" onclick="copyCommand('enhancement')">Copy</button>
+                    <button class="btn btn-execute" onclick="runBuiltCommand('enhancement')">Execute</button>
+                </div>
+
+                <!-- Link Processing Builder -->
+                <div class="tab-pane fade" id="processing-builder">
+                    <form id="processingForm">
+                        <div class="mb-2">
+                            <label class="form-label small">Command Type</label>
+                            <select class="form-control" name="command_type" onchange="updateCommand('processing')">
+                                <option value="validate">Validate Links</option>
+                                <option value="enrich">Enrich Links</option>
+                                <option value="process">Process Links</option>
+                            </select>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small">Input File</label>
+                            <select class="form-control" name="input_file" onchange="updateCommand('processing')">
+                                <option value="">Select file...</option>
+                            </select>
+                        </div>
+                        <div class="form-check mb-2">
+                            <input class="form-check-input" type="checkbox" name="verbose" onchange="updateCommand('processing')">
+                            <label class="form-check-label small">Verbose Output</label>
+                        </div>
+                    </form>
+                    <div class="command-preview" id="processingPreview">python3 -m lynnapse.cli.validate_websites [file]</div>
+                    <button class="btn btn-copy" onclick="copyCommand('processing')">Copy</button>
+                    <button class="btn btn-execute" onclick="runBuiltCommand('processing')">Execute</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Terminal functionality
+let commandHistory = [];
+let historyIndex = -1;
+
+// Load available files for dropdowns
+async function loadAvailableFiles() {
+    try {
+        const response = await fetch('/api/results');
+        const files = await response.json();
+        
+        const selects = document.querySelectorAll('select[name="input_file"]');
+        selects.forEach(select => {
+            select.innerHTML = '<option value="">Select file...</option>';
+            files.forEach(file => {
+                const option = document.createElement('option');
+                option.value = file.filename;
+                option.textContent = `${file.filename} (${file.count} faculty)`;
+                select.appendChild(option);
+            });
+        });
+    } catch (error) {
+        console.error('Failed to load files:', error);
+    }
+}
+
+// Terminal functions
+function clearTerminal() {
+    document.getElementById('terminal').textContent = 'Welcome to Lynnapse CLI Interface!\nType commands or use the builder on the right →\n\n$ ';
+}
+
+function addToTerminal(text) {
+    const terminal = document.getElementById('terminal');
+    terminal.textContent += text;
+    terminal.scrollTop = terminal.scrollHeight;
+}
+
+function handleCommandInput(event) {
+    if (event.key === 'Enter') {
+        executeCommand();
+    } else if (event.key === 'ArrowUp') {
+        if (historyIndex < commandHistory.length - 1) {
+            historyIndex++;
+            document.getElementById('commandInput').value = commandHistory[commandHistory.length - 1 - historyIndex];
+        }
+        event.preventDefault();
+    } else if (event.key === 'ArrowDown') {
+        if (historyIndex > 0) {
+            historyIndex--;
+            document.getElementById('commandInput').value = commandHistory[commandHistory.length - 1 - historyIndex];
+        } else if (historyIndex === 0) {
+            historyIndex = -1;
+            document.getElementById('commandInput').value = '';
+        }
+        event.preventDefault();
+    }
+}
+
+async function executeCommand() {
+    const input = document.getElementById('commandInput');
+    const command = input.value.trim();
+    
+    if (!command) return;
+    
+    // Add to terminal
+    addToTerminal(command + '\n');
+    
+    // Add to history
+    commandHistory.push(command);
+    historyIndex = -1;
+    
+    // Clear input
+    input.value = '';
+    
+    try {
+        // Simple command execution simulation
+        if (command.startsWith('python3 -m lynnapse.cli.adaptive_scrape')) {
+            addToTerminal('🚀 Starting adaptive scraping...\n');
+            addToTerminal('ℹ️  For actual execution, please run this command in your terminal.\n');
+        } else if (command.startsWith('python3 -m lynnapse.cli.enhance_data')) {
+            addToTerminal('✨ Starting data enhancement...\n');
+            addToTerminal('ℹ️  For actual execution, please run this command in your terminal.\n');
+        } else if (command === 'help' || command === '--help') {
+            addToTerminal('Available Lynnapse CLI Commands:\n');
+            addToTerminal('  python3 -m lynnapse.cli.adaptive_scrape    - Adaptive university scraping\n');
+            addToTerminal('  python3 -m lynnapse.cli.enhance_data       - Enhance sparse faculty data\n');
+            addToTerminal('  python3 -m lynnapse.cli.validate_websites  - Validate faculty links\n');
+            addToTerminal('  python3 -m lynnapse.cli.enrich_links       - Enrich validated links\n');
+            addToTerminal('  python3 -m lynnapse.cli.process_links      - Process social media links\n');
+        } else if (command === 'clear') {
+            clearTerminal();
+            return;
+        } else {
+            addToTerminal(`Command '${command}' not recognized. Type 'help' for available commands.\n`);
+        }
+    } catch (error) {
+        addToTerminal(`Error: ${error.message}\n`);
+    }
+    
+    addToTerminal('\n$ ');
+}
+
+// Command builder functions
+function updateCommand(type) {
+    const form = document.getElementById(type + 'Form');
+    const preview = document.getElementById(type + 'Preview');
+    const formData = new FormData(form);
+    
+    let command = '';
+    
+    if (type === 'scraping') {
+        command = 'python3 -m lynnapse.cli.adaptive_scrape';
+        const university = formData.get('university');
+        if (university) command += ` "${university}"`;
+        const department = formData.get('department');
+        if (department) command += ` -d "${department}"`;
+        const maxFaculty = formData.get('max_faculty');
+        if (maxFaculty) command += ` -m ${maxFaculty}`;
+        if (formData.get('lab_discovery')) command += ' --lab-discovery';
+        if (formData.get('verbose')) command += ' -v';
+    } else if (type === 'enhancement') {
+        command = 'python3 -m lynnapse.cli.enhance_data';
+        const inputFile = formData.get('input_file');
+        if (inputFile) command += ` scrape_results/adaptive/${inputFile}`;
+        else command += ' [file]';
+        const concurrent = formData.get('concurrent');
+        if (concurrent) command += ` -c ${concurrent}`;
+        if (formData.get('verbose')) command += ' -v';
+        if (formData.get('skip_validation')) command += ' --no-validate';
+    } else if (type === 'processing') {
+        const commandType = formData.get('command_type');
+        if (commandType === 'validate') {
+            command = 'python3 -m lynnapse.cli.validate_websites';
+        } else if (commandType === 'enrich') {
+            command = 'python3 -m lynnapse.cli.enrich_links';
+        } else if (commandType === 'process') {
+            command = 'python3 -m lynnapse.cli.process_links --mode social';
+        }
+        const inputFile = formData.get('input_file');
+        if (inputFile) command += ` scrape_results/adaptive/${inputFile}`;
+        else command += ' [file]';
+        if (formData.get('verbose')) command += ' -v';
+    }
+    
+    preview.textContent = command;
+}
+
+function copyCommand(type) {
+    const preview = document.getElementById(type + 'Preview');
+    navigator.clipboard.writeText(preview.textContent);
+    
+    // Visual feedback
+    const btn = event.target;
+    const originalText = btn.textContent;
+    btn.textContent = 'Copied!';
+    setTimeout(() => {
+        btn.textContent = originalText;
+    }, 1000);
+}
+
+function runBuiltCommand(type) {
+    const preview = document.getElementById(type + 'Preview');
+    const command = preview.textContent;
+    
+    // Set the command in the input and execute
+    document.getElementById('commandInput').value = command;
+    executeCommand();
+}
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+    loadAvailableFiles();
+    updateCommand('scraping');
+    updateCommand('enhancement');
+    updateCommand('processing');
+});
+</script>
+{% endblock %}

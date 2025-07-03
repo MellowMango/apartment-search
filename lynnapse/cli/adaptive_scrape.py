@@ -178,11 +178,13 @@ def adaptive_scrape(university_name: str,
                         faculty_table.add_column("Lab URL", style="magenta")
                         
                         for faculty in result["faculty"][:10]:  # Show first 10
+                            title = faculty.get("title") or ""
+                            lab_url = faculty.get("lab_url") or ""
                             faculty_table.add_row(
                                 faculty.get("name", "Unknown"),
-                                faculty.get("title", "")[:50] + ("..." if len(faculty.get("title", "")) > 50 else ""),
+                                title[:50] + ("..." if len(title) > 50 else ""),
                                 faculty.get("email", ""),
-                                faculty.get("lab_url", "")[:50] + ("..." if len(faculty.get("lab_url", "")) > 50 else "")
+                                lab_url[:50] + ("..." if len(lab_url) > 50 else "")
                             )
                         
                         console.print(faculty_table)
@@ -203,11 +205,32 @@ def adaptive_scrape(university_name: str,
                         
                         console.print(stats_table)
                     
-                    # Output to file if specified
+                    # Always save results to scrape_results/adaptive folder
+                    import os
+                    from datetime import datetime
+                    from pathlib import Path
+                    
+                    # Create scrape_results/adaptive directory if it doesn't exist
+                    results_dir = Path("scrape_results/adaptive")
+                    results_dir.mkdir(parents=True, exist_ok=True)
+                    
+                    # Generate filename with timestamp
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    university_safe = result["university_name"].replace(" ", "_").replace(",", "")
+                    dept_safe = department.replace(" ", "_") if department else "All_Departments"
+                    auto_filename = f"{university_safe}_{dept_safe}_{timestamp}.json"
+                    auto_filepath = results_dir / auto_filename
+                    
+                    # Save to automatic location
+                    with open(auto_filepath, 'w', encoding='utf-8') as f:
+                        json.dump(result, f, indent=2, ensure_ascii=False, default=str)
+                    console.print(f"\n💾 Results automatically saved to: [bold green]{auto_filepath}[/bold green]")
+                    
+                    # Also save to user-specified location if provided
                     if output:
                         with open(output, 'w', encoding='utf-8') as f:
                             json.dump(result, f, indent=2, ensure_ascii=False, default=str)
-                        console.print(f"\n💾 Results saved to: [bold green]{output}[/bold green]")
+                        console.print(f"💾 Results also saved to: [bold green]{output}[/bold green]")
                     
                     # Show key enhancements used
                     if show_subdomains or verbose:

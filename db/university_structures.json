@@ -17,13 +17,14 @@
     ],
     "departments": {
       "psychology": [
+        "cas/psychology/faculty",
         "psychology/people",
-        "cas/psychology/emeriti-faculty",
-        "cas/psychology/affiliated-faculty",
         "psychology/faculty",
         "departments/psychology/faculty",
+        "cas/psychology/affiliated-faculty",
         "cas/psychology/staff",
-        "cas/psychology/our-faculty"
+        "cas/psychology/our-faculty",
+        "cas/psychology/emeriti-faculty"
       ]
     },
     "discovery_method": "llm_migrated",
@@ -148,6 +149,96 @@
     "discovery_method": "sitemap",
     "confidence_score": 0.85,
     "last_updated": 1751059832.401183,
+    "discovery_count": 1
+  },
+  "university_of_maine": {
+    "university_name": "University of Maine",
+    "base_url": "https://www.maine.edu",
+    "faculty_directory_paths": [
+      "https://www.maine.edu/faculty-staff",
+      "https://www.maine.edu/board-of-trustees/student-faculty-representatives"
+    ],
+    "department_paths": [
+      "department",
+      "dept",
+      "school",
+      "college",
+      "division",
+      "program",
+      "center",
+      "institute"
+    ],
+    "departments": {},
+    "discovery_method": "navigation",
+    "confidence_score": 0.7,
+    "last_updated": 1751088603.469696,
+    "discovery_count": 1
+  },
+  "princeton_university": {
+    "university_name": "Princeton University",
+    "base_url": "https://www.princeton.edu",
+    "faculty_directory_paths": [
+      "faculty",
+      "people",
+      "directory"
+    ],
+    "department_paths": [
+      "department",
+      "school"
+    ],
+    "departments": {},
+    "discovery_method": "fallback",
+    "confidence_score": 0.0,
+    "last_updated": 1751489696.0972102,
+    "discovery_count": 1
+  },
+  "harvard_university": {
+    "university_name": "Harvard University",
+    "base_url": "https://www.harvard.edu",
+    "faculty_directory_paths": [
+      "about/university-professorships/"
+    ],
+    "department_paths": [
+      "department",
+      "dept",
+      "school",
+      "college",
+      "division",
+      "program",
+      "center",
+      "institute"
+    ],
+    "departments": {},
+    "discovery_method": "sitemap",
+    "confidence_score": 0.85,
+    "last_updated": 1751489715.645063,
+    "discovery_count": 1
+  },
+  "uc_berkeley": {
+    "university_name": "UC Berkeley",
+    "base_url": "https://www.berkeley.edu",
+    "faculty_directory_paths": [
+      "map/womens-faculty-club/",
+      "map/faculty-club/",
+      "map/faculty-glade/",
+      "faculty-staff/",
+      "directory/",
+      "timeline-category/faculty-nobels/"
+    ],
+    "department_paths": [
+      "department",
+      "dept",
+      "school",
+      "college",
+      "division",
+      "program",
+      "center",
+      "institute"
+    ],
+    "departments": {},
+    "discovery_method": "sitemap",
+    "confidence_score": 0.85,
+    "last_updated": 1751567390.1949298,
     "discovery_count": 1
   }
 }

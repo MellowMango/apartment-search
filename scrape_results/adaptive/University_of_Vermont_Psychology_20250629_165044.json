@@ -1,0 +1,25 @@
+{
+  "university_name": "University of Vermont",
+  "base_url": "https://www.uvm.edu",
+  "faculty": [],
+  "lab_associations": [],
+  "metadata": {
+    "total_faculty": 0,
+    "total_faculty_before_dedup": 0,
+    "departments_processed": 1,
+    "department_results": {
+      "Psychology": {
+        "faculty_count": 0,
+        "structure_type": "table",
+        "confidence": 0.9
+      }
+    },
+    "discovery_confidence": 0.9,
+    "scraping_strategy": "adaptive_comprehensive",
+    "lab_discovery_enabled": true,
+    "comprehensive_extraction": true,
+    "timestamp": 1751241044.005701
+  },
+  "success": true,
+  "error": null
+}

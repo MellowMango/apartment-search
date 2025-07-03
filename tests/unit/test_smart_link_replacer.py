@@ -9,8 +9,7 @@ import pytest
 from unittest.mock import patch, AsyncMock, MagicMock
 import json
 from lynnapse.core.smart_link_replacer import (
-    SmartLinkReplacer, smart_replace_social_media_links,
-    generate_academic_search_candidates
+    SmartLinkReplacer, smart_replace_social_media_links
 )
 
 

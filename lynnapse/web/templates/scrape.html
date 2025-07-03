@@ -63,13 +63,10 @@
                         </div>
                         
                         <div class="mb-4">
-                            <label class="form-label fw-bold">Scraping Options</label>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="include_profiles" name="include_profiles">
-                                <label class="form-check-label" for="include_profiles">
-                                    <strong>Include Detailed Profiles</strong>
-                                    <br><small class="text-muted">Scrape individual faculty profile pages (slower but more complete)</small>
-                                </label>
+                            <div class="alert alert-info">
+                                <i class="bi bi-info-circle me-2"></i>
+                                <strong>Comprehensive Extraction Enabled</strong>
+                                <br>The adaptive scraper automatically extracts detailed faculty profiles, lab associations, and comprehensive contact information.
                             </div>
                         </div>
                         
@@ -136,6 +133,7 @@
                     <div class="alert alert-info">
                         <i class="bi bi-info-circle me-2"></i>
                         <strong>File saved:</strong> <span id="outputFile">-</span>
+                        <br><small class="text-muted">Complete faculty profiles with lab associations, detailed contact info, and research interests have been extracted and saved.</small>
                     </div>
                     
                     <div class="d-flex gap-2">
@@ -360,15 +358,16 @@
         document.getElementById('startScrapeBtn').disabled = true;
         
         try {
-            // Start adaptive scraping
-            updateProgress(25, 'Initializing adaptive scraper...');
+            // Start adaptive scraping with better progress feedback
+            updateProgress(10, 'Discovering university website structure...');
             
             const scrapeData = {
                 university_name: universityName,
                 department_name: departmentName,
-                max_faculty: document.getElementById('maxFaculty').value,
-                include_profiles: document.getElementById('include_profiles').checked
+                max_faculty: parseInt(document.getElementById('maxFaculty').value) || 100
             };
+            
+            updateProgress(25, 'Analyzing department pages and faculty directories...');
             
             const response = await fetch('/api/adaptive-scrape', {
                 method: 'POST',
@@ -377,6 +376,8 @@
                 },
                 body: JSON.stringify(scrapeData)
             });
+            
+            updateProgress(75, 'Extracting faculty profiles and lab associations...');
             
             const result = await response.json();
             
@@ -410,10 +411,10 @@
         // Update counts
         document.getElementById('totalCount').textContent = result.total_count || 0;
         
-        // Calculate stats from preview data
+        // Calculate stats from preview data (note: these are estimates from preview, full data has more)
         const data = result.data || [];
         const emailCount = data.filter(f => f.email).length;
-        const websiteCount = data.filter(f => f.personal_website).length;
+        const websiteCount = data.filter(f => f.website || f.personal_website).length;
         const labCount = data.filter(f => f.lab_name).length;
         
         document.getElementById('emailCount').textContent = emailCount;

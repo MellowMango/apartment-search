@@ -1,0 +1,23 @@
+{
+  "total_faculty": 11,
+  "total_labs": 2,
+  "total_universities": 1,
+  "total_departments": 1,
+  "faculty_lab_associations": 3,
+  "faculty_department_associations": 11,
+  "lab_department_associations": 2,
+  "total_enrichments": {
+    "google_scholar": 1,
+    "profile": 11,
+    "links": 11,
+    "research": 0
+  },
+  "average_confidence_score": 0.7846153846153844,
+  "data_completeness": 0.696969696969697,
+  "orphaned_faculty": [],
+  "orphaned_labs": [],
+  "orphaned_enrichments": [],
+  "potential_duplicates": {},
+  "data_issues": [],
+  "generated_at": "2025-07-03 07:07:10.543875"
+}

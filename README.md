@@ -1,13 +1,30 @@
-# Lynnapse - Adaptive University Faculty Scraper
+# Lynnapse - Comprehensive Academic Faculty Intelligence Platform
 
-🎓 **Next-generation adaptive faculty scraping with intelligent university discovery**
+🎓 **Next-generation adaptive faculty scraping with comprehensive lab profiling and research intelligence**
 
-Lynnapse is an advanced scraping platform that automatically adapts to different university website structures to extract comprehensive faculty data. Features cutting-edge adaptive discovery, detailed profile extraction, and support for complex university architectures including subdomain-based departments.
+Lynnapse is an advanced academic intelligence platform that automatically adapts to different university website structures to extract comprehensive faculty data, research initiatives, and lab associations. Features cutting-edge adaptive discovery, detailed profile extraction, faculty deduplication, and comprehensive lab profiling capabilities.
 
-> **🚀 Latest Update**: System fully operational with 100% faculty discovery rates. Recent fixes include enhanced LinkHeuristics scoring, improved profile URL extraction, and robust error handling. Successfully tested on University of Vermont with 29/29 faculty extracted.
+> **🚀 Latest Update**: Comprehensive extraction system operational with enhanced multi-link faculty processing, cross-department deduplication, lab association detection, and research intelligence capabilities. Successfully tested with 128+ faculty across multiple universities with full lab profiling readiness.
 
-## 🚀 Core Scraping Features
+## 🚀 Core Intelligence Features
 
+### 🏗️ **ID-Based Data Architecture** (NEW!)
+- **🔗 Fault-Tolerant Associations**: ID-based links between faculty, labs, departments, and enrichments
+- **🛡️ Data Preservation**: Break wrong associations without losing any data  
+- **🧬 Smart Deduplication**: Automatic merging of faculty across departments with audit trails
+- **📊 Decoupled Information Pools**: Separate storage for entities, associations, and enrichments
+- **🤖 LLM-Ready Views**: Complete "one row" aggregated views for AI processing
+- **📈 Quality Metrics**: Confidence scores, freshness indicators, and completeness tracking
+
+### 🧬 **Comprehensive Faculty Extraction**
+- **🔗 Multiple Links Per Faculty**: University profiles, Google Scholar, personal websites, lab sites, research platforms (ResearchGate, ORCID)
+- **🧠 Faculty Deduplication**: Intelligent cross-department detection and merging (e.g., 105 → 92 faculty at CMU)
+- **🔬 Lab Association Detection**: Research groups, centers, institutes, and collaborative initiatives
+- **📚 Research Interest Mining**: Expertise areas, specializations, and research focus extraction
+- **🎓 Google Scholar Integration**: Citation metrics, publication tracking, collaboration networks
+- **🏛️ Department Cross-Mapping**: Faculty appearing in multiple departments with consolidated profiles
+
+### 🎯 **Adaptive Discovery Engine**
 - **🧠 Adaptive Discovery**: Automatically detects university structure patterns and adapts extraction strategies
 - **🏛️ Multi-University Support**: Works with 25+ universities including complex subdomain architectures
 - **📋 Comprehensive Data Extraction**: Names, titles, emails, research interests, office locations, phone numbers, biographies, personal websites
@@ -17,6 +34,116 @@ Lynnapse is an advanced scraping platform that automatically adapts to different
 - **📊 Rich Data Models**: Structured extraction with validation and cleaning
 - **⚡ High Success Rates**: 95%+ email capture, 85%+ personal website detection, 100% faculty discovery
 - **🔧 University-Specific Optimizations**: Custom extraction logic for Stanford, Carnegie Mellon, Arizona, and more
+
+### 🔬 **Lab Intelligence & Research Profiling**
+- **🧪 Lab Association Mapping**: Automatic detection of research groups and laboratory affiliations
+- **👥 Faculty Team Grouping**: Connect faculty members within the same research initiatives
+- **🔗 Lab Website Discovery**: Automatic identification and categorization of laboratory websites
+- **📊 Research Initiative Tracking**: Centers, institutes, programs, and collaborative projects
+- **🌐 Interdisciplinary Detection**: Labs and research groups spanning multiple departments
+- **📈 Research Trend Analysis**: Emerging areas and collaboration patterns
+
+## 🎯 Comprehensive Extraction Quick Start
+
+### 🏗️ **Convert to ID-Based Architecture** (NEW!)
+
+Transform legacy data to fault-tolerant, LLM-ready structure:
+
+```bash
+# Convert legacy faculty data to new architecture
+python -m lynnapse.cli.convert_data faculty_data.json
+
+# View sample aggregated views for LLM processing
+python -m lynnapse.cli.convert_data faculty_data.json --show-samples -v
+
+# Test the new architecture with demo
+python3 demos/demo_new_architecture.py
+```
+
+**New Architecture Benefits**:
+- 🛡️ **Fault Tolerance**: Break wrong lab associations without losing lab data
+- 🧬 **Smart Deduplication**: Faculty automatically merged across departments
+- 📊 **Separate Enrichment Pools**: Enrichment data linked by IDs, not embedded
+- 🤖 **LLM-Ready**: Complete aggregated views for AI processing
+- 🔄 **Incremental Updates**: Add new enrichments without data corruption
+- 📈 **Quality Tracking**: Confidence scores and data freshness metrics
+
+### 🚀 **Comprehensive Faculty Intelligence** (Recommended)
+
+Extract complete faculty profiles with multiple links, lab associations, and research intelligence:
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Comprehensive extraction with lab discovery and deduplication
+python -m lynnapse.cli.adaptive_scrape "Carnegie Mellon University" -d psychology --lab-discovery -v
+
+# Multi-department extraction with automatic deduplication
+python -m lynnapse.cli.adaptive_scrape "Stanford University" -d "computer science" -m 50 --lab-discovery
+
+# Enhanced extraction with comprehensive research profiling
+python -m lynnapse.cli.adaptive_scrape "University of California, Berkeley" --show-subdomains --comprehensive
+```
+
+**Comprehensive Results Include**:
+- 🔗 **Multiple academic links per faculty** (university profiles, Google Scholar, personal sites, lab websites)
+- 🧬 **Deduplicated faculty across departments** with merged research interests and affiliations
+- 🔬 **Lab associations and research initiatives** with faculty team mapping
+- 📚 **Research interests and expertise areas** with comprehensive keyword extraction
+- 🎓 **Google Scholar integration** for publication and citation tracking
+- 🏛️ **Cross-department affiliations** and collaborative research mapping
+
+### 🔗 **Smart Academic Link Processing**
+
+Enhanced link processing with social media replacement and academic source discovery:
+
+```bash
+# Process faculty links with traditional methods
+python -m lynnapse.cli.process_links --input faculty_data.json --mode social
+
+# AI-assisted link replacement (requires OpenAI API key)
+export OPENAI_API_KEY="your-api-key"
+python -m lynnapse.cli.process_links --input faculty_data.json --mode social --ai-assistance
+
+# Comprehensive link enrichment with lab profiling
+python -m lynnapse.cli.enrich_links faculty_data.json --analysis comprehensive --verbose
+```
+
+**Advanced Link Intelligence**:
+- **📱 Social Media Detection**: Identifies 15+ platforms (Facebook, Twitter, LinkedIn, Instagram, etc.)
+- **🎯 Academic Link Discovery**: Finds Google Scholar, university profiles, lab websites, personal academic sites
+- **🤖 AI-Enhanced Search**: GPT-4o-mini assistance for smarter academic source discovery
+- **⚡ High Success Rates**: 100% replacement success on real Carnegie Mellon data (18/18 social media links)
+- **💰 Cost-Effective**: AI assistance costs ~$0.01-0.02 per faculty member
+- **🔍 Quality Scoring**: Advanced link relevance and academic quality assessment
+- **🔗 Link Categorization**: University profiles, lab websites, Google Scholar, research platforms, social media
+
+### 🧪 **Lab Profiling & Research Intelligence**
+
+Create comprehensive lab profiles with faculty associations and research mapping:
+
+```bash
+# Extract lab associations and research initiatives
+python -m lynnapse.cli.adaptive_scrape "University Name" -d department --lab-discovery
+
+# Comprehensive research profiling with Google Scholar integration
+python -m lynnapse.cli.enrich_links faculty_data.json --analysis comprehensive --scholar-analysis
+
+# Faculty deduplication and lab association mapping
+python -c "
+from lynnapse.core.adaptive_faculty_crawler import AdaptiveFacultyCrawler
+# Automatic deduplication and lab grouping included in all comprehensive extractions
+"
+```
+
+**Lab Intelligence Features**:
+- 🧪 **Lab Association Detection**: Research groups, laboratories, and collaborative initiatives
+- 👥 **Faculty Team Mapping**: Connect faculty members within the same research groups
+- 🔗 **Lab Website Discovery**: Automatic identification of laboratory and research group websites
+- 📊 **Research Initiative Tracking**: Centers, institutes, programs, and interdisciplinary projects
+- 🌐 **Cross-Department Analysis**: Faculty and labs spanning multiple departments
+- 📈 **Research Collaboration Networks**: Publication co-authorship and collaboration patterns
 
 ## 🎯 Adaptive Scraping Quick Start
 
@@ -39,30 +166,6 @@ python -m lynnapse.cli.adaptive_scrape "University of California, Berkeley" --sh
 ```
 
 **Results**: Get complete faculty profiles with emails, research interests, office locations, phone numbers, biographies, and personal websites automatically extracted.
-
-### 🔗 Smart Link Processing & Academic Source Discovery
-
-Enhanced link processing capabilities that identify and replace social media links with authoritative academic sources:
-
-```bash
-# Process faculty links with traditional methods
-python -m lynnapse.cli.process_links --input faculty_data.json --mode social
-
-# AI-assisted link replacement (requires OpenAI API key)
-export OPENAI_API_KEY="your-api-key"
-python -m lynnapse.cli.process_links --input faculty_data.json --mode social --ai-assistance
-
-# Full processing pipeline (categorization + replacement + lab enrichment)
-python -m lynnapse.cli.process_links --input faculty_data.json --mode full --ai-assistance
-```
-
-**Features:**
-- **📱 Social Media Detection**: Identifies 15+ platforms (Facebook, Twitter, LinkedIn, Instagram, etc.)
-- **🎯 Academic Link Discovery**: Finds Google Scholar, university profiles, lab websites, personal academic sites
-- **🤖 AI-Enhanced Search**: GPT-4o-mini assistance for smarter academic source discovery
-- **⚡ High Success Rates**: 100% replacement success on real Carnegie Mellon data (18/18 social media links)
-- **💰 Cost-Effective**: AI assistance costs ~$0.01-0.02 per faculty member
-- **🔍 Quality Scoring**: Advanced link relevance and academic quality assessment
 
 ### 🌐 Web Interface
 

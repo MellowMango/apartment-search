@@ -6,7 +6,7 @@ import pytest
 import asyncio
 from pathlib import Path
 
-from lynnapse.config import get_settings, get_seed_loader
+from lynnapse.config import get_settings
 from lynnapse.models import Program, Faculty, LabSite, ScrapeJob
 from lynnapse.db import MongoDBClient
 
@@ -17,29 +17,6 @@ def test_settings_load():
     assert settings.app_name == "Lynnapse"
     assert settings.mongodb_database == "lynnapse"
 
-
-def test_seed_loader():
-    """Test that seed loader works correctly."""
-    seed_loader = get_seed_loader("seeds")
-    
-    # Should load the University of Arizona seed we created
-    universities = seed_loader.universities
-    assert "University of Arizona" in universities
-    
-    university_config = universities["University of Arizona"]
-    assert university_config.name == "University of Arizona"
-    assert len(university_config.programs) >= 1
-    
-    # Check psychology program
-    psychology_program = None
-    for program in university_config.programs:
-        if program.name == "Psychology":
-            psychology_program = program
-            break
-    
-    assert psychology_program is not None
-    assert psychology_program.department == "Psychology"
-    assert psychology_program.college == "College of Science"
 
 
 def test_program_model():
@@ -141,10 +118,6 @@ async def test_mongodb_client():
         pytest.skip(f"MongoDB not available: {e}")
 
 
-def test_seed_file_exists():
-    """Test that the University of Arizona seed file exists."""
-    seed_file = Path("seeds/university_of_arizona.yml")
-    assert seed_file.exists(), "University of Arizona seed file should exist"
 
 
 if __name__ == "__main__":

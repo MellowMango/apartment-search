@@ -1,0 +1,613 @@
+{
+  "university_name": "UC Berkeley",
+  "department_name": "Computer Science",
+  "started_at": "2025-07-03T11:29:46.572794",
+  "stages": {
+    "1_scraping": {
+      "status": "completed",
+      "faculty_count": 7,
+      "metadata": {
+        "total_faculty": 7,
+        "total_faculty_before_dedup": 14,
+        "departments_processed": 1,
+        "department_results": {
+          "Faculty & Staff - University of California, Berkeley": {
+            "faculty_count": 14,
+            "structure_type": "list",
+            "confidence": 0.4
+          }
+        },
+        "discovery_confidence": 0.85,
+        "scraping_strategy": "adaptive_comprehensive",
+        "lab_discovery_enabled": true,
+        "comprehensive_extraction": true,
+        "timestamp": 1751567393.6192799
+      },
+      "completed_at": "2025-07-03T11:29:53.619294"
+    },
+    "2_enhancement": {
+      "status": "completed",
+      "validation_stats": {
+        "valid_links": 7,
+        "accessible_links": 7,
+        "broken_links": 0,
+        "redirected_links": 3
+      },
+      "enhancement_stats": {
+        "total_processed": 7,
+        "successfully_enriched": 6,
+        "research_interests_found": 5,
+        "additional_links_found": 32,
+        "biographies_extracted": 5,
+        "contact_info_found": 2,
+        "errors": 0
+      },
+      "enhanced_faculty_count": 7,
+      "completed_at": "2025-07-03T11:29:55.594219"
+    },
+    "3_link_enrichment": {
+      "status": "completed",
+      "links_processed": 7,
+      "successful_enrichments": 0,
+      "scholar_profiles": 0,
+      "completed_at": "2025-07-03T11:29:55.844073"
+    },
+    "4_conversion": {
+      "status": "failed",
+      "error": "cannot access local variable 'timestamp' where it is not associated with a value",
+      "completed_at": "2025-07-03T11:29:55.844670"
+    }
+  },
+  "final_results": {
+    "legacy_faculty_data": [
+      {
+        "name": "Teaching & learning",
+        "email": null,
+        "title": null,
+        "department": "Faculty & Staff - University of California, Berkeley",
+        "university": "UC Berkeley",
+        "profile_url": "https://rtl.berkeley.edu/",
+        "source_url": "https://www.berkeley.edu/faculty-staff/",
+        "extraction_method": "adaptive_heuristic",
+        "links": [
+          {
+            "url": "https://rtl.berkeley.edu/",
+            "text": "Teaching & learning",
+            "category": "external_academic",
+            "context": "Teaching & learning"
+          }
+        ],
+        "research_interests": [
+          "learning"
+        ],
+        "research_areas": [],
+        "lab_associations": [],
+        "research_initiatives": [],
+        "external_profiles": {
+          "social_media": [],
+          "google_scholar": [],
+          "lab_websites": [],
+          "research_platforms": [],
+          "personal_websites": []
+        },
+        "comprehensive_extraction": true,
+        "departments": [
+          "Faculty & Staff - University of California, Berkeley"
+        ],
+        "profile_url_validation": {
+          "type": "university_profile",
+          "is_valid": true,
+          "is_accessible": true,
+          "confidence": 0.6,
+          "title": "Home | Research, Teaching, &amp; Learning",
+          "error": null
+        },
+        "link_quality_score": 0.6,
+        "enrichment_successful": true,
+        "enrichment_details": {
+          "profile_scraped": true
+        },
+        "biography": "RTL workshops are designed to provide essential teaching tools and best practices to excel in your teaching efforts.Review all of our events.",
+        "additional_links": [
+          {
+            "url": "https://rtl.berkeley.edu/home",
+            "text": "Home",
+            "type": "personal_website"
+          },
+          {
+            "url": "https://teaching.berkeley.edu/home",
+            "text": "Center for Teaching & Learning",
+            "type": "lab_website"
+          },
+          {
+            "url": "https://rtl.berkeley.edu/ai-teaching-learning-overview",
+            "text": "AI in Teaching & LearningOpportunities and challenges of Gen AI on teaching plus resources available to the campus community.",
+            "type": "lab_website"
+          },
+          {
+            "url": "https://teaching.berkeley.edu/teaching-guides-resources",
+            "text": "Teaching Guides + ResourcesResources from our Center for Teaching & Learning that reflect evidence-based strategies.",
+            "type": "lab_website"
+          },
+          {
+            "url": "https://www.linkedin.com/groups/14139058/",
+            "text": "LinkedIn",
+            "type": "social_media"
+          },
+          {
+            "url": "https://rtl.berkeley.edu/home",
+            "text": "Home",
+            "type": "personal_website"
+          },
+          {
+            "url": "https://teaching.berkeley.edu/",
+            "text": "Center for Teaching and Learning",
+            "type": "lab_website"
+          }
+        ],
+        "personal_website": "https://rtl.berkeley.edu/home",
+        "lab_website": "https://teaching.berkeley.edu/home",
+        "links_enriched_count": 0,
+        "enrichment_processed": true
+      },
+      {
+        "name": "Academic Personnel Office",
+        "email": null,
+        "title": null,
+        "department": "Faculty & Staff - University of California, Berkeley",
+        "university": "UC Berkeley",
+        "profile_url": "https://apo.berkeley.edu/",
+        "source_url": "https://www.berkeley.edu/faculty-staff/",
+        "extraction_method": "adaptive_heuristic",
+        "links": [
+          {
+            "url": "https://apo.berkeley.edu/",
+            "text": "Academic Personnel Office",
+            "category": "external_academic",
+            "context": "Academic Personnel Office"
+          }
+        ],
+        "research_interests": [],
+        "research_areas": [],
+        "lab_associations": [],
+        "research_initiatives": [],
+        "external_profiles": {
+          "social_media": [],
+          "google_scholar": [],
+          "lab_websites": [],
+          "research_platforms": [],
+          "personal_websites": []
+        },
+        "comprehensive_extraction": true,
+        "departments": [
+          "Faculty & Staff - University of California, Berkeley"
+        ],
+        "profile_url_validation": {
+          "type": "university_profile",
+          "is_valid": true,
+          "is_accessible": true,
+          "confidence": 0.6,
+          "title": "Home | Academic Personnel Office",
+          "error": null
+        },
+        "link_quality_score": 0.6,
+        "enrichment_successful": true,
+        "enrichment_details": {
+          "profile_scraped": true
+        },
+        "biography": "We work closely with theVice Provost for the Facultyto maintain high standards and fair processes in academic appointments, promotions, and merit increases. We help academic HR staff, faculty, chairs, and deans to stay up-to-date about the University’s policies and practices so that we can sustain a broadly shared understanding across our campus.",
+        "phone": "(510) 642-5626",
+        "additional_links": [
+          {
+            "url": "https://apo.berkeley.edu/home",
+            "text": "Home",
+            "type": "personal_website"
+          },
+          {
+            "url": "https://apo.berkeley.edu/home",
+            "text": "Home",
+            "type": "personal_website"
+          }
+        ],
+        "personal_website": "https://apo.berkeley.edu/home",
+        "links_enriched_count": 0,
+        "enrichment_processed": true
+      },
+      {
+        "name": "Academic Senate",
+        "email": null,
+        "title": null,
+        "department": "Faculty & Staff - University of California, Berkeley",
+        "university": "UC Berkeley",
+        "profile_url": "https://academic-senate.berkeley.edu/",
+        "source_url": "https://www.berkeley.edu/faculty-staff/",
+        "extraction_method": "adaptive_heuristic",
+        "links": [
+          {
+            "url": "http://academic-senate.berkeley.edu/",
+            "text": "Academic Senate",
+            "category": "external_academic",
+            "context": "Academic Senate"
+          }
+        ],
+        "research_interests": [
+          "This section highlights issues of current interest to the Senate and also contains archived information",
+          "and websites for systemwide committees and task forces.",
+          "including Berkeley Division and systemwide documents",
+          "reports",
+          "Academic Senate websites throughout the UC system"
+        ],
+        "research_areas": [],
+        "lab_associations": [],
+        "research_initiatives": [],
+        "external_profiles": {
+          "social_media": [],
+          "google_scholar": [],
+          "lab_websites": [],
+          "research_platforms": [],
+          "personal_websites": []
+        },
+        "comprehensive_extraction": true,
+        "departments": [
+          "Faculty & Staff - University of California, Berkeley"
+        ],
+        "profile_url_validation": {
+          "type": "university_profile",
+          "is_valid": true,
+          "is_accessible": true,
+          "confidence": 0.6,
+          "title": "Academic Senate | Academic Senate",
+          "error": null
+        },
+        "profile_url_original": "http://academic-senate.berkeley.edu/",
+        "link_quality_score": 0.6,
+        "enrichment_successful": true,
+        "enrichment_details": {
+          "profile_scraped": true
+        },
+        "biography": "Information about the Senate's mission, leadership, and staff.",
+        "phone": "(510) 642-4226",
+        "additional_links": [
+          {
+            "url": "https://academic-senate.berkeley.edu/home",
+            "text": "Home",
+            "type": "personal_website"
+          },
+          {
+            "url": "https://academic-senate.berkeley.edu/sites/default/files/apc_memo_acad_delineation.pdf",
+            "text": "Delineation of Academic Research and Paid Labor for Graduate Students (from Workgroup on the Future of Doctoral Programs)",
+            "type": "lab_website"
+          },
+          {
+            "url": "https://academic-senate.berkeley.edu/home",
+            "text": "Home",
+            "type": "personal_website"
+          }
+        ],
+        "personal_website": "https://academic-senate.berkeley.edu/home",
+        "lab_website": "https://academic-senate.berkeley.edu/sites/default/files/apc_memo_acad_delineation.pdf",
+        "links_enriched_count": 0,
+        "enrichment_processed": true
+      },
+      {
+        "name": "Human Resources",
+        "email": null,
+        "title": null,
+        "department": "Faculty & Staff - University of California, Berkeley",
+        "university": "UC Berkeley",
+        "profile_url": "https://hr.berkeley.edu/",
+        "source_url": "https://www.berkeley.edu/faculty-staff/",
+        "extraction_method": "adaptive_heuristic",
+        "links": [
+          {
+            "url": "http://hrweb.berkeley.edu/",
+            "text": "Human Resources",
+            "category": "external_academic",
+            "context": "Human Resources"
+          }
+        ],
+        "research_interests": [
+          "learning"
+        ],
+        "research_areas": [],
+        "lab_associations": [],
+        "research_initiatives": [],
+        "external_profiles": {
+          "social_media": [],
+          "google_scholar": [],
+          "lab_websites": [],
+          "research_platforms": [],
+          "personal_websites": []
+        },
+        "comprehensive_extraction": true,
+        "departments": [
+          "Faculty & Staff - University of California, Berkeley"
+        ],
+        "profile_url_validation": {
+          "type": "university_profile",
+          "is_valid": true,
+          "is_accessible": true,
+          "confidence": 0.6,
+          "title": "Home | People &amp; Culture",
+          "error": null
+        },
+        "profile_url_original": "http://hrweb.berkeley.edu/",
+        "link_quality_score": 0.6,
+        "enrichment_successful": true,
+        "enrichment_details": {
+          "profile_scraped": true
+        },
+        "biography": "OverviewCompensationContact CompensationBenefitsContact BenefitsPerks",
+        "additional_links": [
+          {
+            "url": "https://hr.berkeley.edu/seb/campus-collaborators",
+            "text": "Campus Collaborators",
+            "type": "lab_website"
+          },
+          {
+            "url": "https://hr.berkeley.edu/employee-labor-relations",
+            "text": "Employee & Labor Relations",
+            "type": "lab_website"
+          },
+          {
+            "url": "https://hr.berkeley.edu/labor",
+            "text": "Labor Relations",
+            "type": "lab_website"
+          },
+          {
+            "url": "https://www.facebook.com/UCBerkeleyHR",
+            "text": "Facebook",
+            "type": "social_media"
+          },
+          {
+            "url": "https://twitter.com/@UCBerkeley",
+            "text": "X (formerly Twitter)",
+            "type": "social_media"
+          },
+          {
+            "url": "https://www.linkedin.com/company/uc-berkeley-hr",
+            "text": "LinkedIn",
+            "type": "social_media"
+          },
+          {
+            "url": "https://hr.berkeley.edu/home",
+            "text": "Home",
+            "type": "personal_website"
+          }
+        ],
+        "lab_website": "https://hr.berkeley.edu/seb/campus-collaborators",
+        "personal_website": "https://hr.berkeley.edu/home",
+        "links_enriched_count": 0,
+        "enrichment_processed": true
+      },
+      {
+        "name": "UC Benefits",
+        "email": null,
+        "title": null,
+        "department": "Faculty & Staff - University of California, Berkeley",
+        "university": "UC Berkeley",
+        "profile_url": "https://atyourserviceonline.ucop.edu/ayso/",
+        "source_url": "https://www.berkeley.edu/faculty-staff/",
+        "extraction_method": "adaptive_heuristic",
+        "links": [
+          {
+            "url": "https://atyourserviceonline.ucop.edu/ayso/",
+            "text": "UC Benefits",
+            "category": "external_academic",
+            "context": "UC Benefits"
+          }
+        ],
+        "research_interests": [],
+        "research_areas": [],
+        "lab_associations": [],
+        "research_initiatives": [],
+        "external_profiles": {
+          "social_media": [],
+          "google_scholar": [],
+          "lab_websites": [],
+          "research_platforms": [],
+          "personal_websites": []
+        },
+        "comprehensive_extraction": true,
+        "departments": [
+          "Faculty & Staff - University of California, Berkeley"
+        ],
+        "profile_url_validation": {
+          "type": "university_profile",
+          "is_valid": true,
+          "is_accessible": true,
+          "confidence": 0.6,
+          "title": "At Your Service Online : Sign In",
+          "error": null
+        },
+        "link_quality_score": 0.6,
+        "enrichment_successful": false,
+        "enrichment_details": {},
+        "links_enriched_count": 0,
+        "enrichment_processed": true
+      },
+      {
+        "name": "Berkeley Regional Services",
+        "email": null,
+        "title": null,
+        "department": "Faculty & Staff - University of California, Berkeley",
+        "university": "UC Berkeley",
+        "profile_url": "https://regionalservices.berkeley.edu/",
+        "source_url": "https://www.berkeley.edu/faculty-staff/",
+        "extraction_method": "adaptive_heuristic",
+        "links": [
+          {
+            "url": "http://sharedservices.berkeley.edu/",
+            "text": "Berkeley Regional Services",
+            "category": "external_academic",
+            "context": "Berkeley Regional Services"
+          }
+        ],
+        "research_interests": [
+          "data science",
+          "social",
+          "learning"
+        ],
+        "research_areas": [],
+        "lab_associations": [],
+        "research_initiatives": [],
+        "external_profiles": {
+          "social_media": [],
+          "google_scholar": [],
+          "lab_websites": [],
+          "research_platforms": [],
+          "personal_websites": []
+        },
+        "comprehensive_extraction": true,
+        "departments": [
+          "Faculty & Staff - University of California, Berkeley"
+        ],
+        "profile_url_validation": {
+          "type": "university_profile",
+          "is_valid": true,
+          "is_accessible": true,
+          "confidence": 0.6,
+          "title": "Home | Berkeley Regional Services",
+          "error": null
+        },
+        "profile_url_original": "http://sharedservices.berkeley.edu/",
+        "link_quality_score": 0.6,
+        "enrichment_successful": true,
+        "enrichment_details": {
+          "profile_scraped": true
+        },
+        "biography": "Go here to find the library of tools and resources all BRS regions use to support the onboarding of newly hired Berkeley employees for the campus departments they serve. Note: The Records Management Team has been realigned to People & Culture (P&C) visit their website page to review the details about the support they provide campus.",
+        "additional_links": [
+          {
+            "url": "http://www.erso.berkeley.edu/erso/",
+            "text": "ERSO Region website",
+            "type": "personal_website"
+          },
+          {
+            "url": "https://bioregion.berkeley.edu",
+            "text": "BEST Region website",
+            "type": "personal_website"
+          },
+          {
+            "url": "https://shareregion.berkeley.edu",
+            "text": "SHARE Region website",
+            "type": "personal_website"
+          },
+          {
+            "url": "https://pros.berkeley.edu",
+            "text": "ProS Region website",
+            "type": "personal_website"
+          },
+          {
+            "url": "https://bearsregion.berkeley.edu",
+            "text": "BEARS Region website",
+            "type": "personal_website"
+          },
+          {
+            "url": "http://systemstatus.berkeley.edu/",
+            "text": "View campus network/availability (System Status)",
+            "type": "lab_website"
+          },
+          {
+            "url": "https://regionalservices.berkeley.edu/home",
+            "text": "Home",
+            "type": "personal_website"
+          },
+          {
+            "url": "https://shareregion.berkeley.edu",
+            "text": "SHARE RegionDivisions of Social Sciences, A&H, Undergraduate Studies, College of Chemistry, Space Sciences Lab, and related ORUs",
+            "type": "lab_website"
+          },
+          {
+            "url": "https://regionalservices.berkeley.edu/home",
+            "text": "Home",
+            "type": "personal_website"
+          }
+        ],
+        "personal_website": "http://www.erso.berkeley.edu/erso/",
+        "lab_website": "http://systemstatus.berkeley.edu/",
+        "links_enriched_count": 0,
+        "enrichment_processed": true
+      },
+      {
+        "name": "Information Technology",
+        "email": null,
+        "title": null,
+        "department": "Faculty & Staff - University of California, Berkeley",
+        "university": "UC Berkeley",
+        "profile_url": "https://technology.berkeley.edu/home",
+        "source_url": "https://www.berkeley.edu/faculty-staff/",
+        "extraction_method": "adaptive_heuristic",
+        "links": [
+          {
+            "url": "https://technology.berkeley.edu/home",
+            "text": "Information Technology",
+            "category": "external_academic",
+            "context": "Information Technology"
+          }
+        ],
+        "research_interests": [
+          "learning"
+        ],
+        "research_areas": [],
+        "lab_associations": [],
+        "research_initiatives": [],
+        "external_profiles": {
+          "social_media": [],
+          "google_scholar": [],
+          "lab_websites": [],
+          "research_platforms": [],
+          "personal_websites": []
+        },
+        "comprehensive_extraction": true,
+        "departments": [
+          "Faculty & Staff - University of California, Berkeley"
+        ],
+        "profile_url_validation": {
+          "type": "university_profile",
+          "is_valid": true,
+          "is_accessible": true,
+          "confidence": 0.6,
+          "title": "Home | Information Technology",
+          "error": null
+        },
+        "link_quality_score": 0.6,
+        "enrichment_successful": true,
+        "enrichment_details": {
+          "profile_scraped": true
+        },
+        "additional_links": [
+          {
+            "url": "https://technology.berkeley.edu/home",
+            "text": "Home",
+            "type": "personal_website"
+          },
+          {
+            "url": "https://technology.berkeley.edu/governance/PCTC",
+            "text": "Productivity & Collaboration Tools (PCTC)",
+            "type": "lab_website"
+          },
+          {
+            "url": "https://berkeley.service-now.com/bit?id=emp_taxonomy_topic&topic_id=b1bf7f4a87b18ed0a4fdeb1e3fbb3508&in_context=true",
+            "text": "Access software available on campus",
+            "type": "lab_website"
+          },
+          {
+            "url": "https://www.linkedin.com/groups/8552812",
+            "text": "LinkedIn",
+            "type": "social_media"
+          }
+        ],
+        "personal_website": "https://technology.berkeley.edu/home",
+        "lab_website": "https://technology.berkeley.edu/governance/PCTC",
+        "links_enriched_count": 0,
+        "enrichment_processed": true
+      }
+    ],
+    "faculty_entities": [],
+    "lab_entities": [],
+    "total_faculty": 7,
+    "total_entities": 0
+  },
+  "completed_at": "2025-07-03T11:29:55.844710"
+}

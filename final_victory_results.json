@@ -1,1 +1,0 @@
-{"success":false,"message":"Scraping failed: module 'lynnapse.config.settings' has no attribute 'openai_api_key'","error":"module 'lynnapse.config.settings' has no attribute 'openai_api_key'"}

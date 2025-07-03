@@ -1,0 +1,2505 @@
+[
+  {
+    "faculty": {
+      "id": "fac_7ad47661",
+      "name": "Robert Althoff",
+      "normalized_name": "robert::althoff",
+      "title": "Associate Professor \u2022 Department of Psychiatry",
+      "primary_university_id": "univ_of::vermont",
+      "primary_department_id": "dept_of::vermont_psychology",
+      "email": "Robert.Althoff@uvm.edu",
+      "phone": "(802) 656-2670",
+      "office_location": null,
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/robert-althoff",
+      "personal_website": "https://www.uvm.edu/cas/psychology",
+      "status": "active",
+      "confidence_score": 0.8,
+      "duplicate_of": null,
+      "merged_from": [],
+      "created_at": "2025-07-03 07:07:10.539793",
+      "updated_at": "2025-07-03 07:07:10.539795",
+      "source_scrape_id": "conversion_bc12ed05"
+    },
+    "university": {
+      "id": "univ_of::vermont",
+      "name": "University Of Vermont",
+      "normalized_name": "of::vermont",
+      "short_name": null,
+      "domain": "www.uvm.edu",
+      "website_url": "https://www.uvm.edu",
+      "city": null,
+      "state_province": null,
+      "country": "US",
+      "status": "active",
+      "created_at": "2025-07-03 07:07:10.539817",
+      "updated_at": "2025-07-03 07:07:10.539817"
+    },
+    "primary_department": null,
+    "department_associations": [
+      {
+        "association": {
+          "id": "4b9ef9a7-bd46-4ede-a86f-64527458518b",
+          "faculty_id": "fac_7ad47661",
+          "department_id": "dept_univ_of::vermont_psychology",
+          "appointment_type": "primary",
+          "title": "Associate Professor \u2022 Department of Psychiatry",
+          "percentage": null,
+          "confidence_score": 0.9,
+          "evidence_sources": [
+            "https://www.uvm.edu/cas/psychology/profile/robert-althoff"
+          ],
+          "status": "active",
+          "start_date": null,
+          "end_date": null,
+          "is_current": true,
+          "created_at": "2025-07-03 07:07:10.539833",
+          "updated_at": "2025-07-03 07:07:10.539833",
+          "created_by_scrape_id": "conversion_bc12ed05"
+        },
+        "department": {
+          "id": "dept_univ_of::vermont_psychology",
+          "name": "Psychology",
+          "normalized_name": "psychology",
+          "short_name": null,
+          "university_id": "univ_of::vermont",
+          "college_school": null,
+          "website_url": null,
+          "status": "active",
+          "created_at": "2025-07-03 07:07:10.539823",
+          "updated_at": "2025-07-03 07:07:10.539823"
+        }
+      }
+    ],
+    "lab_associations": [],
+    "enrichments": {
+      "google_scholar": [
+        {
+          "id": "scholar_a6cbc84e",
+          "scholar_url": "https://scholar.google.com/citations?hl=en&user=m-DOgLkAAAAJ&view_op=list_works&sortby=pubdate",
+          "scholar_id": null,
+          "verified_email": false,
+          "total_citations": null,
+          "h_index": null,
+          "i10_index": null,
+          "citations_by_year": {},
+          "publications": [],
+          "publication_years": [],
+          "scholar_interests": [],
+          "co_authors": [],
+          "recent_activity": null,
+          "productivity_trend": null,
+          "profile_completeness": 0.8,
+          "data_reliability": 0.0,
+          "status": "fresh",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.539848",
+          "expires_at": null,
+          "association": {
+            "id": "54ef73a9-0509-4e26-8ac5-36406e402e46",
+            "faculty_id": "fac_7ad47661",
+            "enrichment_id": "scholar_a6cbc84e",
+            "enrichment_type": "google_scholar",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/robert-althoff",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.539856",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.539856",
+            "updated_at": "2025-07-03 07:07:10.539856",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "profile": [
+        {
+          "id": "profile_83c39056",
+          "profile_url": "https://www.uvm.edu/cas/psychology/profile/robert-althoff",
+          "full_biography": null,
+          "education": [],
+          "career_history": [],
+          "research_statement": null,
+          "current_projects": [],
+          "research_keywords": [
+            "behavioral",
+            "psychology",
+            "clinical"
+          ],
+          "office_hours": null,
+          "availability": null,
+          "additional_contact": {},
+          "teaching_interests": [],
+          "service_activities": [],
+          "editorial_boards": [],
+          "awards": [],
+          "grants": [],
+          "completeness_score": 0.7,
+          "freshness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.539867",
+          "expires_at": null,
+          "association": {
+            "id": "a9db3328-e650-4552-99a6-fa7a2848adf0",
+            "faculty_id": "fac_7ad47661",
+            "enrichment_id": "profile_83c39056",
+            "enrichment_type": "profile",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/robert-althoff",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.539871",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.539872",
+            "updated_at": "2025-07-03 07:07:10.539872",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "links": [
+        {
+          "id": "links_b6ed3b67",
+          "source_url": "https://www.uvm.edu/cas/psychology/profile/robert-althoff",
+          "source_type": "faculty_profile",
+          "title": "Links for Robert Althoff",
+          "description": null,
+          "last_modified": null,
+          "research_interests": [
+            "behavioral",
+            "psychology",
+            "clinical"
+          ],
+          "affiliations": [],
+          "contact_info": {},
+          "related_links": [
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://scholar.google.com/citations?hl=en&user=m-DOgLkAAAAJ&view_op=list_works&sortby=pubdate",
+              "text": "Google Scholar - Robert Althoff",
+              "type": "google_scholar"
+            },
+            {
+              "url": "https://scholar.google.com/citations?hl=en&user=m-DOgLkAAAAJ&view_op=list_works&sortby=pubdate",
+              "text": "Google Scholar - Robert Althoff",
+              "type": "google_scholar"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "University of Vermont home",
+              "type": "personal_website"
+            }
+          ],
+          "content_quality_score": 0.6,
+          "academic_relevance_score": 0.0,
+          "completeness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.539882",
+          "expires_at": null,
+          "raw_html": null,
+          "raw_metadata": {},
+          "association": {
+            "id": "9dc47947-e6c8-40a3-8f62-01c1ad52649b",
+            "faculty_id": "fac_7ad47661",
+            "enrichment_id": "links_b6ed3b67",
+            "enrichment_type": "links",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/robert-althoff",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.539887",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.539887",
+            "updated_at": "2025-07-03 07:07:10.539887",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "research": []
+    },
+    "computed_metrics": {
+      "total_enrichments": 3,
+      "lab_count": 0,
+      "department_count": 1
+    },
+    "data_sources": [
+      "https://www.uvm.edu/cas/psychology/profile/robert-althoff"
+    ],
+    "view_generated_at": "2025-07-03 07:07:10.541158",
+    "data_freshness_score": 1.0,
+    "completeness_score": 0.6,
+    "confidence_score": 0.8
+  },
+  {
+    "faculty": {
+      "id": "fac_da33b583",
+      "name": "Hugh Garavan",
+      "normalized_name": "hugh::garavan",
+      "title": "Professor of Psychiatry \u2022 Professor of Psychology",
+      "primary_university_id": "univ_of::vermont",
+      "primary_department_id": "dept_of::vermont_psychology",
+      "email": "Hugh.Garavan@uvm.edu",
+      "phone": "(802) 656-2670",
+      "office_location": null,
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/hugh-garavan",
+      "personal_website": "https://www.uvm.edu/cas/psychology",
+      "status": "active",
+      "confidence_score": 0.8,
+      "duplicate_of": null,
+      "merged_from": [],
+      "created_at": "2025-07-03 07:07:10.539901",
+      "updated_at": "2025-07-03 07:07:10.539901",
+      "source_scrape_id": "conversion_bc12ed05"
+    },
+    "university": {
+      "id": "univ_of::vermont",
+      "name": "University Of Vermont",
+      "normalized_name": "of::vermont",
+      "short_name": null,
+      "domain": "www.uvm.edu",
+      "website_url": "https://www.uvm.edu",
+      "city": null,
+      "state_province": null,
+      "country": "US",
+      "status": "active",
+      "created_at": "2025-07-03 07:07:10.539817",
+      "updated_at": "2025-07-03 07:07:10.539817"
+    },
+    "primary_department": null,
+    "department_associations": [
+      {
+        "association": {
+          "id": "9eecff59-cefb-4363-b00f-b283f59293d9",
+          "faculty_id": "fac_da33b583",
+          "department_id": "dept_univ_of::vermont_psychology",
+          "appointment_type": "primary",
+          "title": "Professor of Psychiatry \u2022 Professor of Psychology",
+          "percentage": null,
+          "confidence_score": 0.9,
+          "evidence_sources": [
+            "https://www.uvm.edu/cas/psychology/profile/hugh-garavan"
+          ],
+          "status": "active",
+          "start_date": null,
+          "end_date": null,
+          "is_current": true,
+          "created_at": "2025-07-03 07:07:10.539909",
+          "updated_at": "2025-07-03 07:07:10.539909",
+          "created_by_scrape_id": "conversion_bc12ed05"
+        },
+        "department": {
+          "id": "dept_univ_of::vermont_psychology",
+          "name": "Psychology",
+          "normalized_name": "psychology",
+          "short_name": null,
+          "university_id": "univ_of::vermont",
+          "college_school": null,
+          "website_url": null,
+          "status": "active",
+          "created_at": "2025-07-03 07:07:10.539823",
+          "updated_at": "2025-07-03 07:07:10.539823"
+        }
+      }
+    ],
+    "lab_associations": [],
+    "enrichments": {
+      "google_scholar": [],
+      "profile": [
+        {
+          "id": "profile_85900040",
+          "profile_url": "https://www.uvm.edu/cas/psychology/profile/hugh-garavan",
+          "full_biography": null,
+          "education": [],
+          "career_history": [],
+          "research_statement": null,
+          "current_projects": [],
+          "research_keywords": [
+            "clinical",
+            "psychology",
+            "developmental"
+          ],
+          "office_hours": null,
+          "availability": null,
+          "additional_contact": {},
+          "teaching_interests": [],
+          "service_activities": [],
+          "editorial_boards": [],
+          "awards": [],
+          "grants": [],
+          "completeness_score": 0.7,
+          "freshness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.539915",
+          "expires_at": null,
+          "association": {
+            "id": "9e9ac93e-be0b-476a-9103-6ed62249c811",
+            "faculty_id": "fac_da33b583",
+            "enrichment_id": "profile_85900040",
+            "enrichment_type": "profile",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/hugh-garavan",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.539919",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.539919",
+            "updated_at": "2025-07-03 07:07:10.539919",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "links": [
+        {
+          "id": "links_22e9583c",
+          "source_url": "https://www.uvm.edu/cas/psychology/profile/hugh-garavan",
+          "source_type": "faculty_profile",
+          "title": "Links for Hugh Garavan",
+          "description": null,
+          "last_modified": null,
+          "research_interests": [
+            "clinical",
+            "psychology",
+            "developmental"
+          ],
+          "affiliations": [],
+          "contact_info": {},
+          "related_links": [
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "University of Vermont home",
+              "type": "personal_website"
+            }
+          ],
+          "content_quality_score": 0.6,
+          "academic_relevance_score": 0.0,
+          "completeness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.539924",
+          "expires_at": null,
+          "raw_html": null,
+          "raw_metadata": {},
+          "association": {
+            "id": "75a97e68-1fa8-45bb-9e3d-1e3997f4a797",
+            "faculty_id": "fac_da33b583",
+            "enrichment_id": "links_22e9583c",
+            "enrichment_type": "links",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/hugh-garavan",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.539928",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.539928",
+            "updated_at": "2025-07-03 07:07:10.539929",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "research": []
+    },
+    "computed_metrics": {
+      "total_enrichments": 2,
+      "lab_count": 0,
+      "department_count": 1
+    },
+    "data_sources": [
+      "https://www.uvm.edu/cas/psychology/profile/hugh-garavan"
+    ],
+    "view_generated_at": "2025-07-03 07:07:10.541232",
+    "data_freshness_score": 1.0,
+    "completeness_score": 0.4,
+    "confidence_score": 0.8
+  },
+  {
+    "faculty": {
+      "id": "fac_f758211a",
+      "name": "Sarah Heil",
+      "normalized_name": "sarah::heil",
+      "title": "Professor of Psychology \u2022 Professor of Psychiatry",
+      "primary_university_id": "univ_of::vermont",
+      "primary_department_id": "dept_of::vermont_psychology",
+      "email": null,
+      "phone": "(802) 656-2670",
+      "office_location": null,
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/sarah-heil",
+      "personal_website": "https://www.uvm.edu/cas/psychology",
+      "status": "active",
+      "confidence_score": 0.8,
+      "duplicate_of": null,
+      "merged_from": [],
+      "created_at": "2025-07-03 07:07:10.539938",
+      "updated_at": "2025-07-03 07:07:10.539938",
+      "source_scrape_id": "conversion_bc12ed05"
+    },
+    "university": {
+      "id": "univ_of::vermont",
+      "name": "University Of Vermont",
+      "normalized_name": "of::vermont",
+      "short_name": null,
+      "domain": "www.uvm.edu",
+      "website_url": "https://www.uvm.edu",
+      "city": null,
+      "state_province": null,
+      "country": "US",
+      "status": "active",
+      "created_at": "2025-07-03 07:07:10.539817",
+      "updated_at": "2025-07-03 07:07:10.539817"
+    },
+    "primary_department": null,
+    "department_associations": [
+      {
+        "association": {
+          "id": "82ae77da-a26c-47d1-9e43-c7309df3135e",
+          "faculty_id": "fac_f758211a",
+          "department_id": "dept_univ_of::vermont_psychology",
+          "appointment_type": "primary",
+          "title": "Professor of Psychology \u2022 Professor of Psychiatry",
+          "percentage": null,
+          "confidence_score": 0.9,
+          "evidence_sources": [
+            "https://www.uvm.edu/cas/psychology/profile/sarah-heil"
+          ],
+          "status": "active",
+          "start_date": null,
+          "end_date": null,
+          "is_current": true,
+          "created_at": "2025-07-03 07:07:10.539945",
+          "updated_at": "2025-07-03 07:07:10.539946",
+          "created_by_scrape_id": "conversion_bc12ed05"
+        },
+        "department": {
+          "id": "dept_univ_of::vermont_psychology",
+          "name": "Psychology",
+          "normalized_name": "psychology",
+          "short_name": null,
+          "university_id": "univ_of::vermont",
+          "college_school": null,
+          "website_url": null,
+          "status": "active",
+          "created_at": "2025-07-03 07:07:10.539823",
+          "updated_at": "2025-07-03 07:07:10.539823"
+        }
+      }
+    ],
+    "lab_associations": [
+      {
+        "association": {
+          "id": "4b1c758e-0a3f-48ab-af5e-5f7c382d7b91",
+          "faculty_id": "fac_f758211a",
+          "lab_id": "lab_5f967ef2",
+          "role": "member",
+          "relationship_type": "member",
+          "confidence_score": 0.7,
+          "confidence_level": "medium",
+          "evidence_sources": [
+            "https://www.uvm.edu/cas/psychology/profile/sarah-heil",
+            "http://www.med.uvm.edu/behaviorandhealth"
+          ],
+          "status": "pending_verification",
+          "start_date": null,
+          "end_date": null,
+          "is_current": true,
+          "conflicts_with": [],
+          "supersedes": null,
+          "created_at": "2025-07-03 07:07:10.539967",
+          "updated_at": "2025-07-03 07:07:10.539967",
+          "created_by_scrape_id": "conversion_bc12ed05",
+          "verified_by": null
+        },
+        "lab": {
+          "id": "lab_5f967ef2",
+          "name": "Unknown Lab",
+          "normalized_name": "unknown::lab",
+          "lab_type": null,
+          "university_id": "univ_of::vermont",
+          "primary_department_id": "dept_univ_of::vermont_psychology",
+          "website_url": "http://www.med.uvm.edu/behaviorandhealth",
+          "description": null,
+          "location": null,
+          "status": "active",
+          "confidence_score": 0.7,
+          "duplicate_of": null,
+          "merged_from": [],
+          "created_at": "2025-07-03 07:07:10.539951",
+          "updated_at": "2025-07-03 07:07:10.539951",
+          "source_scrape_id": "conversion_bc12ed05"
+        }
+      }
+    ],
+    "enrichments": {
+      "google_scholar": [],
+      "profile": [
+        {
+          "id": "profile_b9128fb4",
+          "profile_url": "https://www.uvm.edu/cas/psychology/profile/sarah-heil",
+          "full_biography": null,
+          "education": [],
+          "career_history": [],
+          "research_statement": null,
+          "current_projects": [],
+          "research_keywords": [
+            "behavioral",
+            "psychology",
+            "clinical"
+          ],
+          "office_hours": null,
+          "availability": null,
+          "additional_contact": {},
+          "teaching_interests": [],
+          "service_activities": [],
+          "editorial_boards": [],
+          "awards": [],
+          "grants": [],
+          "completeness_score": 0.7,
+          "freshness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.539973",
+          "expires_at": null,
+          "association": {
+            "id": "f3b62c77-4f64-48af-91af-dd9c6bbd2cd7",
+            "faculty_id": "fac_f758211a",
+            "enrichment_id": "profile_b9128fb4",
+            "enrichment_type": "profile",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/sarah-heil",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.539977",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.539978",
+            "updated_at": "2025-07-03 07:07:10.539978",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "links": [
+        {
+          "id": "links_a2844c74",
+          "source_url": "https://www.uvm.edu/cas/psychology/profile/sarah-heil",
+          "source_type": "faculty_profile",
+          "title": "Links for Sarah Heil",
+          "description": null,
+          "last_modified": null,
+          "research_interests": [
+            "behavioral",
+            "psychology",
+            "clinical"
+          ],
+          "affiliations": [],
+          "contact_info": {},
+          "related_links": [
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "http://www.med.uvm.edu/behaviorandhealth",
+              "text": "Vermont Center on Behavior and Health",
+              "type": "lab_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "University of Vermont home",
+              "type": "personal_website"
+            }
+          ],
+          "content_quality_score": 0.6,
+          "academic_relevance_score": 0.0,
+          "completeness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.539983",
+          "expires_at": null,
+          "raw_html": null,
+          "raw_metadata": {},
+          "association": {
+            "id": "184a9980-7bed-4f7a-8d2b-9e41926b8790",
+            "faculty_id": "fac_f758211a",
+            "enrichment_id": "links_a2844c74",
+            "enrichment_type": "links",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/sarah-heil",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.539987",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.539987",
+            "updated_at": "2025-07-03 07:07:10.539987",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "research": []
+    },
+    "computed_metrics": {
+      "total_enrichments": 2,
+      "lab_count": 1,
+      "department_count": 1
+    },
+    "data_sources": [
+      "https://www.uvm.edu/cas/psychology/profile/sarah-heil"
+    ],
+    "view_generated_at": "2025-07-03 07:07:10.541305",
+    "data_freshness_score": 1.0,
+    "completeness_score": 0.4,
+    "confidence_score": 0.8
+  },
+  {
+    "faculty": {
+      "id": "fac_58abff48",
+      "name": "Stephen Higgins",
+      "normalized_name": "stephen::higgins",
+      "title": "Professor of Psychology \u2022 Professor of Psychiatry",
+      "primary_university_id": "univ_of::vermont",
+      "primary_department_id": "dept_of::vermont_psychology",
+      "email": "stephen.higgins@uvm.edu",
+      "phone": "(802) 656-9614",
+      "office_location": "3100\nBurlington",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/stephen-higgins",
+      "personal_website": "https://www.uvm.edu/cas/psychology",
+      "status": "active",
+      "confidence_score": 0.8,
+      "duplicate_of": null,
+      "merged_from": [],
+      "created_at": "2025-07-03 07:07:10.539997",
+      "updated_at": "2025-07-03 07:07:10.539997",
+      "source_scrape_id": "conversion_bc12ed05"
+    },
+    "university": {
+      "id": "univ_of::vermont",
+      "name": "University Of Vermont",
+      "normalized_name": "of::vermont",
+      "short_name": null,
+      "domain": "www.uvm.edu",
+      "website_url": "https://www.uvm.edu",
+      "city": null,
+      "state_province": null,
+      "country": "US",
+      "status": "active",
+      "created_at": "2025-07-03 07:07:10.539817",
+      "updated_at": "2025-07-03 07:07:10.539817"
+    },
+    "primary_department": null,
+    "department_associations": [
+      {
+        "association": {
+          "id": "749c082c-8525-4ecd-8420-2259c10a7993",
+          "faculty_id": "fac_58abff48",
+          "department_id": "dept_univ_of::vermont_psychology",
+          "appointment_type": "primary",
+          "title": "Professor of Psychology \u2022 Professor of Psychiatry",
+          "percentage": null,
+          "confidence_score": 0.9,
+          "evidence_sources": [
+            "https://www.uvm.edu/cas/psychology/profile/stephen-higgins"
+          ],
+          "status": "active",
+          "start_date": null,
+          "end_date": null,
+          "is_current": true,
+          "created_at": "2025-07-03 07:07:10.540003",
+          "updated_at": "2025-07-03 07:07:10.540003",
+          "created_by_scrape_id": "conversion_bc12ed05"
+        },
+        "department": {
+          "id": "dept_univ_of::vermont_psychology",
+          "name": "Psychology",
+          "normalized_name": "psychology",
+          "short_name": null,
+          "university_id": "univ_of::vermont",
+          "college_school": null,
+          "website_url": null,
+          "status": "active",
+          "created_at": "2025-07-03 07:07:10.539823",
+          "updated_at": "2025-07-03 07:07:10.539823"
+        }
+      }
+    ],
+    "lab_associations": [
+      {
+        "association": {
+          "id": "0125a656-31ac-4140-af1f-c2969af5f79c",
+          "faculty_id": "fac_58abff48",
+          "lab_id": "lab_5f967ef2",
+          "role": "member",
+          "relationship_type": "member",
+          "confidence_score": 0.7,
+          "confidence_level": "medium",
+          "evidence_sources": [
+            "https://www.uvm.edu/cas/psychology/profile/stephen-higgins",
+            "http://www.med.uvm.edu/behaviorandhealth"
+          ],
+          "status": "pending_verification",
+          "start_date": null,
+          "end_date": null,
+          "is_current": true,
+          "conflicts_with": [],
+          "supersedes": null,
+          "created_at": "2025-07-03 07:07:10.540011",
+          "updated_at": "2025-07-03 07:07:10.540011",
+          "created_by_scrape_id": "conversion_bc12ed05",
+          "verified_by": null
+        },
+        "lab": {
+          "id": "lab_5f967ef2",
+          "name": "Unknown Lab",
+          "normalized_name": "unknown::lab",
+          "lab_type": null,
+          "university_id": "univ_of::vermont",
+          "primary_department_id": "dept_univ_of::vermont_psychology",
+          "website_url": "http://www.med.uvm.edu/behaviorandhealth",
+          "description": null,
+          "location": null,
+          "status": "active",
+          "confidence_score": 0.7,
+          "duplicate_of": null,
+          "merged_from": [],
+          "created_at": "2025-07-03 07:07:10.539951",
+          "updated_at": "2025-07-03 07:07:10.539951",
+          "source_scrape_id": "conversion_bc12ed05"
+        }
+      }
+    ],
+    "enrichments": {
+      "google_scholar": [],
+      "profile": [
+        {
+          "id": "profile_69eda345",
+          "profile_url": "https://www.uvm.edu/cas/psychology/profile/stephen-higgins",
+          "full_biography": null,
+          "education": [],
+          "career_history": [],
+          "research_statement": null,
+          "current_projects": [],
+          "research_keywords": [
+            "behavioral",
+            "psychology",
+            "clinical"
+          ],
+          "office_hours": null,
+          "availability": null,
+          "additional_contact": {},
+          "teaching_interests": [],
+          "service_activities": [],
+          "editorial_boards": [],
+          "awards": [],
+          "grants": [],
+          "completeness_score": 0.7,
+          "freshness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.540016",
+          "expires_at": null,
+          "association": {
+            "id": "759e8fc5-e638-4db0-b993-0cb9011bebe0",
+            "faculty_id": "fac_58abff48",
+            "enrichment_id": "profile_69eda345",
+            "enrichment_type": "profile",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/stephen-higgins",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.540021",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.540021",
+            "updated_at": "2025-07-03 07:07:10.540021",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "links": [
+        {
+          "id": "links_257aa80a",
+          "source_url": "https://www.uvm.edu/cas/psychology/profile/stephen-higgins",
+          "source_type": "faculty_profile",
+          "title": "Links for Stephen Higgins",
+          "description": null,
+          "last_modified": null,
+          "research_interests": [
+            "behavioral",
+            "psychology",
+            "clinical"
+          ],
+          "affiliations": [],
+          "contact_info": {},
+          "related_links": [
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "http://www.med.uvm.edu/behaviorandhealth",
+              "text": "Vermont Center on Behavior and Health",
+              "type": "lab_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "University of Vermont home",
+              "type": "personal_website"
+            }
+          ],
+          "content_quality_score": 0.6,
+          "academic_relevance_score": 0.0,
+          "completeness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.540026",
+          "expires_at": null,
+          "raw_html": null,
+          "raw_metadata": {},
+          "association": {
+            "id": "8d852cb3-fc29-4827-9954-09971e934f17",
+            "faculty_id": "fac_58abff48",
+            "enrichment_id": "links_257aa80a",
+            "enrichment_type": "links",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/stephen-higgins",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.540030",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.540030",
+            "updated_at": "2025-07-03 07:07:10.540031",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "research": []
+    },
+    "computed_metrics": {
+      "total_enrichments": 2,
+      "lab_count": 1,
+      "department_count": 1
+    },
+    "data_sources": [
+      "https://www.uvm.edu/cas/psychology/profile/stephen-higgins"
+    ],
+    "view_generated_at": "2025-07-03 07:07:10.541366",
+    "data_freshness_score": 1.0,
+    "completeness_score": 0.4,
+    "confidence_score": 0.8
+  },
+  {
+    "faculty": {
+      "id": "fac_45621e3b",
+      "name": "Masha Ivanova",
+      "normalized_name": "masha::ivanova",
+      "title": "Associate Professor \u2022 Department of Psychiatry",
+      "primary_university_id": "univ_of::vermont",
+      "primary_department_id": "dept_of::vermont_psychology",
+      "email": "masha.ivanova@uvm.edu",
+      "phone": "(802) 656-2670",
+      "office_location": "3211A\nBurlington",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/masha-ivanova",
+      "personal_website": "https://www.uvm.edu/cas/psychology",
+      "status": "active",
+      "confidence_score": 0.8,
+      "duplicate_of": null,
+      "merged_from": [],
+      "created_at": "2025-07-03 07:07:10.540039",
+      "updated_at": "2025-07-03 07:07:10.540040",
+      "source_scrape_id": "conversion_bc12ed05"
+    },
+    "university": {
+      "id": "univ_of::vermont",
+      "name": "University Of Vermont",
+      "normalized_name": "of::vermont",
+      "short_name": null,
+      "domain": "www.uvm.edu",
+      "website_url": "https://www.uvm.edu",
+      "city": null,
+      "state_province": null,
+      "country": "US",
+      "status": "active",
+      "created_at": "2025-07-03 07:07:10.539817",
+      "updated_at": "2025-07-03 07:07:10.539817"
+    },
+    "primary_department": null,
+    "department_associations": [
+      {
+        "association": {
+          "id": "9734ea8a-57d3-41fb-aa5b-98790a53a708",
+          "faculty_id": "fac_45621e3b",
+          "department_id": "dept_univ_of::vermont_psychology",
+          "appointment_type": "primary",
+          "title": "Associate Professor \u2022 Department of Psychiatry",
+          "percentage": null,
+          "confidence_score": 0.9,
+          "evidence_sources": [
+            "https://www.uvm.edu/cas/psychology/profile/masha-ivanova"
+          ],
+          "status": "active",
+          "start_date": null,
+          "end_date": null,
+          "is_current": true,
+          "created_at": "2025-07-03 07:07:10.540045",
+          "updated_at": "2025-07-03 07:07:10.540045",
+          "created_by_scrape_id": "conversion_bc12ed05"
+        },
+        "department": {
+          "id": "dept_univ_of::vermont_psychology",
+          "name": "Psychology",
+          "normalized_name": "psychology",
+          "short_name": null,
+          "university_id": "univ_of::vermont",
+          "college_school": null,
+          "website_url": null,
+          "status": "active",
+          "created_at": "2025-07-03 07:07:10.539823",
+          "updated_at": "2025-07-03 07:07:10.539823"
+        }
+      }
+    ],
+    "lab_associations": [],
+    "enrichments": {
+      "google_scholar": [],
+      "profile": [
+        {
+          "id": "profile_47834e0c",
+          "profile_url": "https://www.uvm.edu/cas/psychology/profile/masha-ivanova",
+          "full_biography": null,
+          "education": [],
+          "career_history": [],
+          "research_statement": null,
+          "current_projects": [],
+          "research_keywords": [
+            "behavioral",
+            "social",
+            "psychology"
+          ],
+          "office_hours": null,
+          "availability": null,
+          "additional_contact": {},
+          "teaching_interests": [],
+          "service_activities": [],
+          "editorial_boards": [],
+          "awards": [],
+          "grants": [],
+          "completeness_score": 0.7,
+          "freshness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.540050",
+          "expires_at": null,
+          "association": {
+            "id": "96289f55-1814-47e8-94ad-369cf010d1ff",
+            "faculty_id": "fac_45621e3b",
+            "enrichment_id": "profile_47834e0c",
+            "enrichment_type": "profile",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/masha-ivanova",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.540053",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.540053",
+            "updated_at": "2025-07-03 07:07:10.540054",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "links": [
+        {
+          "id": "links_50c52a55",
+          "source_url": "https://www.uvm.edu/cas/psychology/profile/masha-ivanova",
+          "source_type": "faculty_profile",
+          "title": "Links for Masha Ivanova",
+          "description": null,
+          "last_modified": null,
+          "research_interests": [
+            "behavioral",
+            "social",
+            "psychology"
+          ],
+          "affiliations": [],
+          "contact_info": {},
+          "related_links": [
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "University of Vermont home",
+              "type": "personal_website"
+            }
+          ],
+          "content_quality_score": 0.6,
+          "academic_relevance_score": 0.0,
+          "completeness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.540058",
+          "expires_at": null,
+          "raw_html": null,
+          "raw_metadata": {},
+          "association": {
+            "id": "b6bfe08d-f613-4711-8916-4979af893cea",
+            "faculty_id": "fac_45621e3b",
+            "enrichment_id": "links_50c52a55",
+            "enrichment_type": "links",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/masha-ivanova",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.540062",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.540062",
+            "updated_at": "2025-07-03 07:07:10.540062",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "research": []
+    },
+    "computed_metrics": {
+      "total_enrichments": 2,
+      "lab_count": 0,
+      "department_count": 1
+    },
+    "data_sources": [
+      "https://www.uvm.edu/cas/psychology/profile/masha-ivanova"
+    ],
+    "view_generated_at": "2025-07-03 07:07:10.541416",
+    "data_freshness_score": 1.0,
+    "completeness_score": 0.4,
+    "confidence_score": 0.8
+  },
+  {
+    "faculty": {
+      "id": "fac_d45186b9",
+      "name": "Elias Klemperer",
+      "normalized_name": "elias::klemperer",
+      "title": "Assistant Professor of Psychology \u2022 Assistant Professor of Psychiatry",
+      "primary_university_id": "univ_of::vermont",
+      "primary_department_id": "dept_of::vermont_psychology",
+      "email": "elias.klemperer@uvm.edu",
+      "phone": "(802) 656-1641",
+      "office_location": "1408\nBurlington",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/elias-klemperer",
+      "personal_website": "https://www.uvm.edu/cas/psychology",
+      "status": "active",
+      "confidence_score": 0.8,
+      "duplicate_of": null,
+      "merged_from": [],
+      "created_at": "2025-07-03 07:07:10.540071",
+      "updated_at": "2025-07-03 07:07:10.540071",
+      "source_scrape_id": "conversion_bc12ed05"
+    },
+    "university": {
+      "id": "univ_of::vermont",
+      "name": "University Of Vermont",
+      "normalized_name": "of::vermont",
+      "short_name": null,
+      "domain": "www.uvm.edu",
+      "website_url": "https://www.uvm.edu",
+      "city": null,
+      "state_province": null,
+      "country": "US",
+      "status": "active",
+      "created_at": "2025-07-03 07:07:10.539817",
+      "updated_at": "2025-07-03 07:07:10.539817"
+    },
+    "primary_department": null,
+    "department_associations": [
+      {
+        "association": {
+          "id": "cc8a5b0c-fe12-4729-a543-af4660c50c1a",
+          "faculty_id": "fac_d45186b9",
+          "department_id": "dept_univ_of::vermont_psychology",
+          "appointment_type": "primary",
+          "title": "Assistant Professor of Psychology \u2022 Assistant Professor of Psychiatry",
+          "percentage": null,
+          "confidence_score": 0.9,
+          "evidence_sources": [
+            "https://www.uvm.edu/cas/psychology/profile/elias-klemperer"
+          ],
+          "status": "active",
+          "start_date": null,
+          "end_date": null,
+          "is_current": true,
+          "created_at": "2025-07-03 07:07:10.540076",
+          "updated_at": "2025-07-03 07:07:10.540076",
+          "created_by_scrape_id": "conversion_bc12ed05"
+        },
+        "department": {
+          "id": "dept_univ_of::vermont_psychology",
+          "name": "Psychology",
+          "normalized_name": "psychology",
+          "short_name": null,
+          "university_id": "univ_of::vermont",
+          "college_school": null,
+          "website_url": null,
+          "status": "active",
+          "created_at": "2025-07-03 07:07:10.539823",
+          "updated_at": "2025-07-03 07:07:10.539823"
+        }
+      }
+    ],
+    "lab_associations": [
+      {
+        "association": {
+          "id": "44e01d34-115d-481d-8e6c-ef917f481f27",
+          "faculty_id": "fac_d45186b9",
+          "lab_id": "lab_68de9338",
+          "role": "member",
+          "relationship_type": "member",
+          "confidence_score": 0.7,
+          "confidence_level": "medium",
+          "evidence_sources": [
+            "https://www.uvm.edu/cas/psychology/profile/elias-klemperer",
+            "https://www.med.uvm.edu/behaviorandhealth/home"
+          ],
+          "status": "pending_verification",
+          "start_date": null,
+          "end_date": null,
+          "is_current": true,
+          "conflicts_with": [],
+          "supersedes": null,
+          "created_at": "2025-07-03 07:07:10.540089",
+          "updated_at": "2025-07-03 07:07:10.540089",
+          "created_by_scrape_id": "conversion_bc12ed05",
+          "verified_by": null
+        },
+        "lab": {
+          "id": "lab_68de9338",
+          "name": "Unknown Lab",
+          "normalized_name": "unknown::lab",
+          "lab_type": null,
+          "university_id": "univ_of::vermont",
+          "primary_department_id": "dept_univ_of::vermont_psychology",
+          "website_url": "https://www.med.uvm.edu/behaviorandhealth/home",
+          "description": null,
+          "location": null,
+          "status": "active",
+          "confidence_score": 0.7,
+          "duplicate_of": null,
+          "merged_from": [],
+          "created_at": "2025-07-03 07:07:10.540080",
+          "updated_at": "2025-07-03 07:07:10.540080",
+          "source_scrape_id": "conversion_bc12ed05"
+        }
+      }
+    ],
+    "enrichments": {
+      "google_scholar": [],
+      "profile": [
+        {
+          "id": "profile_72455141",
+          "profile_url": "https://www.uvm.edu/cas/psychology/profile/elias-klemperer",
+          "full_biography": null,
+          "education": [],
+          "career_history": [],
+          "research_statement": null,
+          "current_projects": [],
+          "research_keywords": [
+            "behavioral",
+            "psychology",
+            "clinical"
+          ],
+          "office_hours": null,
+          "availability": null,
+          "additional_contact": {},
+          "teaching_interests": [],
+          "service_activities": [],
+          "editorial_boards": [],
+          "awards": [],
+          "grants": [],
+          "completeness_score": 0.7,
+          "freshness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.540094",
+          "expires_at": null,
+          "association": {
+            "id": "2ff3f56f-6160-465b-8097-ba839630ab42",
+            "faculty_id": "fac_d45186b9",
+            "enrichment_id": "profile_72455141",
+            "enrichment_type": "profile",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/elias-klemperer",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.540097",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.540098",
+            "updated_at": "2025-07-03 07:07:10.540098",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "links": [
+        {
+          "id": "links_f13de98a",
+          "source_url": "https://www.uvm.edu/cas/psychology/profile/elias-klemperer",
+          "source_type": "faculty_profile",
+          "title": "Links for Elias Klemperer",
+          "description": null,
+          "last_modified": null,
+          "research_interests": [
+            "behavioral",
+            "psychology",
+            "clinical"
+          ],
+          "affiliations": [],
+          "contact_info": {},
+          "related_links": [
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.med.uvm.edu/behaviorandhealth/home",
+              "text": "Vermont Center on Behavior and Health",
+              "type": "lab_website"
+            },
+            {
+              "url": "https://www.uvmcora.org/",
+              "text": "UVM Center on Rural Addiction",
+              "type": "lab_website"
+            },
+            {
+              "url": "https://www.med.uvm.edu/behaviorandhealth/home",
+              "text": "Vermont Center on Behavior and Health",
+              "type": "lab_website"
+            },
+            {
+              "url": "https://www.uvmcora.org/",
+              "text": "UVM Center on Rural Addiction",
+              "type": "lab_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "University of Vermont home",
+              "type": "personal_website"
+            }
+          ],
+          "content_quality_score": 0.6,
+          "academic_relevance_score": 0.0,
+          "completeness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.540103",
+          "expires_at": null,
+          "raw_html": null,
+          "raw_metadata": {},
+          "association": {
+            "id": "96bd54ff-5e7c-48fc-bd97-c85505275f62",
+            "faculty_id": "fac_d45186b9",
+            "enrichment_id": "links_f13de98a",
+            "enrichment_type": "links",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/elias-klemperer",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.540107",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.540107",
+            "updated_at": "2025-07-03 07:07:10.540107",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "research": []
+    },
+    "computed_metrics": {
+      "total_enrichments": 2,
+      "lab_count": 1,
+      "department_count": 1
+    },
+    "data_sources": [
+      "https://www.uvm.edu/cas/psychology/profile/elias-klemperer"
+    ],
+    "view_generated_at": "2025-07-03 07:07:10.541471",
+    "data_freshness_score": 1.0,
+    "completeness_score": 0.4,
+    "confidence_score": 0.8
+  },
+  {
+    "faculty": {
+      "id": "fac_0df3c095",
+      "name": "Kelly Peck",
+      "normalized_name": "kelly::peck",
+      "title": "Assistant Professor of Psychology \u2022 Assistant Professor of Psychiatry",
+      "primary_university_id": "univ_of::vermont",
+      "primary_department_id": "dept_of::vermont_psychology",
+      "email": "kelly.peck@uvm.edu",
+      "phone": "(802) 656-9610",
+      "office_location": "1407\nBurlington",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/kelly-peck",
+      "personal_website": "https://www.uvm.edu/cas/psychology",
+      "status": "active",
+      "confidence_score": 0.8,
+      "duplicate_of": null,
+      "merged_from": [],
+      "created_at": "2025-07-03 07:07:10.540115",
+      "updated_at": "2025-07-03 07:07:10.540116",
+      "source_scrape_id": "conversion_bc12ed05"
+    },
+    "university": {
+      "id": "univ_of::vermont",
+      "name": "University Of Vermont",
+      "normalized_name": "of::vermont",
+      "short_name": null,
+      "domain": "www.uvm.edu",
+      "website_url": "https://www.uvm.edu",
+      "city": null,
+      "state_province": null,
+      "country": "US",
+      "status": "active",
+      "created_at": "2025-07-03 07:07:10.539817",
+      "updated_at": "2025-07-03 07:07:10.539817"
+    },
+    "primary_department": null,
+    "department_associations": [
+      {
+        "association": {
+          "id": "53eca4d9-76c8-483c-8ae2-ffa82446eae2",
+          "faculty_id": "fac_0df3c095",
+          "department_id": "dept_univ_of::vermont_psychology",
+          "appointment_type": "primary",
+          "title": "Assistant Professor of Psychology \u2022 Assistant Professor of Psychiatry",
+          "percentage": null,
+          "confidence_score": 0.9,
+          "evidence_sources": [
+            "https://www.uvm.edu/cas/psychology/profile/kelly-peck"
+          ],
+          "status": "active",
+          "start_date": null,
+          "end_date": null,
+          "is_current": true,
+          "created_at": "2025-07-03 07:07:10.540122",
+          "updated_at": "2025-07-03 07:07:10.540122",
+          "created_by_scrape_id": "conversion_bc12ed05"
+        },
+        "department": {
+          "id": "dept_univ_of::vermont_psychology",
+          "name": "Psychology",
+          "normalized_name": "psychology",
+          "short_name": null,
+          "university_id": "univ_of::vermont",
+          "college_school": null,
+          "website_url": null,
+          "status": "active",
+          "created_at": "2025-07-03 07:07:10.539823",
+          "updated_at": "2025-07-03 07:07:10.539823"
+        }
+      }
+    ],
+    "lab_associations": [],
+    "enrichments": {
+      "google_scholar": [],
+      "profile": [
+        {
+          "id": "profile_f03a53e8",
+          "profile_url": "https://www.uvm.edu/cas/psychology/profile/kelly-peck",
+          "full_biography": null,
+          "education": [],
+          "career_history": [],
+          "research_statement": null,
+          "current_projects": [],
+          "research_keywords": [
+            "BIOMy research interests are two-fold. I have conducted research focused on the development and evaluation of novel treatments for opioid misuse and use disorder. Most recently",
+            "an efficacious manualized cognitive-behavioral treatment for posttraumatic stress disorder",
+            "My research interests are two-fold. I have conducted research focused on the development and evaluation of novel treatments for opioid misuse and use disorder. Most recently",
+            "this has included work on two randomized clinical trials evaluating a novel interim buprenorphine treatment for reducing illicit opioid use and other high-risk behaviors among adults with untreated opioid use disorder. I also have a research interest focused on the delivery and evaluation of cognitive-behavioral treatments for posttraumatic stress disorder in individuals with concurrent substance use disorders. I am currently preparing to integrate these two areas of research as I direct a study investigating the contribution of prolonged exposure therapy",
+            "above and beyond opioid agonist treatment alone for reducing posttraumatic stress disorder symptoms among patients with concurrent posttraumatic stress disorder and opioid use disorder."
+          ],
+          "office_hours": null,
+          "availability": null,
+          "additional_contact": {},
+          "teaching_interests": [],
+          "service_activities": [],
+          "editorial_boards": [],
+          "awards": [],
+          "grants": [],
+          "completeness_score": 0.7,
+          "freshness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.540127",
+          "expires_at": null,
+          "association": {
+            "id": "a351b8c5-49ef-41b5-8c6f-97e0e884dcb3",
+            "faculty_id": "fac_0df3c095",
+            "enrichment_id": "profile_f03a53e8",
+            "enrichment_type": "profile",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/kelly-peck",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.540131",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.540131",
+            "updated_at": "2025-07-03 07:07:10.540131",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "links": [
+        {
+          "id": "links_df616781",
+          "source_url": "https://www.uvm.edu/cas/psychology/profile/kelly-peck",
+          "source_type": "faculty_profile",
+          "title": "Links for Kelly Peck",
+          "description": null,
+          "last_modified": null,
+          "research_interests": [
+            "BIOMy research interests are two-fold. I have conducted research focused on the development and evaluation of novel treatments for opioid misuse and use disorder. Most recently",
+            "an efficacious manualized cognitive-behavioral treatment for posttraumatic stress disorder",
+            "My research interests are two-fold. I have conducted research focused on the development and evaluation of novel treatments for opioid misuse and use disorder. Most recently",
+            "this has included work on two randomized clinical trials evaluating a novel interim buprenorphine treatment for reducing illicit opioid use and other high-risk behaviors among adults with untreated opioid use disorder. I also have a research interest focused on the delivery and evaluation of cognitive-behavioral treatments for posttraumatic stress disorder in individuals with concurrent substance use disorders. I am currently preparing to integrate these two areas of research as I direct a study investigating the contribution of prolonged exposure therapy",
+            "above and beyond opioid agonist treatment alone for reducing posttraumatic stress disorder symptoms among patients with concurrent posttraumatic stress disorder and opioid use disorder."
+          ],
+          "affiliations": [],
+          "contact_info": {},
+          "related_links": [
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "University of Vermont home",
+              "type": "personal_website"
+            }
+          ],
+          "content_quality_score": 0.6,
+          "academic_relevance_score": 0.0,
+          "completeness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.540136",
+          "expires_at": null,
+          "raw_html": null,
+          "raw_metadata": {},
+          "association": {
+            "id": "151f91a0-19a9-427c-92ea-6379618cf50b",
+            "faculty_id": "fac_0df3c095",
+            "enrichment_id": "links_df616781",
+            "enrichment_type": "links",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/kelly-peck",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.540139",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.540139",
+            "updated_at": "2025-07-03 07:07:10.540139",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "research": []
+    },
+    "computed_metrics": {
+      "total_enrichments": 2,
+      "lab_count": 0,
+      "department_count": 1
+    },
+    "data_sources": [
+      "https://www.uvm.edu/cas/psychology/profile/kelly-peck"
+    ],
+    "view_generated_at": "2025-07-03 07:07:10.541521",
+    "data_freshness_score": 1.0,
+    "completeness_score": 0.4,
+    "confidence_score": 0.8
+  },
+  {
+    "faculty": {
+      "id": "fac_39b36429",
+      "name": "Alexandra Potter",
+      "normalized_name": "alexana::potter",
+      "title": "Associate Professor \u2022 Department of Psychiatry",
+      "primary_university_id": "univ_of::vermont",
+      "primary_department_id": "dept_of::vermont_psychology",
+      "email": "alexandra.potter@uvm.edu",
+      "phone": "(180) 265-6266",
+      "office_location": "135\nBurlington",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/alexandra-potter",
+      "personal_website": "https://www.uvm.edu/cas/psychology",
+      "status": "active",
+      "confidence_score": 0.8,
+      "duplicate_of": null,
+      "merged_from": [],
+      "created_at": "2025-07-03 07:07:10.540152",
+      "updated_at": "2025-07-03 07:07:10.540152",
+      "source_scrape_id": "conversion_bc12ed05"
+    },
+    "university": {
+      "id": "univ_of::vermont",
+      "name": "University Of Vermont",
+      "normalized_name": "of::vermont",
+      "short_name": null,
+      "domain": "www.uvm.edu",
+      "website_url": "https://www.uvm.edu",
+      "city": null,
+      "state_province": null,
+      "country": "US",
+      "status": "active",
+      "created_at": "2025-07-03 07:07:10.539817",
+      "updated_at": "2025-07-03 07:07:10.539817"
+    },
+    "primary_department": null,
+    "department_associations": [
+      {
+        "association": {
+          "id": "04a4c625-2701-4754-a580-dc717760984b",
+          "faculty_id": "fac_39b36429",
+          "department_id": "dept_univ_of::vermont_psychology",
+          "appointment_type": "primary",
+          "title": "Associate Professor \u2022 Department of Psychiatry",
+          "percentage": null,
+          "confidence_score": 0.9,
+          "evidence_sources": [
+            "https://www.uvm.edu/cas/psychology/profile/alexandra-potter"
+          ],
+          "status": "active",
+          "start_date": null,
+          "end_date": null,
+          "is_current": true,
+          "created_at": "2025-07-03 07:07:10.540160",
+          "updated_at": "2025-07-03 07:07:10.540160",
+          "created_by_scrape_id": "conversion_bc12ed05"
+        },
+        "department": {
+          "id": "dept_univ_of::vermont_psychology",
+          "name": "Psychology",
+          "normalized_name": "psychology",
+          "short_name": null,
+          "university_id": "univ_of::vermont",
+          "college_school": null,
+          "website_url": null,
+          "status": "active",
+          "created_at": "2025-07-03 07:07:10.539823",
+          "updated_at": "2025-07-03 07:07:10.539823"
+        }
+      }
+    ],
+    "lab_associations": [],
+    "enrichments": {
+      "google_scholar": [],
+      "profile": [
+        {
+          "id": "profile_041a7c1b",
+          "profile_url": "https://www.uvm.edu/cas/psychology/profile/alexandra-potter",
+          "full_biography": null,
+          "education": [],
+          "career_history": [],
+          "research_statement": null,
+          "current_projects": [],
+          "research_keywords": [
+            "attention",
+            "and adults who do or do not have ADHD.a project examining cognitive deficits in older adults with ADHD and healthy controls.LaboratoryResearch in theClinical Neuroscience Research Unit(CNRU) examines the neurobiology of cognitive dysfunctions associated with neurodevelopmental/neurobehavioral disabilities.",
+            "BIOMy research broadly investigates the neurobiology of cognitive dysfunctions associated with neurodevelopmental/neurobehavioral disabilities. I have been specifically interested in the role of cholinergic systems in the cognitive deficits associated with ADHD. I am currently conducting acute drug challenge studies to manipulate cholinergic system function to examine nicotinic cholinergic contributions to behavioral inhibition (impulsivity)",
+            "and adults who do or do not have ADHD.a project examining cognitive deficits in older adults with ADHD and healthy controls.LaboratoryResearch in theClinical Neuroscience Research Unit(CNRU) examines the neurobiology of cognitive dysfunctions associated with neurodevelopmental/neurobehavioral disabilities.PublicationsPubmed.gov",
+            "adolescents"
+          ],
+          "office_hours": null,
+          "availability": null,
+          "additional_contact": {},
+          "teaching_interests": [],
+          "service_activities": [],
+          "editorial_boards": [],
+          "awards": [],
+          "grants": [],
+          "completeness_score": 0.7,
+          "freshness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.540166",
+          "expires_at": null,
+          "association": {
+            "id": "1c59e599-1bb8-403a-acc5-e77975bfb19f",
+            "faculty_id": "fac_39b36429",
+            "enrichment_id": "profile_041a7c1b",
+            "enrichment_type": "profile",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/alexandra-potter",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.540170",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.540170",
+            "updated_at": "2025-07-03 07:07:10.540170",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "links": [
+        {
+          "id": "links_f4d7d11f",
+          "source_url": "https://www.uvm.edu/cas/psychology/profile/alexandra-potter",
+          "source_type": "faculty_profile",
+          "title": "Links for Alexandra Potter",
+          "description": null,
+          "last_modified": null,
+          "research_interests": [
+            "attention",
+            "and adults who do or do not have ADHD.a project examining cognitive deficits in older adults with ADHD and healthy controls.LaboratoryResearch in theClinical Neuroscience Research Unit(CNRU) examines the neurobiology of cognitive dysfunctions associated with neurodevelopmental/neurobehavioral disabilities.",
+            "BIOMy research broadly investigates the neurobiology of cognitive dysfunctions associated with neurodevelopmental/neurobehavioral disabilities. I have been specifically interested in the role of cholinergic systems in the cognitive deficits associated with ADHD. I am currently conducting acute drug challenge studies to manipulate cholinergic system function to examine nicotinic cholinergic contributions to behavioral inhibition (impulsivity)",
+            "and adults who do or do not have ADHD.a project examining cognitive deficits in older adults with ADHD and healthy controls.LaboratoryResearch in theClinical Neuroscience Research Unit(CNRU) examines the neurobiology of cognitive dysfunctions associated with neurodevelopmental/neurobehavioral disabilities.PublicationsPubmed.gov",
+            "adolescents"
+          ],
+          "affiliations": [],
+          "contact_info": {},
+          "related_links": [
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "University of Vermont home",
+              "type": "personal_website"
+            }
+          ],
+          "content_quality_score": 0.6,
+          "academic_relevance_score": 0.0,
+          "completeness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.540178",
+          "expires_at": null,
+          "raw_html": null,
+          "raw_metadata": {},
+          "association": {
+            "id": "70e8e37c-fd56-43b1-9a2b-b78a8d879990",
+            "faculty_id": "fac_39b36429",
+            "enrichment_id": "links_f4d7d11f",
+            "enrichment_type": "links",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/alexandra-potter",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.540182",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.540182",
+            "updated_at": "2025-07-03 07:07:10.540182",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "research": []
+    },
+    "computed_metrics": {
+      "total_enrichments": 2,
+      "lab_count": 0,
+      "department_count": 1
+    },
+    "data_sources": [
+      "https://www.uvm.edu/cas/psychology/profile/alexandra-potter"
+    ],
+    "view_generated_at": "2025-07-03 07:07:10.541568",
+    "data_freshness_score": 1.0,
+    "completeness_score": 0.4,
+    "confidence_score": 0.8
+  },
+  {
+    "faculty": {
+      "id": "fac_5f43f7a5",
+      "name": "David C. Rettew",
+      "normalized_name": "david::c::rettew",
+      "title": "Associate Professor of Psychiatry and Pediatrics",
+      "primary_university_id": "univ_of::vermont",
+      "primary_department_id": "dept_of::vermont_psychology",
+      "email": "david.rettew@uvm.edu",
+      "phone": "(802) 656-2670",
+      "office_location": null,
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/david-c-rettew",
+      "personal_website": "https://www.uvm.edu/cas/psychology",
+      "status": "active",
+      "confidence_score": 0.8,
+      "duplicate_of": null,
+      "merged_from": [],
+      "created_at": "2025-07-03 07:07:10.540193",
+      "updated_at": "2025-07-03 07:07:10.540193",
+      "source_scrape_id": "conversion_bc12ed05"
+    },
+    "university": {
+      "id": "univ_of::vermont",
+      "name": "University Of Vermont",
+      "normalized_name": "of::vermont",
+      "short_name": null,
+      "domain": "www.uvm.edu",
+      "website_url": "https://www.uvm.edu",
+      "city": null,
+      "state_province": null,
+      "country": "US",
+      "status": "active",
+      "created_at": "2025-07-03 07:07:10.539817",
+      "updated_at": "2025-07-03 07:07:10.539817"
+    },
+    "primary_department": null,
+    "department_associations": [
+      {
+        "association": {
+          "id": "3b793afb-93e8-4c90-a8da-eee18249c4a7",
+          "faculty_id": "fac_5f43f7a5",
+          "department_id": "dept_univ_of::vermont_psychology",
+          "appointment_type": "primary",
+          "title": "Associate Professor of Psychiatry and Pediatrics",
+          "percentage": null,
+          "confidence_score": 0.9,
+          "evidence_sources": [
+            "https://www.uvm.edu/cas/psychology/profile/david-c-rettew"
+          ],
+          "status": "active",
+          "start_date": null,
+          "end_date": null,
+          "is_current": true,
+          "created_at": "2025-07-03 07:07:10.540199",
+          "updated_at": "2025-07-03 07:07:10.540199",
+          "created_by_scrape_id": "conversion_bc12ed05"
+        },
+        "department": {
+          "id": "dept_univ_of::vermont_psychology",
+          "name": "Psychology",
+          "normalized_name": "psychology",
+          "short_name": null,
+          "university_id": "univ_of::vermont",
+          "college_school": null,
+          "website_url": null,
+          "status": "active",
+          "created_at": "2025-07-03 07:07:10.539823",
+          "updated_at": "2025-07-03 07:07:10.539823"
+        }
+      }
+    ],
+    "lab_associations": [],
+    "enrichments": {
+      "google_scholar": [],
+      "profile": [
+        {
+          "id": "profile_2c476af2",
+          "profile_url": "https://www.uvm.edu/cas/psychology/profile/david-c-rettew",
+          "full_biography": null,
+          "education": [],
+          "career_history": [],
+          "research_statement": null,
+          "current_projects": [],
+          "research_keywords": [
+            "personality",
+            "psychology",
+            "clinical"
+          ],
+          "office_hours": null,
+          "availability": null,
+          "additional_contact": {},
+          "teaching_interests": [],
+          "service_activities": [],
+          "editorial_boards": [],
+          "awards": [],
+          "grants": [],
+          "completeness_score": 0.7,
+          "freshness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.540204",
+          "expires_at": null,
+          "association": {
+            "id": "ffae1245-1bb9-43dd-aa34-05481d55fce1",
+            "faculty_id": "fac_5f43f7a5",
+            "enrichment_id": "profile_2c476af2",
+            "enrichment_type": "profile",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/david-c-rettew",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.540208",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.540208",
+            "updated_at": "2025-07-03 07:07:10.540208",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "links": [
+        {
+          "id": "links_4536e42d",
+          "source_url": "https://www.uvm.edu/cas/psychology/profile/david-c-rettew",
+          "source_type": "faculty_profile",
+          "title": "Links for David C. Rettew",
+          "description": null,
+          "last_modified": null,
+          "research_interests": [
+            "personality",
+            "psychology",
+            "clinical"
+          ],
+          "affiliations": [],
+          "contact_info": {},
+          "related_links": [
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "University of Vermont home",
+              "type": "personal_website"
+            }
+          ],
+          "content_quality_score": 0.6,
+          "academic_relevance_score": 0.0,
+          "completeness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.540213",
+          "expires_at": null,
+          "raw_html": null,
+          "raw_metadata": {},
+          "association": {
+            "id": "cef6dce9-4822-4222-aae1-9f22ee5d61df",
+            "faculty_id": "fac_5f43f7a5",
+            "enrichment_id": "links_4536e42d",
+            "enrichment_type": "links",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/david-c-rettew",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.540216",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.540216",
+            "updated_at": "2025-07-03 07:07:10.540217",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "research": []
+    },
+    "computed_metrics": {
+      "total_enrichments": 2,
+      "lab_count": 0,
+      "department_count": 1
+    },
+    "data_sources": [
+      "https://www.uvm.edu/cas/psychology/profile/david-c-rettew"
+    ],
+    "view_generated_at": "2025-07-03 07:07:10.541614",
+    "data_freshness_score": 1.0,
+    "completeness_score": 0.4,
+    "confidence_score": 0.8
+  },
+  {
+    "faculty": {
+      "id": "fac_6b63439b",
+      "name": "Lee Rosen",
+      "normalized_name": "lee::rosen",
+      "title": "Associate Professor of Psychiatry \u2022 Clinical Educator of Psychological Science",
+      "primary_university_id": "univ_of::vermont",
+      "primary_department_id": "dept_of::vermont_psychology",
+      "email": "lee.rosen@uvm.edu",
+      "phone": "(180) 265-6266",
+      "office_location": "135\nBurlington",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/lee-rosen",
+      "personal_website": "https://www.uvm.edu/cas/psychology",
+      "status": "active",
+      "confidence_score": 0.8,
+      "duplicate_of": null,
+      "merged_from": [],
+      "created_at": "2025-07-03 07:07:10.540225",
+      "updated_at": "2025-07-03 07:07:10.540225",
+      "source_scrape_id": "conversion_bc12ed05"
+    },
+    "university": {
+      "id": "univ_of::vermont",
+      "name": "University Of Vermont",
+      "normalized_name": "of::vermont",
+      "short_name": null,
+      "domain": "www.uvm.edu",
+      "website_url": "https://www.uvm.edu",
+      "city": null,
+      "state_province": null,
+      "country": "US",
+      "status": "active",
+      "created_at": "2025-07-03 07:07:10.539817",
+      "updated_at": "2025-07-03 07:07:10.539817"
+    },
+    "primary_department": null,
+    "department_associations": [
+      {
+        "association": {
+          "id": "1d59ec94-d6df-4819-ac7f-cc898f5e9c0c",
+          "faculty_id": "fac_6b63439b",
+          "department_id": "dept_univ_of::vermont_psychology",
+          "appointment_type": "primary",
+          "title": "Associate Professor of Psychiatry \u2022 Clinical Educator of Psychological Science",
+          "percentage": null,
+          "confidence_score": 0.9,
+          "evidence_sources": [
+            "https://www.uvm.edu/cas/psychology/profile/lee-rosen"
+          ],
+          "status": "active",
+          "start_date": null,
+          "end_date": null,
+          "is_current": true,
+          "created_at": "2025-07-03 07:07:10.540230",
+          "updated_at": "2025-07-03 07:07:10.540230",
+          "created_by_scrape_id": "conversion_bc12ed05"
+        },
+        "department": {
+          "id": "dept_univ_of::vermont_psychology",
+          "name": "Psychology",
+          "normalized_name": "psychology",
+          "short_name": null,
+          "university_id": "univ_of::vermont",
+          "college_school": null,
+          "website_url": null,
+          "status": "active",
+          "created_at": "2025-07-03 07:07:10.539823",
+          "updated_at": "2025-07-03 07:07:10.539823"
+        }
+      }
+    ],
+    "lab_associations": [],
+    "enrichments": {
+      "google_scholar": [],
+      "profile": [
+        {
+          "id": "profile_d44c3db9",
+          "profile_url": "https://www.uvm.edu/cas/psychology/profile/lee-rosen",
+          "full_biography": null,
+          "education": [],
+          "career_history": [],
+          "research_statement": null,
+          "current_projects": [],
+          "research_keywords": [
+            "physicians",
+            "exposure",
+            "My clinical and academic interests are in the application of cognitive behavioral therapies",
+            "BIOMy clinical and academic interests are in the application of cognitive behavioral therapies",
+            "and other healthcare professionals and trainees. My psychotherapy practice and clinical supervision include the following areas of focus:Integrating cognitive therapy"
+          ],
+          "office_hours": null,
+          "availability": null,
+          "additional_contact": {},
+          "teaching_interests": [],
+          "service_activities": [],
+          "editorial_boards": [],
+          "awards": [],
+          "grants": [],
+          "completeness_score": 0.7,
+          "freshness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.540235",
+          "expires_at": null,
+          "association": {
+            "id": "1da62eca-e40a-48ee-a094-fa30128343e7",
+            "faculty_id": "fac_6b63439b",
+            "enrichment_id": "profile_d44c3db9",
+            "enrichment_type": "profile",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/lee-rosen",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.540239",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.540239",
+            "updated_at": "2025-07-03 07:07:10.540239",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "links": [
+        {
+          "id": "links_a83f086f",
+          "source_url": "https://www.uvm.edu/cas/psychology/profile/lee-rosen",
+          "source_type": "faculty_profile",
+          "title": "Links for Lee Rosen",
+          "description": null,
+          "last_modified": null,
+          "research_interests": [
+            "physicians",
+            "exposure",
+            "My clinical and academic interests are in the application of cognitive behavioral therapies",
+            "BIOMy clinical and academic interests are in the application of cognitive behavioral therapies",
+            "and other healthcare professionals and trainees. My psychotherapy practice and clinical supervision include the following areas of focus:Integrating cognitive therapy"
+          ],
+          "affiliations": [],
+          "contact_info": {},
+          "related_links": [
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "University of Vermont home",
+              "type": "personal_website"
+            }
+          ],
+          "content_quality_score": 0.6,
+          "academic_relevance_score": 0.0,
+          "completeness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.540244",
+          "expires_at": null,
+          "raw_html": null,
+          "raw_metadata": {},
+          "association": {
+            "id": "f3295f9e-94ed-42df-b345-916d42f05856",
+            "faculty_id": "fac_6b63439b",
+            "enrichment_id": "links_a83f086f",
+            "enrichment_type": "links",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/lee-rosen",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.540247",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.540247",
+            "updated_at": "2025-07-03 07:07:10.540247",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "research": []
+    },
+    "computed_metrics": {
+      "total_enrichments": 2,
+      "lab_count": 0,
+      "department_count": 1
+    },
+    "data_sources": [
+      "https://www.uvm.edu/cas/psychology/profile/lee-rosen"
+    ],
+    "view_generated_at": "2025-07-03 07:07:10.541660",
+    "data_freshness_score": 1.0,
+    "completeness_score": 0.4,
+    "confidence_score": 0.8
+  },
+  {
+    "faculty": {
+      "id": "fac_b7fbc419",
+      "name": "Stacey Sigmon",
+      "normalized_name": "stacey::sigmon",
+      "title": "Professor of Psychology \u2022 Professor of Psychiatry",
+      "primary_university_id": "univ_of::vermont",
+      "primary_department_id": "dept_of::vermont_psychology",
+      "email": "stacey.sigmon@uvm.edu",
+      "phone": "(802) 656-8714",
+      "office_location": "1415\nBurlington",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/stacey-sigmon",
+      "personal_website": "https://www.uvm.edu/cas/psychology",
+      "status": "active",
+      "confidence_score": 0.8,
+      "duplicate_of": null,
+      "merged_from": [],
+      "created_at": "2025-07-03 07:07:10.540256",
+      "updated_at": "2025-07-03 07:07:10.540256",
+      "source_scrape_id": "conversion_bc12ed05"
+    },
+    "university": {
+      "id": "univ_of::vermont",
+      "name": "University Of Vermont",
+      "normalized_name": "of::vermont",
+      "short_name": null,
+      "domain": "www.uvm.edu",
+      "website_url": "https://www.uvm.edu",
+      "city": null,
+      "state_province": null,
+      "country": "US",
+      "status": "active",
+      "created_at": "2025-07-03 07:07:10.539817",
+      "updated_at": "2025-07-03 07:07:10.539817"
+    },
+    "primary_department": null,
+    "department_associations": [
+      {
+        "association": {
+          "id": "5f1c7344-0feb-42b0-8afc-8977cd1cad6f",
+          "faculty_id": "fac_b7fbc419",
+          "department_id": "dept_univ_of::vermont_psychology",
+          "appointment_type": "primary",
+          "title": "Professor of Psychology \u2022 Professor of Psychiatry",
+          "percentage": null,
+          "confidence_score": 0.9,
+          "evidence_sources": [
+            "https://www.uvm.edu/cas/psychology/profile/stacey-sigmon"
+          ],
+          "status": "active",
+          "start_date": null,
+          "end_date": null,
+          "is_current": true,
+          "created_at": "2025-07-03 07:07:10.540261",
+          "updated_at": "2025-07-03 07:07:10.540261",
+          "created_by_scrape_id": "conversion_bc12ed05"
+        },
+        "department": {
+          "id": "dept_univ_of::vermont_psychology",
+          "name": "Psychology",
+          "normalized_name": "psychology",
+          "short_name": null,
+          "university_id": "univ_of::vermont",
+          "college_school": null,
+          "website_url": null,
+          "status": "active",
+          "created_at": "2025-07-03 07:07:10.539823",
+          "updated_at": "2025-07-03 07:07:10.539823"
+        }
+      }
+    ],
+    "lab_associations": [],
+    "enrichments": {
+      "google_scholar": [],
+      "profile": [
+        {
+          "id": "profile_16741ce3",
+          "profile_url": "https://www.uvm.edu/cas/psychology/profile/stacey-sigmon",
+          "full_biography": null,
+          "education": [],
+          "career_history": [],
+          "research_statement": null,
+          "current_projects": [],
+          "research_keywords": [
+            "behavioral",
+            "psychology",
+            "clinical"
+          ],
+          "office_hours": null,
+          "availability": null,
+          "additional_contact": {},
+          "teaching_interests": [],
+          "service_activities": [],
+          "editorial_boards": [],
+          "awards": [],
+          "grants": [],
+          "completeness_score": 0.7,
+          "freshness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.540267",
+          "expires_at": null,
+          "association": {
+            "id": "482cecb1-a58f-4e2b-ab82-a038373a46c5",
+            "faculty_id": "fac_b7fbc419",
+            "enrichment_id": "profile_16741ce3",
+            "enrichment_type": "profile",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/stacey-sigmon",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.540270",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.540271",
+            "updated_at": "2025-07-03 07:07:10.540271",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "links": [
+        {
+          "id": "links_44cee7f6",
+          "source_url": "https://www.uvm.edu/cas/psychology/profile/stacey-sigmon",
+          "source_type": "faculty_profile",
+          "title": "Links for Stacey Sigmon",
+          "description": null,
+          "last_modified": null,
+          "research_interests": [
+            "behavioral",
+            "psychology",
+            "clinical"
+          ],
+          "affiliations": [],
+          "contact_info": {},
+          "related_links": [
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/cas/psychology",
+              "text": "Department of Psychological Science Home",
+              "type": "personal_website"
+            },
+            {
+              "url": "https://www.uvm.edu/",
+              "text": "University of Vermont home",
+              "type": "personal_website"
+            }
+          ],
+          "content_quality_score": 0.6,
+          "academic_relevance_score": 0.0,
+          "completeness_score": 0.0,
+          "status": "fresh",
+          "extraction_method": "legacy_conversion",
+          "extraction_errors": [],
+          "extracted_at": "2025-07-03 07:07:10.540275",
+          "expires_at": null,
+          "raw_html": null,
+          "raw_metadata": {},
+          "association": {
+            "id": "455217db-bbee-4d15-84e7-e5fab515ff37",
+            "faculty_id": "fac_b7fbc419",
+            "enrichment_id": "links_44cee7f6",
+            "enrichment_type": "links",
+            "data_source": "https://www.uvm.edu/cas/psychology/profile/stacey-sigmon",
+            "extraction_method": "legacy_conversion",
+            "confidence_score": 0.8,
+            "quality_score": 0.7,
+            "completeness_score": 0.6,
+            "status": "active",
+            "extracted_at": "2025-07-03 07:07:10.540278",
+            "expires_at": null,
+            "supersedes": null,
+            "conflicts_with": [],
+            "created_at": "2025-07-03 07:07:10.540278",
+            "updated_at": "2025-07-03 07:07:10.540278",
+            "created_by_enrichment_id": "conversion_bc12ed05"
+          }
+        }
+      ],
+      "research": []
+    },
+    "computed_metrics": {
+      "total_enrichments": 2,
+      "lab_count": 0,
+      "department_count": 1
+    },
+    "data_sources": [
+      "https://www.uvm.edu/cas/psychology/profile/stacey-sigmon"
+    ],
+    "view_generated_at": "2025-07-03 07:07:10.541706",
+    "data_freshness_score": 1.0,
+    "completeness_score": 0.4,
+    "confidence_score": 0.8
+  }
+]

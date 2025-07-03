@@ -1,0 +1,356 @@
+{
+  "university_name": "University of Vermont",
+  "base_url": "https://www.uvm.edu",
+  "faculty": [
+    {
+      "name": "Robert Althoff",
+      "email": "Robert.Althoff@uvm.edu",
+      "title": "Associate Professor • Department of Psychiatry",
+      "department": "Psychology",
+      "university": "University Of Vermont",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/robert-althoff",
+      "source_url": "https://www.uvm.edu/cas/psychology/affiliated-faculty",
+      "extraction_method": "adaptive_heuristic",
+      "links": [
+        {
+          "url": "https://www.uvm.edu/cas/psychology/profile/robert-althoff",
+          "text": "Robert Althoff",
+          "category": "university_profile",
+          "context": "Robert Althoff"
+        }
+      ],
+      "research_interests": [],
+      "research_areas": [],
+      "lab_associations": [],
+      "research_initiatives": [],
+      "external_profiles": {
+        "google_scholar": [],
+        "research_platforms": [],
+        "personal_websites": [],
+        "lab_websites": [],
+        "social_media": []
+      },
+      "comprehensive_extraction": true
+    },
+    {
+      "name": "Hugh Garavan",
+      "email": "Hugh.Garavan@uvm.edu",
+      "title": "Professor of Psychiatry • Professor of Psychology",
+      "department": "Psychology",
+      "university": "University Of Vermont",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/hugh-garavan",
+      "source_url": "https://www.uvm.edu/cas/psychology/affiliated-faculty",
+      "extraction_method": "adaptive_heuristic",
+      "links": [
+        {
+          "url": "https://www.uvm.edu/cas/psychology/profile/hugh-garavan",
+          "text": "Hugh Garavan",
+          "category": "university_profile",
+          "context": "Hugh Garavan"
+        }
+      ],
+      "research_interests": [],
+      "research_areas": [],
+      "lab_associations": [],
+      "research_initiatives": [],
+      "external_profiles": {
+        "google_scholar": [],
+        "research_platforms": [],
+        "personal_websites": [],
+        "lab_websites": [],
+        "social_media": []
+      },
+      "comprehensive_extraction": true
+    },
+    {
+      "name": "Sarah Heil",
+      "email": null,
+      "title": "Professor of Psychology • Professor of Psychiatry",
+      "department": "Psychology",
+      "university": "University Of Vermont",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/sarah-heil",
+      "source_url": "https://www.uvm.edu/cas/psychology/affiliated-faculty",
+      "extraction_method": "adaptive_heuristic",
+      "links": [
+        {
+          "url": "https://www.uvm.edu/cas/psychology/profile/sarah-heil",
+          "text": "Sarah Heil",
+          "category": "university_profile",
+          "context": "Sarah Heil"
+        }
+      ],
+      "research_interests": [],
+      "research_areas": [],
+      "lab_associations": [],
+      "research_initiatives": [],
+      "external_profiles": {
+        "google_scholar": [],
+        "research_platforms": [],
+        "personal_websites": [],
+        "lab_websites": [],
+        "social_media": []
+      },
+      "comprehensive_extraction": true
+    },
+    {
+      "name": "Stephen Higgins",
+      "email": "stephen.higgins@uvm.edu",
+      "title": "Professor of Psychology • Professor of Psychiatry",
+      "department": "Psychology",
+      "university": "University Of Vermont",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/stephen-higgins",
+      "source_url": "https://www.uvm.edu/cas/psychology/affiliated-faculty",
+      "extraction_method": "adaptive_heuristic",
+      "links": [
+        {
+          "url": "https://www.uvm.edu/cas/psychology/profile/stephen-higgins",
+          "text": "Stephen Higgins",
+          "category": "university_profile",
+          "context": "Stephen Higgins"
+        }
+      ],
+      "research_interests": [],
+      "research_areas": [],
+      "lab_associations": [],
+      "research_initiatives": [],
+      "external_profiles": {
+        "google_scholar": [],
+        "research_platforms": [],
+        "personal_websites": [],
+        "lab_websites": [],
+        "social_media": []
+      },
+      "comprehensive_extraction": true
+    },
+    {
+      "name": "Masha Ivanova",
+      "email": "masha.ivanova@uvm.edu",
+      "title": "Associate Professor • Department of Psychiatry",
+      "department": "Psychology",
+      "university": "University Of Vermont",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/masha-ivanova",
+      "source_url": "https://www.uvm.edu/cas/psychology/affiliated-faculty",
+      "extraction_method": "adaptive_heuristic",
+      "links": [
+        {
+          "url": "https://www.uvm.edu/cas/psychology/profile/masha-ivanova",
+          "text": "Masha Ivanova",
+          "category": "university_profile",
+          "context": "Masha Ivanova"
+        }
+      ],
+      "research_interests": [],
+      "research_areas": [],
+      "lab_associations": [],
+      "research_initiatives": [],
+      "external_profiles": {
+        "google_scholar": [],
+        "research_platforms": [],
+        "personal_websites": [],
+        "lab_websites": [],
+        "social_media": []
+      },
+      "comprehensive_extraction": true
+    },
+    {
+      "name": "Elias Klemperer",
+      "email": "elias.klemperer@uvm.edu",
+      "title": "Assistant Professor of Psychology • Assistant Professor of Psychiatry",
+      "department": "Psychology",
+      "university": "University Of Vermont",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/elias-klemperer",
+      "source_url": "https://www.uvm.edu/cas/psychology/affiliated-faculty",
+      "extraction_method": "adaptive_heuristic",
+      "links": [
+        {
+          "url": "https://www.uvm.edu/cas/psychology/profile/elias-klemperer",
+          "text": "Elias Klemperer",
+          "category": "university_profile",
+          "context": "Elias Klemperer"
+        }
+      ],
+      "research_interests": [],
+      "research_areas": [],
+      "lab_associations": [],
+      "research_initiatives": [],
+      "external_profiles": {
+        "google_scholar": [],
+        "research_platforms": [],
+        "personal_websites": [],
+        "lab_websites": [],
+        "social_media": []
+      },
+      "comprehensive_extraction": true
+    },
+    {
+      "name": "Kelly Peck",
+      "email": "kelly.peck@uvm.edu",
+      "title": "Assistant Professor of Psychology • Assistant Professor of Psychiatry",
+      "department": "Psychology",
+      "university": "University Of Vermont",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/kelly-peck",
+      "source_url": "https://www.uvm.edu/cas/psychology/affiliated-faculty",
+      "extraction_method": "adaptive_heuristic",
+      "links": [
+        {
+          "url": "https://www.uvm.edu/cas/psychology/profile/kelly-peck",
+          "text": "Kelly Peck",
+          "category": "university_profile",
+          "context": "Kelly Peck"
+        }
+      ],
+      "research_interests": [],
+      "research_areas": [],
+      "lab_associations": [],
+      "research_initiatives": [],
+      "external_profiles": {
+        "google_scholar": [],
+        "research_platforms": [],
+        "personal_websites": [],
+        "lab_websites": [],
+        "social_media": []
+      },
+      "comprehensive_extraction": true
+    },
+    {
+      "name": "Alexandra Potter",
+      "email": "alexandra.potter@uvm.edu",
+      "title": "Associate Professor • Department of Psychiatry",
+      "department": "Psychology",
+      "university": "University Of Vermont",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/alexandra-potter",
+      "source_url": "https://www.uvm.edu/cas/psychology/affiliated-faculty",
+      "extraction_method": "adaptive_heuristic",
+      "links": [
+        {
+          "url": "https://www.uvm.edu/cas/psychology/profile/alexandra-potter",
+          "text": "Alexandra Potter",
+          "category": "university_profile",
+          "context": "Alexandra Potter"
+        }
+      ],
+      "research_interests": [],
+      "research_areas": [],
+      "lab_associations": [],
+      "research_initiatives": [],
+      "external_profiles": {
+        "google_scholar": [],
+        "research_platforms": [],
+        "personal_websites": [],
+        "lab_websites": [],
+        "social_media": []
+      },
+      "comprehensive_extraction": true
+    },
+    {
+      "name": "David C. Rettew",
+      "email": "david.rettew@uvm.edu",
+      "title": "Associate Professor of Psychiatry and Pediatrics",
+      "department": "Psychology",
+      "university": "University Of Vermont",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/david-c-rettew",
+      "source_url": "https://www.uvm.edu/cas/psychology/affiliated-faculty",
+      "extraction_method": "adaptive_heuristic",
+      "links": [
+        {
+          "url": "https://www.uvm.edu/cas/psychology/profile/david-c-rettew",
+          "text": "David C. Rettew",
+          "category": "university_profile",
+          "context": "David C. Rettew"
+        }
+      ],
+      "research_interests": [],
+      "research_areas": [],
+      "lab_associations": [],
+      "research_initiatives": [],
+      "external_profiles": {
+        "google_scholar": [],
+        "research_platforms": [],
+        "personal_websites": [],
+        "lab_websites": [],
+        "social_media": []
+      },
+      "comprehensive_extraction": true
+    },
+    {
+      "name": "Lee Rosen",
+      "email": "lee.rosen@uvm.edu",
+      "title": "Associate Professor of Psychiatry • Clinical Educator of Psychological Science",
+      "department": "Psychology",
+      "university": "University Of Vermont",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/lee-rosen",
+      "source_url": "https://www.uvm.edu/cas/psychology/affiliated-faculty",
+      "extraction_method": "adaptive_heuristic",
+      "links": [
+        {
+          "url": "https://www.uvm.edu/cas/psychology/profile/lee-rosen",
+          "text": "Lee Rosen",
+          "category": "university_profile",
+          "context": "Lee Rosen"
+        }
+      ],
+      "research_interests": [],
+      "research_areas": [],
+      "lab_associations": [],
+      "research_initiatives": [],
+      "external_profiles": {
+        "google_scholar": [],
+        "research_platforms": [],
+        "personal_websites": [],
+        "lab_websites": [],
+        "social_media": []
+      },
+      "comprehensive_extraction": true
+    },
+    {
+      "name": "Stacey Sigmon",
+      "email": "stacey.sigmon@uvm.edu",
+      "title": "Professor of Psychology • Professor of Psychiatry",
+      "department": "Psychology",
+      "university": "University Of Vermont",
+      "profile_url": "https://www.uvm.edu/cas/psychology/profile/stacey-sigmon",
+      "source_url": "https://www.uvm.edu/cas/psychology/affiliated-faculty",
+      "extraction_method": "adaptive_heuristic",
+      "links": [
+        {
+          "url": "https://www.uvm.edu/cas/psychology/profile/stacey-sigmon",
+          "text": "Stacey Sigmon",
+          "category": "university_profile",
+          "context": "Stacey Sigmon"
+        }
+      ],
+      "research_interests": [],
+      "research_areas": [],
+      "lab_associations": [],
+      "research_initiatives": [],
+      "external_profiles": {
+        "google_scholar": [],
+        "research_platforms": [],
+        "personal_websites": [],
+        "lab_websites": [],
+        "social_media": []
+      },
+      "comprehensive_extraction": true
+    }
+  ],
+  "lab_associations": [],
+  "metadata": {
+    "total_faculty": 11,
+    "total_faculty_before_dedup": 11,
+    "departments_processed": 1,
+    "department_results": {
+      "Psychology": {
+        "faculty_count": 11,
+        "structure_type": "table",
+        "confidence": 0.9
+      }
+    },
+    "discovery_confidence": 0.9,
+    "scraping_strategy": "adaptive_comprehensive",
+    "lab_discovery_enabled": true,
+    "comprehensive_extraction": true,
+    "timestamp": 1751138010.913422
+  },
+  "success": true,
+  "error": null
+}

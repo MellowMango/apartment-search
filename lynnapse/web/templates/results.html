@@ -106,10 +106,14 @@
                                      <div class="col-md-6">
                                          <select class="form-select" id="facultyFilter" onchange="filterFaculty()">
                                              <option value="">All Faculty</option>
+                                             <option value="enriched">🌟 Enriched Data</option>
+                                             <option value="basic">📄 Basic Data</option>
+                                             <option value="sparse">⚠️ Sparse Data</option>
                                              <option value="has-email">Has Email</option>
-                                             <option value="has-website">Has Personal Website</option>
-                                             <option value="has-lab">Has Lab</option>
+                                             <option value="has-website">Has Academic Links</option>
+                                             <option value="has-lab">Has Lab Info</option>
                                              <option value="has-biography">Has Biography</option>
+                                             <option value="validated">Validated Links</option>
                                          </select>
                                      </div>
                                  </div>
@@ -118,15 +122,14 @@
                                      <table class="table table-striped" id="facultyTable">
                                          <thead>
                                              <tr>
-                                                 <th style="min-width: 150px;">Name</th>
+                                                 <th style="min-width: 150px;">Name & Status</th>
                                                  <th style="min-width: 180px;">Title</th>
-                                                 <th style="min-width: 150px;">Email</th>
+                                                 <th style="min-width: 150px;">Contact Info</th>
                                                  <th style="min-width: 200px;">Research Interests</th>
-                                                 <th style="min-width: 100px;">Personal Website</th>
-                                                 <th style="min-width: 120px;">Lab</th>
-                                                 <th style="min-width: 100px;">Office</th>
-                                                 <th style="min-width: 120px;">Phone</th>
-                                                 <th style="min-width: 300px; max-width: 400px;">Biography</th>
+                                                 <th style="min-width: 200px;">Academic Links</th>
+                                                 <th style="min-width: 120px;">Lab Info</th>
+                                                 <th style="min-width: 300px; max-width: 400px;">Biography & Profile</th>
+                                                 <th style="min-width: 120px;">Data Sources</th>
                                              </tr>
                                          </thead>
                                         <tbody id="facultyTableBody">
@@ -136,11 +139,20 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
+                                <div class="me-auto">
+                                    <small class="text-muted">
+                                        <i class="bi bi-info-circle me-1"></i>
+                                        Pipeline: Initial Scrape → Link Validation → Link Enhancement → Data Enrichment
+                                    </small>
+                                </div>
                                 <button type="button" class="btn btn-outline-info" onclick="validateWebsites()" id="validateBtn">
-                                    <i class="bi bi-check-circle me-2"></i>Validate Websites
+                                    <i class="bi bi-check-circle me-2"></i>1. Validate Links
                                 </button>
                                 <button type="button" class="btn btn-outline-warning" onclick="findBetterLinks()" id="findLinksBtn">
-                                    <i class="bi bi-search me-2"></i>Find Better Links
+                                    <i class="bi bi-search me-2"></i>2. Find Better Links
+                                </button>
+                                <button type="button" class="btn btn-outline-success" onclick="enhanceData()" id="enhanceBtn">
+                                    <i class="bi bi-stars me-2"></i>3. Enrich Data
                                 </button>
                                 <button type="button" class="btn btn-outline-primary" onclick="exportData()">
                                     <i class="bi bi-download me-2"></i>Export JSON
@@ -276,7 +288,7 @@ let currentFilename = null;
         try {
             // Show loading state
             document.getElementById('facultyTableBody').innerHTML = 
-                '<tr><td colspan="9" class="text-center"><div class="spinner-border spinner-border-sm me-2"></div>Loading faculty data...</td></tr>';
+                '<tr><td colspan="8" class="text-center"><div class="spinner-border spinner-border-sm me-2"></div>Loading faculty data...</td></tr>';
             
             const modal = new bootstrap.Modal(document.getElementById('detailModal'));
             modal.show();
@@ -295,12 +307,12 @@ let currentFilename = null;
                     `<i class="bi bi-person-lines-fill me-2"></i>Faculty Data Details (${data.count} total)`;
             } else {
                 document.getElementById('facultyTableBody').innerHTML = 
-                    '<tr><td colspan="9" class="text-center text-danger">Failed to load data</td></tr>';
+                    '<tr><td colspan="8" class="text-center text-danger">Failed to load data</td></tr>';
             }
         } catch (error) {
             console.error('Failed to load details:', error);
             document.getElementById('facultyTableBody').innerHTML = 
-                '<tr><td colspan="9" class="text-center text-danger">Error loading data</td></tr>';
+                '<tr><td colspan="8" class="text-center text-danger">Error loading data</td></tr>';
         }
     }
     
@@ -309,18 +321,48 @@ let currentFilename = null;
         tbody.innerHTML = '';
         
         facultyData.forEach(faculty => {
+            // Determine enrichment status
+            const hasEnrichedData = !!(faculty.biography || faculty.bio || 
+                                       (faculty.research_interests && Array.isArray(faculty.research_interests)) ||
+                                       faculty.personal_website_validation ||
+                                       faculty.enhanced_data);
+            const hasBasicData = !!(faculty.name && faculty.email);
+            
+            let statusBadge = '';
+            if (hasEnrichedData) {
+                statusBadge = '<span class="badge bg-success ms-2">🌟 Enriched</span>';
+            } else if (hasBasicData) {
+                statusBadge = '<span class="badge bg-primary ms-2">📄 Basic</span>';
+            } else {
+                statusBadge = '<span class="badge bg-warning ms-2">⚠️ Sparse</span>';
+            }
+            
             const row = `
                 <tr>
                     <td>
                         <strong>${faculty.name || 'N/A'}</strong>
                         ${faculty.pronouns ? `<br><small class="text-muted">${faculty.pronouns}</small>` : ''}
+                        ${statusBadge}
                     </td>
                     <td>${faculty.title || 'N/A'}</td>
                     <td>
                         ${faculty.email ? 
-                            `<a href="mailto:${faculty.email}" class="text-decoration-none">
-                                <i class="bi bi-envelope me-1"></i>${faculty.email}
-                            </a>` : 'N/A'}
+                            `<div class="mb-1">
+                                <a href="mailto:${faculty.email}" class="text-decoration-none">
+                                    <i class="bi bi-envelope me-1"></i>${faculty.email}
+                                </a>
+                            </div>` : ''}
+                        ${(faculty.phone || faculty.office_phone) ? 
+                            `<div class="mb-1">
+                                <a href="tel:${faculty.phone || faculty.office_phone}" class="text-decoration-none">
+                                    <i class="bi bi-telephone me-1"></i>${faculty.phone || faculty.office_phone}
+                                </a>
+                            </div>` : ''}
+                        ${(faculty.office || faculty.office_location) ? 
+                            `<div class="small text-muted">
+                                <i class="bi bi-geo-alt me-1"></i>${faculty.office || faculty.office_location}
+                            </div>` : ''}
+                        ${(!faculty.email && !faculty.phone && !faculty.office) ? 'N/A' : ''}
                     </td>
                                                              <td>
                         ${(faculty.research_interests || faculty.research_areas) ? 
@@ -339,13 +381,26 @@ let currentFilename = null;
                                 }
                             })() : 'N/A'}
                     </td>
-                                                          <td>
-                         ${faculty.personal_website ? 
-                             (() => {
+                     <td>
+                         ${(() => {
+                             let linksHtml = '';
+                             
+                             // University Profile
+                             if (faculty.profile_url) {
+                                 const validation = faculty.profile_url_validation;
+                                 linksHtml += `<div class="mb-1">
+                                     <a href="${faculty.profile_url}" target="_blank" class="text-decoration-none">
+                                         <i class="bi bi-building text-success me-1"></i>University Profile
+                                     </a>
+                                     ${validation ? `<br><small class="text-muted">${validation.is_accessible ? '✅' : '❌'} ${(validation.confidence * 100).toFixed(0)}%</small>` : ''}
+                                 </div>`;
+                             }
+                             
+                             // Personal Website
+                             if (faculty.personal_website) {
                                  const validation = faculty.personal_website_validation;
-                                 let linkHtml = `<a href="${faculty.personal_website}" target="_blank" class="text-decoration-none">
-                                     <i class="bi bi-globe me-1"></i>Website
-                                 </a>`;
+                                 let linkType = 'Website';
+                                 let icon = 'bi-globe text-info';
                                  
                                  if (validation) {
                                      const iconMap = {
@@ -355,77 +410,147 @@ let currentFilename = null;
                                          'academic_profile': 'bi-journal-text text-secondary',
                                          'lab_website': 'bi-microscope text-warning',
                                          'social_media': 'bi-share text-danger',
-                                         'publication': 'bi-file-text text-secondary',
-                                         'unknown': 'bi-question-circle text-muted',
-                                         'invalid': 'bi-x-circle text-danger'
+                                         'publication': 'bi-file-text text-secondary'
                                      };
-                                     
-                                     const icon = iconMap[validation.type] || 'bi-link text-muted';
-                                     const statusIcon = validation.is_accessible ? '✅' : '❌';
-                                     const confidence = (validation.confidence * 100).toFixed(0);
-                                     
-                                     linkHtml = `
-                                         <div>
-                                             <a href="${faculty.personal_website}" target="_blank" class="text-decoration-none">
-                                                 <i class="${icon} me-1"></i>
-                                                 ${validation.type.replace('_', ' ').replace(/\\b\\w/g, l => l.toUpperCase())}
-                                             </a>
-                                             <br><small class="text-muted">
-                                                 ${statusIcon} ${confidence}% confidence
-                                                 ${validation.title ? `<br>"${validation.title.substring(0, 40)}..."` : ''}
-                                             </small>
-                                         </div>
-                                     `;
+                                     icon = iconMap[validation.type] || 'bi-link text-muted';
+                                     linkType = validation.type.replace('_', ' ').replace(/\\b\\w/g, l => l.toUpperCase());
                                  }
                                  
-                                 return linkHtml;
-                             })() : 'N/A'}
+                                 linksHtml += `<div class="mb-1">
+                                     <a href="${faculty.personal_website}" target="_blank" class="text-decoration-none">
+                                         <i class="${icon} me-1"></i>${linkType}
+                                     </a>
+                                     ${validation ? `<br><small class="text-muted">${validation.is_accessible ? '✅' : '❌'} ${(validation.confidence * 100).toFixed(0)}%</small>` : ''}
+                                 </div>`;
+                             }
+                             
+                             // Secondary Link Candidates (from enrichment)
+                             if (faculty.secondary_link_candidates && faculty.secondary_link_candidates.length > 0) {
+                                 linksHtml += '<div class="mt-2"><strong class="small text-success">🔍 Found Links:</strong><br>';
+                                 faculty.secondary_link_candidates.slice(0, 3).forEach(candidate => {
+                                     const confidenceIcon = candidate.confidence > 0.8 ? '🎯' : candidate.confidence > 0.6 ? '🔍' : '❓';
+                                     linksHtml += `<div class="small mb-1">
+                                         <a href="${candidate.url}" target="_blank" class="text-decoration-none">
+                                             ${confidenceIcon} ${candidate.source || 'Academic'}
+                                         </a>
+                                         <span class="text-muted">(${(candidate.confidence * 100).toFixed(0)}%)</span>
+                                     </div>`;
+                                 });
+                                 if (faculty.secondary_link_candidates.length > 3) {
+                                     linksHtml += `<small class="text-muted">+${faculty.secondary_link_candidates.length - 3} more</small>`;
+                                 }
+                                 linksHtml += '</div>';
+                             }
+                             
+                             return linksHtml || 'N/A';
+                         })()}
                      </td>
                      <td>
                          ${faculty.lab_name ? 
-                             `<span class="text-primary">${faculty.lab_name}</span>
+                             `<div><strong class="text-primary">${faculty.lab_name}</strong></div>
                               ${faculty.lab_website ? 
-                                 `<br><a href="${faculty.lab_website}" target="_blank" class="small text-decoration-none">
-                                     <i class="bi bi-link-45deg"></i>Lab Site
-                                 </a>` : ''}` : 'N/A'}
+                                 `<div class="mt-1">
+                                     <a href="${faculty.lab_website}" target="_blank" class="small text-decoration-none">
+                                         <i class="bi bi-microscope me-1"></i>Lab Website
+                                     </a>
+                                 </div>` : ''}
+                              ${faculty.lab_description ? 
+                                 `<div class="small text-muted mt-1">${faculty.lab_description.substring(0, 100)}${faculty.lab_description.length > 100 ? '...' : ''}</div>` : ''}` : 'N/A'}
                      </td>
                      <td>
-                         ${faculty.office || faculty.office_location || 'N/A'}
-                     </td>
-                     <td>
-                         ${(faculty.phone || faculty.office_phone) ? 
-                             `<a href="tel:${faculty.phone || faculty.office_phone}" class="text-decoration-none">
-                                 <i class="bi bi-telephone me-1"></i>${faculty.phone || faculty.office_phone}
-                             </a>` : 'N/A'}
-                     </td>
-                     <td>
-                         ${(faculty.biography || faculty.bio) ? 
-                             (() => {
+                         ${(() => {
+                             let profileHtml = '';
+                             
+                             // Biography
+                             if (faculty.biography || faculty.bio) {
                                  const bioText = faculty.biography || faculty.bio;
                                  const bioId = `bio-${Math.random().toString(36).substr(2, 9)}`;
-                                 if (bioText.length <= 200) {
-                                     // Short biography - show full text
-                                     return `<div class="bio-text small">${bioText}</div>`;
+                                 
+                                 if (bioText.length <= 150) {
+                                     profileHtml += `<div class="bio-text small mb-2">${bioText}</div>`;
                                  } else {
-                                     // Long biography - show preview with expand option
-                                     return `
-                                         <div class="bio-container">
+                                     profileHtml += `
+                                         <div class="bio-container mb-2">
                                              <div id="${bioId}-preview" class="bio-text small">
-                                                 ${bioText.substring(0, 200)}...
-                                                 <br><button class="bio-expand-btn mt-2" onclick="expandBio('${bioId}')">
+                                                 ${bioText.substring(0, 150)}...
+                                                 <br><button class="bio-expand-btn mt-1" onclick="expandBio('${bioId}')">
                                                      <i class="bi bi-chevron-down me-1"></i>Read more
                                                  </button>
                                              </div>
                                              <div id="${bioId}-full" class="bio-text small" style="display: none;">
                                                  ${bioText}
-                                                 <br><button class="bio-collapse-btn mt-2" onclick="collapseBio('${bioId}')">
+                                                 <br><button class="bio-collapse-btn mt-1" onclick="collapseBio('${bioId}')">
                                                      <i class="bi bi-chevron-up me-1"></i>Show less
                                                  </button>
                                              </div>
                                          </div>
                                      `;
                                  }
-                             })() : '<span class="text-muted">N/A</span>'}
+                             }
+                             
+                             // Education
+                             if (faculty.education || faculty.degrees) {
+                                 const education = faculty.education || faculty.degrees;
+                                 if (Array.isArray(education)) {
+                                     profileHtml += `<div class="small"><strong>Education:</strong><br>`;
+                                     education.slice(0, 2).forEach(deg => {
+                                         profileHtml += `<div class="text-muted">${deg}</div>`;
+                                     });
+                                     if (education.length > 2) {
+                                         profileHtml += `<small class="text-muted">+${education.length - 2} more</small>`;
+                                     }
+                                     profileHtml += '</div>';
+                                 } else if (typeof education === 'string') {
+                                     profileHtml += `<div class="small"><strong>Education:</strong><br><span class="text-muted">${education.substring(0, 100)}${education.length > 100 ? '...' : ''}</span></div>`;
+                                 }
+                             }
+                             
+                             return profileHtml || '<span class="text-muted">N/A</span>';
+                         })()}
+                     </td>
+                     <td>
+                         ${(() => {
+                             let sourcesHtml = '';
+                             
+                             // Initial scraping source
+                             sourcesHtml += '<div class="small mb-1"><i class="bi bi-search text-primary me-1"></i><strong>Initial Scrape</strong>';
+                             if (faculty.scraped_at) {
+                                 const date = new Date(faculty.scraped_at).toLocaleDateString();
+                                 sourcesHtml += `<br><span class="text-muted">${date}</span>`;
+                             }
+                             sourcesHtml += '</div>';
+                             
+                             // Validation source
+                             if (faculty.personal_website_validation || faculty.profile_url_validation) {
+                                 sourcesHtml += '<div class="small mb-1"><i class="bi bi-check-circle text-success me-1"></i><strong>Validated</strong>';
+                                 if (faculty.last_validated) {
+                                     const date = new Date(faculty.last_validated).toLocaleDateString();
+                                     sourcesHtml += `<br><span class="text-muted">${date}</span>`;
+                                 }
+                                 sourcesHtml += '</div>';
+                             }
+                             
+                             // Enrichment source
+                             if (faculty.enhanced_data || faculty.secondary_link_candidates || 
+                                 (faculty.biography && faculty.biography.length > 200) ||
+                                 (faculty.research_interests && Array.isArray(faculty.research_interests) && faculty.research_interests.length > 3)) {
+                                 sourcesHtml += '<div class="small mb-1"><i class="bi bi-stars text-warning me-1"></i><strong>Enriched</strong>';
+                                 if (faculty.enriched_at) {
+                                     const date = new Date(faculty.enriched_at).toLocaleDateString();
+                                     sourcesHtml += `<br><span class="text-muted">${date}</span>`;
+                                 }
+                                 sourcesHtml += '</div>';
+                             }
+                             
+                             // Data quality indicator
+                             const dataQuality = hasEnrichedData ? 'High' : hasBasicData ? 'Medium' : 'Low';
+                             const qualityColor = hasEnrichedData ? 'success' : hasBasicData ? 'primary' : 'warning';
+                             sourcesHtml += `<div class="small mt-2">
+                                 <span class="badge bg-${qualityColor}">Quality: ${dataQuality}</span>
+                             </div>`;
+                             
+                             return sourcesHtml;
+                         })()}
                      </td>
                 </tr>
             `;
@@ -487,18 +612,37 @@ let currentFilename = null;
                 const faculty = currentData[i];
                 if (!faculty) continue;
                 
+                // Determine enrichment status for filtering
+                const hasEnrichedData = !!(faculty.biography || faculty.bio || 
+                                           (faculty.research_interests && Array.isArray(faculty.research_interests)) ||
+                                           faculty.personal_website_validation ||
+                                           faculty.enhanced_data);
+                const hasBasicData = !!(faculty.name && faculty.email);
+                
                 switch (filterType) {
+                    case 'enriched':
+                        showRow = hasEnrichedData;
+                        break;
+                    case 'basic':
+                        showRow = hasBasicData && !hasEnrichedData;
+                        break;
+                    case 'sparse':
+                        showRow = !hasBasicData;
+                        break;
                     case 'has-email':
                         showRow = !!faculty.email;
                         break;
                     case 'has-website':
-                        showRow = !!faculty.personal_website;
+                        showRow = !!(faculty.personal_website || faculty.profile_url);
                         break;
                     case 'has-lab':
                         showRow = !!faculty.lab_name;
                         break;
                     case 'has-biography':
-                        showRow = !!faculty.biography;
+                        showRow = !!(faculty.biography || faculty.bio);
+                        break;
+                    case 'validated':
+                        showRow = !!(faculty.personal_website_validation || faculty.profile_url_validation);
                         break;
                 }
             }
@@ -798,6 +942,48 @@ let currentFilename = null;
             // Restore button state
             findLinksBtn.innerHTML = originalText;
             findLinksBtn.disabled = false;
+        }
+    }
+
+    // Data enhancement function (Step 3)
+    async function enhanceData() {
+        if (!currentData || currentData.length === 0) {
+            showAlert('warning', 'No faculty data loaded to enhance');
+            return;
+        }
+        
+        const enhanceBtn = document.getElementById('enhanceBtn');
+        const originalText = enhanceBtn.innerHTML;
+        
+        try {
+            // Show loading state
+            enhanceBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Enriching Data...';
+            enhanceBtn.disabled = true;
+            
+            showAlert('info', `🚀 Starting comprehensive data enrichment for ${currentData.length} faculty members...<br><small>This extracts detailed biographies, research interests, and additional contact information.</small>`);
+            
+            // For now, show a message about using CLI commands for enrichment
+            // In a full implementation, this would call the enhance_data API endpoint
+            setTimeout(() => {
+                showAlert('info', `
+                    <strong>💡 Data Enrichment Available via CLI</strong><br>
+                    To perform comprehensive data enrichment, use the CLI command:<br><br>
+                    <code>python3 -m lynnapse.cli.enhance_data ${currentFilename || 'faculty_data.json'}</code><br><br>
+                    This will extract detailed biographies, research interests, education, and additional academic links from individual faculty profile pages.
+                `);
+                
+                // Restore button state
+                enhanceBtn.innerHTML = originalText;
+                enhanceBtn.disabled = false;
+            }, 2000);
+            
+        } catch (error) {
+            console.error('Data enhancement error:', error);
+            showAlert('danger', 'Data enhancement failed due to error');
+            
+            // Restore button state
+            enhanceBtn.innerHTML = originalText;
+            enhanceBtn.disabled = false;
         }
     }
 

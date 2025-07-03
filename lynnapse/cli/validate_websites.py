@@ -98,9 +98,10 @@ def main(
     if output_file:
         output_data = metadata.copy() if metadata else {}
         output_data['faculty'] = enhanced_data
+        from datetime import datetime
         output_data['validation_metadata'] = {
             'total_validated': len(enhanced_data),
-            'validation_timestamp': asyncio.get_event_loop().time(),
+            'validation_timestamp': datetime.now().isoformat(),
             'max_concurrent': max_concurrent
         }
         

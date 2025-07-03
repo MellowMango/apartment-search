@@ -23,6 +23,18 @@ from ..config.university_database import get_university_suggestions, get_departm
 import logging
 import os
 
+def json_serializer(obj):
+    """JSON serializer for objects not serializable by default json code"""
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    elif hasattr(obj, 'isoformat'):
+        return obj.isoformat()
+    elif hasattr(obj, 'dict'):
+        return obj.dict()
+    elif hasattr(obj, '__dict__'):
+        return obj.__dict__
+    return str(obj)
+
 # Configure logging to show INFO level messages
 logging.basicConfig(
     level=logging.INFO,
@@ -94,7 +106,6 @@ def create_app() -> FastAPI:
             university_name = data.get('university_name')
             department_name = data.get('department_name')
             max_faculty = int(data.get('max_faculty', 100))
-            include_profiles = data.get('include_profiles', False)
             
             if not university_name or not department_name:
                 return JSONResponse({
@@ -107,8 +118,9 @@ def create_app() -> FastAPI:
             
             logger.info(f"Starting adaptive scrape for {university_name} - {department_name}")
             
-            # Create and run the adaptive crawler
-            crawler = AdaptiveFacultyCrawler(enable_lab_discovery=True)  # Enable detailed profile extraction
+            # Create and run the adaptive crawler with comprehensive extraction
+            # Always enable lab discovery and detailed profile extraction for complete results
+            crawler = AdaptiveFacultyCrawler(enable_lab_discovery=True)
             
             try:
                 scrape_result = await crawler.scrape_university_faculty(
@@ -437,6 +449,18 @@ def create_app() -> FastAPI:
             "title": "Scraping Results"
         })
     
+    @app.get("/cli", response_class=HTMLResponse)
+    async def cli_page(request: Request):
+        """CLI Commands page."""
+        try:
+            return templates.TemplateResponse("cli_simple.html", {
+                "request": request,
+                "title": "CLI Interface"
+            })
+        except Exception as e:
+            logger.error(f"CLI page error: {e}")
+            return HTMLResponse(f"<h1>CLI Page Error</h1><p>{str(e)}</p>", status_code=500)
+    
     @app.get("/api/stats")
     async def get_stats():
         """Get scraping statistics from database."""
@@ -745,5 +769,343 @@ def create_app() -> FastAPI:
                 "success": False,
                 "message": f"Secondary scraping failed: {str(e)}"
             }, status_code=500)
+    
+    # CLI API Endpoints
+    @app.post("/api/cli/adaptive-scrape")
+    async def cli_adaptive_scrape(
+        university: str = Form(...),
+        department: Optional[str] = Form(None),
+        max_faculty: Optional[int] = Form(None),
+        lab_discovery: bool = Form(False),
+        verbose: bool = Form(False)
+    ):
+        """Execute adaptive scraping command via API."""
+        try:
+            logger.info(f"CLI API: Starting adaptive scrape for {university}")
+            
+            # For now, return a success message without actually executing
+            # This prevents subprocess issues in the web interface
+            return JSONResponse({
+                "success": True,
+                "message": f"Command prepared for {university}. Please run this command in your terminal:",
+                "command": f"python3 -m lynnapse.cli.adaptive_scrape \"{university}\"" + 
+                          (f" -d \"{department}\"" if department else "") +
+                          (f" -m {max_faculty}" if max_faculty else "") +
+                          (" --lab-discovery" if lab_discovery else "") +
+                          (" -v" if verbose else ""),
+                "note": "For security reasons, commands are shown here for manual execution."
+            })
+                
+        except Exception as e:
+            logger.error(f"CLI API error: {e}")
+            return JSONResponse({
+                "success": False,
+                "message": f"Failed to prepare command: {str(e)}"
+            })
+    
+    @app.post("/api/cli/enhance-data")
+    async def cli_enhance_data(
+        input_file: str = Form(...),
+        concurrent: int = Form(3),
+        verbose: bool = Form(False),
+        skip_validation: bool = Form(False)
+    ):
+        """Execute data enhancement command via API."""
+        try:
+            logger.info(f"CLI API: Preparing enhance-data command for {input_file}")
+            
+            # Build command string
+            cmd = f"python3 -m lynnapse.cli.enhance_data scrape_results/adaptive/{input_file}"
+            cmd += f" -c {concurrent}"
+            if verbose:
+                cmd += " -v"
+            if skip_validation:
+                cmd += " --no-validate"
+            
+            return JSONResponse({
+                "success": True,
+                "message": f"Command prepared for enhancing {input_file}. Please run this command in your terminal:",
+                "command": cmd,
+                "note": "This will transform sparse faculty data into rich profiles with research interests, biographies, and contact info."
+            })
+                
+        except Exception as e:
+            logger.error(f"CLI API error: {e}")
+            return JSONResponse({
+                "success": False,
+                "message": f"Failed to prepare command: {str(e)}"
+            })
+    
+    @app.post("/api/full-pipeline")
+    async def run_full_pipeline(request: Request):
+        """
+        Execute the complete academic data pipeline:
+        1. Adaptive scraping (university + department)
+        2. Data enhancement (profiles, research interests, etc.)
+        3. Link enrichment (metadata extraction)
+        4. Conversion to new ID-based architecture
+        5. Return comprehensive results
+        """
+        try:
+            data = await request.json()
+            university_name = data.get('university_name')
+            department_name = data.get('department_name')
+            max_faculty = int(data.get('max_faculty', 50))
+            
+            if not university_name or not department_name:
+                return JSONResponse({
+                    "success": False,
+                    "message": "University name and department name are required"
+                })
+            
+            logger.info(f"Starting full pipeline for {university_name} - {department_name}")
+            
+            # Generate timestamp for this pipeline run (needed for saving regardless of success/failure)
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            
+            # Create progress tracking
+            pipeline_results = {
+                "university_name": university_name,
+                "department_name": department_name,
+                "started_at": datetime.now().isoformat(),
+                "stages": {},
+                "final_results": {}
+            }
+            
+            # Stage 1: Adaptive Scraping
+            logger.info("Stage 1: Adaptive Scraping")
+            pipeline_results["stages"]["1_scraping"] = {"status": "running", "started_at": datetime.now().isoformat()}
+            
+            from lynnapse.core.adaptive_faculty_crawler import AdaptiveFacultyCrawler
+            
+            crawler = AdaptiveFacultyCrawler(enable_lab_discovery=True)
+            try:
+                scrape_result = await crawler.scrape_university_faculty(
+                    university_name=university_name,
+                    department_filter=department_name,
+                    max_faculty=max_faculty if max_faculty > 0 else None
+                )
+                
+                if not scrape_result.get('success') or not scrape_result.get('faculty'):
+                    return JSONResponse({
+                        "success": False,
+                        "message": f"Initial scraping failed: {scrape_result.get('message', 'Unknown error')}",
+                        "pipeline_results": pipeline_results
+                    })
+                
+                faculty_data = scrape_result['faculty']
+                pipeline_results["stages"]["1_scraping"] = {
+                    "status": "completed",
+                    "faculty_count": len(faculty_data),
+                    "metadata": scrape_result.get('metadata', {}),
+                    "completed_at": datetime.now().isoformat()
+                }
+                
+                logger.info(f"Scraping completed: {len(faculty_data)} faculty found")
+                
+            finally:
+                await crawler.close()
+            
+            # Stage 2: Data Enhancement
+            logger.info("Stage 2: Data Enhancement")
+            pipeline_results["stages"]["2_enhancement"] = {"status": "running", "started_at": datetime.now().isoformat()}
+            
+            from lynnapse.core.profile_enricher import ProfileEnricher
+            from lynnapse.core.website_validator import validate_faculty_websites
+            
+            # First validate links
+            try:
+                validated_faculty, validation_report = await validate_faculty_websites(faculty_data)
+                
+                # Then enhance profiles
+                enricher = ProfileEnricher(max_concurrent=3, timeout=30)
+                enhanced_faculty, enhancement_stats = await enricher.enrich_sparse_faculty_data(validated_faculty)
+                
+                pipeline_results["stages"]["2_enhancement"] = {
+                    "status": "completed",
+                    "validation_stats": validation_report.get('validation_stats', {}),
+                    "enhancement_stats": enhancement_stats,
+                    "enhanced_faculty_count": len(enhanced_faculty),
+                    "completed_at": datetime.now().isoformat()
+                }
+                
+                logger.info(f"Enhancement completed: {enhancement_stats.get('successfully_enriched', 0)} profiles enhanced")
+                
+            except Exception as e:
+                logger.error(f"Enhancement failed: {e}")
+                pipeline_results["stages"]["2_enhancement"] = {
+                    "status": "failed",
+                    "error": str(e),
+                    "completed_at": datetime.now().isoformat()
+                }
+                # Continue with original data
+                enhanced_faculty = faculty_data
+            
+            # Stage 3: Link Enrichment
+            logger.info("Stage 3: Link Enrichment")
+            pipeline_results["stages"]["3_link_enrichment"] = {"status": "running", "started_at": datetime.now().isoformat()}
+            
+            from lynnapse.core.link_enrichment import enrich_faculty_links_simple
+            
+            # Only enrich faculty with validated links
+            faculty_with_links = [f for f in enhanced_faculty if any(
+                f.get(field) and f.get(f"{field}_validation", {}).get('is_accessible')
+                for field in ['profile_url', 'personal_website', 'lab_website']
+            )]
+            
+            if faculty_with_links:
+                try:
+                    enriched_links_faculty, enrichment_report = await enrich_faculty_links_simple(
+                        faculty_with_links, 
+                        max_concurrent=3,
+                        timeout=30
+                    )
+                    
+                    # Merge enriched links back with all faculty
+                    enriched_dict = {f.get('name', ''): f for f in enriched_links_faculty}
+                    final_faculty = []
+                    
+                    for faculty in enhanced_faculty:
+                        name = faculty.get('name', '')
+                        if name in enriched_dict:
+                            final_faculty.append(enriched_dict[name])
+                        else:
+                            final_faculty.append(faculty)
+                    
+                    pipeline_results["stages"]["3_link_enrichment"] = {
+                        "status": "completed",
+                        "links_processed": enrichment_report.total_links_processed,
+                        "successful_enrichments": enrichment_report.successful_enrichments,
+                        "scholar_profiles": enrichment_report.scholar_profiles_enriched,
+                        "completed_at": datetime.now().isoformat()
+                    }
+                    
+                    logger.info(f"Link enrichment completed: {enrichment_report.successful_enrichments} links enriched")
+                    
+                except Exception as e:
+                    logger.error(f"Link enrichment failed: {e}")
+                    pipeline_results["stages"]["3_link_enrichment"] = {
+                        "status": "failed", 
+                        "error": str(e),
+                        "completed_at": datetime.now().isoformat()
+                    }
+                    final_faculty = enhanced_faculty
+            else:
+                pipeline_results["stages"]["3_link_enrichment"] = {
+                    "status": "skipped",
+                    "reason": "No faculty with validated links",
+                    "completed_at": datetime.now().isoformat()
+                }
+                final_faculty = enhanced_faculty
+            
+            # Stage 4: Convert to New ID-based Architecture
+            logger.info("Stage 4: Converting to ID-based Architecture")
+            pipeline_results["stages"]["4_conversion"] = {"status": "running", "started_at": datetime.now().isoformat()}
+            
+            from lynnapse.core.data_manager import AcademicDataManager
+            
+            try:
+                # Create data manager and convert legacy data
+                data_manager = AcademicDataManager()
+                
+                # Convert the enhanced faculty data
+                conversion_result = data_manager.ingest_legacy_faculty_data(final_faculty, f"pipeline_{timestamp}")
+                
+                # Generate aggregated views for LLM processing
+                faculty_views = [data_manager.get_faculty_aggregated_view(fid) for fid in data_manager.faculty_entities.keys()]
+                faculty_views = [view for view in faculty_views if view is not None]
+                lab_views = [data_manager.get_lab_aggregated_view(lid) for lid in data_manager.lab_entities.keys()]
+                lab_views = [view for view in lab_views if view is not None]
+                
+                pipeline_results["stages"]["4_conversion"] = {
+                    "status": "completed",
+                    "entities_created": {
+                        "faculty": len(data_manager.faculty_entities),
+                        "labs": len(data_manager.lab_entities),
+                        "departments": len(data_manager.department_entities),
+                        "universities": len(data_manager.university_entities)
+                    },
+                    "associations_created": {
+                        "faculty_lab": len(data_manager.faculty_lab_associations),
+                        "faculty_department": len(data_manager.faculty_dept_associations),
+                        "faculty_enrichment": len(data_manager.faculty_enrichment_associations)
+                    },
+                    "deduplication_stats": conversion_result,
+                    "completed_at": datetime.now().isoformat()
+                }
+                
+                logger.info(f"Conversion completed: {len(faculty_views)} faculty entities created")
+                
+            except Exception as e:
+                logger.error(f"Conversion failed: {e}")
+                pipeline_results["stages"]["4_conversion"] = {
+                    "status": "failed",
+                    "error": str(e),
+                    "completed_at": datetime.now().isoformat()
+                }
+                # Fallback to legacy format
+                faculty_views = []
+                lab_views = []
+            
+            # Save comprehensive results
+            safe_university = university_name.replace(' ', '_').replace('/', '_')
+            safe_department = department_name.replace(' ', '_').replace('/', '_')
+            
+            # Save detailed pipeline results
+            pipeline_file = f"scrape_results/pipeline/{safe_university}_{safe_department}_{timestamp}.json"
+            Path("scrape_results/pipeline").mkdir(parents=True, exist_ok=True)
+            
+            pipeline_results["completed_at"] = datetime.now().isoformat()
+            pipeline_results["final_results"] = {
+                "legacy_faculty_data": final_faculty,
+                "faculty_entities": [view.dict() for view in faculty_views] if faculty_views else [],
+                "lab_entities": [view.dict() for view in lab_views] if lab_views else [],
+                "total_faculty": len(final_faculty),
+                "total_entities": len(faculty_views) if faculty_views else 0
+            }
+            
+            with open(pipeline_file, 'w', encoding='utf-8') as f:
+                json.dump(pipeline_results, f, indent=2, ensure_ascii=False, default=str)
+            
+            # Return comprehensive response
+            response_data = {
+                "success": True,
+                "message": f"Full pipeline completed successfully for {university_name} {department_name}",
+                "pipeline_results": {
+                    "university_name": university_name,
+                    "department_name": department_name,
+                    "total_faculty": len(final_faculty),
+                    "total_entities": len(faculty_views) if faculty_views else 0,
+                    "stages_completed": len([s for s in pipeline_results["stages"].values() if s.get("status") == "completed"]),
+                    "stages_failed": len([s for s in pipeline_results["stages"].values() if s.get("status") == "failed"]),
+                    "processing_time_minutes": (datetime.now() - datetime.fromisoformat(pipeline_results["started_at"])).total_seconds() / 60,
+                    "output_file": pipeline_file
+                },
+                "preview_data": {
+                    "legacy_faculty": final_faculty[:3],  # First 3 faculty in legacy format
+                    "faculty_entities": [view.dict() for view in faculty_views[:3]] if faculty_views else [],  # First 3 in new format
+                    "lab_entities": [view.dict() for view in lab_views[:2]] if lab_views else []  # First 2 labs
+                },
+                "stage_summary": {
+                    "scraping": pipeline_results["stages"]["1_scraping"],
+                    "enhancement": pipeline_results["stages"]["2_enhancement"],
+                    "link_enrichment": pipeline_results["stages"]["3_link_enrichment"],
+                    "conversion": pipeline_results["stages"]["4_conversion"]
+                }
+            }
+            
+            # Use custom JSON serializer to handle datetime objects
+            response_json = json.dumps(response_data, default=json_serializer, ensure_ascii=False, indent=2)
+            return JSONResponse(json.loads(response_json))
+            
+        except Exception as e:
+            logger.error(f"Full pipeline failed: {e}")
+            import traceback
+            logger.error(f"Full traceback: {traceback.format_exc()}")
+            return JSONResponse({
+                "success": False,
+                "message": f"Full pipeline failed: {str(e)}",
+                "error": str(e)
+            })
     
     return app 
