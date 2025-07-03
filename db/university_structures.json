@@ -240,5 +240,57 @@
     "confidence_score": 0.85,
     "last_updated": 1751567390.1949298,
     "discovery_count": 1
+  },
+  "university_of_california_berkeley": {
+    "university_name": "University of California, Berkeley",
+    "base_url": "https://www.berkeley.edu",
+    "faculty_directory_paths": [
+      "map/faculty-club/",
+      "map/faculty-glade/",
+      "map/womens-faculty-club/",
+      "faculty-staff/",
+      "timeline-category/faculty-nobels/",
+      "directory/"
+    ],
+    "department_paths": [
+      "department",
+      "dept",
+      "school",
+      "college",
+      "division",
+      "program",
+      "center",
+      "institute"
+    ],
+    "departments": {},
+    "discovery_method": "sitemap",
+    "confidence_score": 0.85,
+    "last_updated": 1751572098.578534,
+    "discovery_count": 1
+  },
+  "university_of_chicago": {
+    "university_name": "University of Chicago",
+    "base_url": "https://www.uchicago.edu",
+    "faculty_directory_paths": [
+      "staff",
+      "who-we-are/global-impact/accolades/faculty-awards-for-excellence-in-phd-teaching-and-mentoring",
+      "education-and-research/faculty_research",
+      "faculty"
+    ],
+    "department_paths": [
+      "department",
+      "dept",
+      "school",
+      "college",
+      "division",
+      "program",
+      "center",
+      "institute"
+    ],
+    "departments": {},
+    "discovery_method": "sitemap",
+    "confidence_score": 0.85,
+    "last_updated": 1751576636.89645,
+    "discovery_count": 1
   }
 }

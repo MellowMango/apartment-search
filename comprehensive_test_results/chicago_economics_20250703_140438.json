@@ -1,0 +1,1168 @@
+{
+  "success": true,
+  "message": "Full pipeline completed successfully for University of Chicago Economics",
+  "pipeline_results": {
+    "university_name": "University of Chicago",
+    "department_name": "Economics",
+    "total_faculty": 97,
+    "total_entities": 97,
+    "stages_completed": 4,
+    "stages_failed": 0,
+    "processing_time_minutes": 0.8620527333333333,
+    "output_file": "scrape_results/pipeline/University_of_Chicago_Economics_20250703_140347.json"
+  },
+  "preview_data": {
+    "legacy_faculty": [
+      {
+        "name": "University Reports",
+        "email": null,
+        "title": null,
+        "department": "Faculty Awards for Excellence in PhD Teaching and Mentoring | University of Chicago",
+        "university": "University of Chicago",
+        "profile_url": "https://www.uchicago.edu/university-reports",
+        "source_url": "https://www.uchicago.edu/who-we-are/global-impact/accolades/faculty-awards-for-excellence-in-phd-teaching-and-mentoring",
+        "extraction_method": "adaptive_heuristic",
+        "links": [],
+        "research_interests": [],
+        "research_areas": [],
+        "lab_associations": [],
+        "research_initiatives": [],
+        "external_profiles": {
+          "google_scholar": [],
+          "research_platforms": [],
+          "personal_websites": [],
+          "lab_websites": [],
+          "social_media": []
+        },
+        "comprehensive_extraction": true,
+        "profile_url_validation": {
+          "type": "university_profile",
+          "is_valid": true,
+          "is_accessible": true,
+          "confidence": 0.6,
+          "title": "University Reports | University of Chicago",
+          "error": null
+        },
+        "link_quality_score": 0.6,
+        "enrichment_successful": true,
+        "enrichment_details": {
+          "profile_scraped": true
+        },
+        "biography": "The annual Ryerson Lecture grew out of a 1972 bequest to the University by Nora and Edward L. Ryerson, a former Chairman of the Board. The faculty selects each Ryerson Lecturer based on a consensus that a particular scholar has made research contributions of lasting significance. In return, the Ryerson Lecturer is asked to reflect on his or her intellectual life and work.",
+        "office": "365A",
+        "additional_links": [
+          {
+            "url": "https://www.facebook.com/uchicago",
+            "text": "",
+            "type": "social_media"
+          },
+          {
+            "url": "https://www.linkedin.com/school/uchicago/",
+            "text": "",
+            "type": "social_media"
+          },
+          {
+            "url": "https://twitter.com/UChicago",
+            "text": "",
+            "type": "social_media"
+          }
+        ],
+        "profile_url_enrichment": {
+          "metadata": {
+            "title": "University Reports | University of Chicago",
+            "description": null,
+            "research_interests": [],
+            "affiliations": [
+              "Reports of the Independent Review Committee for the University of Chicago Police Department",
+              "Reports of the Independent Review Committee for the University of Chicago Police Department"
+            ],
+            "citation_count": null,
+            "h_index": null,
+            "i10_index": null,
+            "publications_count": 0,
+            "co_authors_count": 0,
+            "lab_members_count": 0,
+            "research_projects_count": 0,
+            "equipment_count": 0,
+            "funding_sources_count": 0
+          },
+          "quality_scores": {
+            "content_quality": 0.2,
+            "academic_relevance": 0.6,
+            "overall_confidence": 0.4
+          },
+          "extraction_info": {
+            "method": "link_enrichment",
+            "extracted_at": "2025-07-03T21:04:30.120691",
+            "errors": []
+          }
+        },
+        "links_enriched_count": 1,
+        "enrichment_processed": true
+      },
+      {
+        "name": "Boards, Committees, and Councils",
+        "email": null,
+        "title": null,
+        "department": "Faculty Awards for Excellence in PhD Teaching and Mentoring | University of Chicago",
+        "university": "University of Chicago",
+        "profile_url": "https://www.uchicago.edu/who-we-are/boards-committees-and-councils",
+        "source_url": "https://www.uchicago.edu/who-we-are/global-impact/accolades/faculty-awards-for-excellence-in-phd-teaching-and-mentoring",
+        "extraction_method": "adaptive_heuristic",
+        "links": [],
+        "research_interests": [
+          "Associate Professors",
+          "the President",
+          "and Assistant Professors who have completed one year's full-time service on academic appointment at whatever rank",
+          "Board of TrusteesThe University of Chicago is governed by the Board of Trustees. The Trustees are responsible for ensuring the capacity of the University to fulfill its mission for current and future generations.The University of Chicago Board of TrusteesAdvisory CouncilsThe University of Chicago Medical Centeris governed by a separate Board of Trustees.The University Senate and the Ruling BodiesThe University Senate consists of Professors",
+          "the Provost"
+        ],
+        "research_areas": [],
+        "lab_associations": [],
+        "research_initiatives": [],
+        "external_profiles": {
+          "google_scholar": [],
+          "research_platforms": [],
+          "personal_websites": [],
+          "lab_websites": [],
+          "social_media": []
+        },
+        "comprehensive_extraction": true,
+        "profile_url_validation": {
+          "type": "university_profile",
+          "is_valid": true,
+          "is_accessible": true,
+          "confidence": 0.6,
+          "title": "Boards, Committees, and Councils | University of Chicago",
+          "error": null
+        },
+        "link_quality_score": 0.6,
+        "enrichment_successful": true,
+        "enrichment_details": {
+          "profile_scraped": true
+        },
+        "biography": "The University Senate consists of Professors, Associate Professors, and Assistant Professors who have completed one year's full-time service on academic appointment at whatever rank; the President; the Provost; and the Vice Presidents.",
+        "office": "365A",
+        "additional_links": [
+          {
+            "url": "http://trustees.uchicago.edu/page/med-center",
+            "text": "The University of Chicago Medical Center",
+            "type": "lab_website"
+          },
+          {
+            "url": "https://www.facebook.com/uchicago",
+            "text": "",
+            "type": "social_media"
+          },
+          {
+            "url": "https://www.linkedin.com/school/uchicago/",
+            "text": "",
+            "type": "social_media"
+          },
+          {
+            "url": "https://twitter.com/UChicago",
+            "text": "",
+            "type": "social_media"
+          }
+        ],
+        "lab_website": "http://trustees.uchicago.edu/page/med-center",
+        "profile_url_enrichment": {
+          "metadata": {
+            "title": "Boards, Committees, and Councils | University of Chicago",
+            "description": null,
+            "research_interests": [],
+            "affiliations": [
+              "University Police Department, Independent Review Committee for the",
+              "The Faculty of the Booth School of Business",
+              "The Faculty of the Divinity School",
+              "The Faculty of the Law School",
+              "The Faculty of the College",
+              "Additional Governance Structures Within the College",
+              "The College Council",
+              "The Faculty of the Oriental Institute",
+              "The University of Chicago Medical Center"
+            ],
+            "citation_count": null,
+            "h_index": null,
+            "i10_index": null,
+            "publications_count": 0,
+            "co_authors_count": 0,
+            "lab_members_count": 0,
+            "research_projects_count": 0,
+            "equipment_count": 0,
+            "funding_sources_count": 0
+          },
+          "quality_scores": {
+            "content_quality": 0.2,
+            "academic_relevance": 0.6,
+            "overall_confidence": 0.4
+          },
+          "extraction_info": {
+            "method": "link_enrichment",
+            "extracted_at": "2025-07-03T21:04:30.120785",
+            "errors": []
+          }
+        },
+        "links_enriched_count": 1,
+        "enrichment_processed": true
+      },
+      {
+        "name": "Non-discrimination Statement",
+        "email": null,
+        "title": null,
+        "department": "Faculty Awards for Excellence in PhD Teaching and Mentoring | University of Chicago",
+        "university": "University of Chicago",
+        "profile_url": "https://www.uchicago.edu/non-discrimination",
+        "source_url": "https://www.uchicago.edu/who-we-are/global-impact/accolades/faculty-awards-for-excellence-in-phd-teaching-and-mentoring",
+        "extraction_method": "adaptive_heuristic",
+        "links": [],
+        "research_interests": [],
+        "research_areas": [],
+        "lab_associations": [],
+        "research_initiatives": [],
+        "external_profiles": {
+          "google_scholar": [],
+          "research_platforms": [],
+          "personal_websites": [],
+          "lab_websites": [],
+          "social_media": []
+        },
+        "comprehensive_extraction": true,
+        "profile_url_validation": {
+          "type": "university_profile",
+          "is_valid": true,
+          "is_accessible": true,
+          "confidence": 0.6,
+          "title": "Non-discrimination statement | University of Chicago",
+          "error": null
+        },
+        "link_quality_score": 0.6,
+        "enrichment_successful": true,
+        "enrichment_details": {
+          "profile_scraped": true
+        },
+        "phone": "(773) 702-5671",
+        "office": "365A",
+        "additional_links": [
+          {
+            "url": "https://cares.uchicago.edu/make-a-report/",
+            "text": "CARES website",
+            "type": "personal_website"
+          },
+          {
+            "url": "https://www.facebook.com/uchicago",
+            "text": "",
+            "type": "social_media"
+          },
+          {
+            "url": "https://www.linkedin.com/school/uchicago/",
+            "text": "",
+            "type": "social_media"
+          },
+          {
+            "url": "https://twitter.com/UChicago",
+            "text": "",
+            "type": "social_media"
+          }
+        ],
+        "personal_website": "https://cares.uchicago.edu/make-a-report/",
+        "profile_url_enrichment": {
+          "metadata": {
+            "title": "Non-discrimination statement | University of Chicago",
+            "description": "In keeping with its long-standing traditions and policies, the University of Chicago considers students, employees, applicants for admission or employment, and those seeking access to University programs on the basis of individual merit.",
+            "research_interests": [],
+            "affiliations": [],
+            "citation_count": null,
+            "h_index": null,
+            "i10_index": null,
+            "publications_count": 0,
+            "co_authors_count": 0,
+            "lab_members_count": 0,
+            "research_projects_count": 0,
+            "equipment_count": 0,
+            "funding_sources_count": 0
+          },
+          "quality_scores": {
+            "content_quality": 0.30000000000000004,
+            "academic_relevance": 0.4,
+            "overall_confidence": 0.35000000000000003
+          },
+          "extraction_info": {
+            "method": "link_enrichment",
+            "extracted_at": "2025-07-03T21:04:30.120821",
+            "errors": []
+          }
+        },
+        "links_enriched_count": 1,
+        "enrichment_processed": true
+      }
+    ],
+    "faculty_entities": [
+      {
+        "faculty": {
+          "id": "fac_922daff6",
+          "name": "University Reports",
+          "normalized_name": "university::reports",
+          "title": null,
+          "primary_university_id": "univ_of::chicago",
+          "primary_department_id": "dept_of::chicago_faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+          "email": null,
+          "phone": null,
+          "office_location": "365A",
+          "profile_url": "https://www.uchicago.edu/university-reports",
+          "personal_website": null,
+          "status": "active",
+          "confidence_score": 0.8,
+          "duplicate_of": null,
+          "merged_from": [],
+          "created_at": "2025-07-03T21:04:38.759296",
+          "updated_at": "2025-07-03T21:04:38.759301",
+          "source_scrape_id": "pipeline_20250703_140347"
+        },
+        "university": {
+          "id": "univ_of::chicago",
+          "name": "University of Chicago",
+          "normalized_name": "of::chicago",
+          "short_name": null,
+          "domain": "www.uchicago.edu",
+          "website_url": "https://www.uchicago.edu",
+          "city": null,
+          "state_province": null,
+          "country": "US",
+          "status": "active",
+          "created_at": "2025-07-03T21:04:38.759575",
+          "updated_at": "2025-07-03T21:04:38.759578"
+        },
+        "primary_department": null,
+        "department_associations": [
+          {
+            "association": {
+              "id": "3290eb05-9756-44a5-b54d-762e86e6d749",
+              "faculty_id": "fac_922daff6",
+              "department_id": "dept_univ_of::chicago_faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+              "appointment_type": "primary",
+              "title": null,
+              "percentage": null,
+              "confidence_score": 0.9,
+              "evidence_sources": [
+                "https://www.uchicago.edu/university-reports"
+              ],
+              "status": "active",
+              "start_date": null,
+              "end_date": null,
+              "is_current": true,
+              "created_at": "2025-07-03T21:04:38.759979",
+              "updated_at": "2025-07-03T21:04:38.759981",
+              "created_by_scrape_id": "pipeline_20250703_140347"
+            },
+            "department": {
+              "id": "dept_univ_of::chicago_faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+              "name": "Faculty Awards for Excellence in PhD Teaching and Mentoring | University of Chicago",
+              "normalized_name": "faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+              "short_name": null,
+              "university_id": "univ_of::chicago",
+              "college_school": null,
+              "website_url": null,
+              "status": "active",
+              "created_at": "2025-07-03T21:04:38.759631",
+              "updated_at": "2025-07-03T21:04:38.759632"
+            }
+          }
+        ],
+        "lab_associations": [],
+        "enrichments": {
+          "google_scholar": [],
+          "profile": [],
+          "links": [
+            {
+              "id": "links_fdc3b76d",
+              "source_url": "https://www.uchicago.edu/university-reports",
+              "source_type": "faculty_profile",
+              "title": "Links for University Reports",
+              "description": null,
+              "last_modified": null,
+              "research_interests": [],
+              "affiliations": [],
+              "contact_info": {},
+              "related_links": [
+                {
+                  "url": "https://www.facebook.com/uchicago",
+                  "text": "",
+                  "type": "social_media"
+                },
+                {
+                  "url": "https://www.linkedin.com/school/uchicago/",
+                  "text": "",
+                  "type": "social_media"
+                },
+                {
+                  "url": "https://twitter.com/UChicago",
+                  "text": "",
+                  "type": "social_media"
+                }
+              ],
+              "content_quality_score": 0.6,
+              "academic_relevance_score": 0.0,
+              "completeness_score": 0.0,
+              "status": "fresh",
+              "extraction_method": "legacy_conversion",
+              "extraction_errors": [],
+              "extracted_at": "2025-07-03T21:04:38.760615",
+              "expires_at": null,
+              "raw_html": null,
+              "raw_metadata": {},
+              "association": {
+                "id": "f996e716-83ff-4c9e-a28c-a2e688e3a8c6",
+                "faculty_id": "fac_922daff6",
+                "enrichment_id": "links_fdc3b76d",
+                "enrichment_type": "links",
+                "data_source": "https://www.uchicago.edu/university-reports",
+                "extraction_method": "legacy_conversion",
+                "confidence_score": 0.8,
+                "quality_score": 0.7,
+                "completeness_score": 0.6,
+                "status": "active",
+                "extracted_at": "2025-07-03T21:04:38.760669",
+                "expires_at": null,
+                "supersedes": null,
+                "conflicts_with": [],
+                "created_at": "2025-07-03T21:04:38.760671",
+                "updated_at": "2025-07-03T21:04:38.760672",
+                "created_by_enrichment_id": "pipeline_20250703_140347"
+              }
+            }
+          ],
+          "research": []
+        },
+        "computed_metrics": {
+          "total_enrichments": 1,
+          "lab_count": 0,
+          "department_count": 1
+        },
+        "data_sources": [
+          "https://www.uchicago.edu/university-reports"
+        ],
+        "view_generated_at": "2025-07-03T21:04:38.777157",
+        "data_freshness_score": 1.0,
+        "completeness_score": 0.2,
+        "confidence_score": 0.8
+      },
+      {
+        "faculty": {
+          "id": "fac_5f5a40e8",
+          "name": "Boards, Committees, and Councils",
+          "normalized_name": "boards::committees::and::councils",
+          "title": null,
+          "primary_university_id": "univ_of::chicago",
+          "primary_department_id": "dept_of::chicago_faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+          "email": null,
+          "phone": null,
+          "office_location": "365A",
+          "profile_url": "https://www.uchicago.edu/who-we-are/boards-committees-and-councils",
+          "personal_website": null,
+          "status": "active",
+          "confidence_score": 0.8,
+          "duplicate_of": null,
+          "merged_from": [],
+          "created_at": "2025-07-03T21:04:38.760738",
+          "updated_at": "2025-07-03T21:04:38.760739",
+          "source_scrape_id": "pipeline_20250703_140347"
+        },
+        "university": {
+          "id": "univ_of::chicago",
+          "name": "University of Chicago",
+          "normalized_name": "of::chicago",
+          "short_name": null,
+          "domain": "www.uchicago.edu",
+          "website_url": "https://www.uchicago.edu",
+          "city": null,
+          "state_province": null,
+          "country": "US",
+          "status": "active",
+          "created_at": "2025-07-03T21:04:38.759575",
+          "updated_at": "2025-07-03T21:04:38.759578"
+        },
+        "primary_department": null,
+        "department_associations": [
+          {
+            "association": {
+              "id": "180fd6a8-9f27-45d7-bafe-3ebaeef5b696",
+              "faculty_id": "fac_5f5a40e8",
+              "department_id": "dept_univ_of::chicago_faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+              "appointment_type": "primary",
+              "title": null,
+              "percentage": null,
+              "confidence_score": 0.9,
+              "evidence_sources": [
+                "https://www.uchicago.edu/who-we-are/boards-committees-and-councils"
+              ],
+              "status": "active",
+              "start_date": null,
+              "end_date": null,
+              "is_current": true,
+              "created_at": "2025-07-03T21:04:38.760764",
+              "updated_at": "2025-07-03T21:04:38.760765",
+              "created_by_scrape_id": "pipeline_20250703_140347"
+            },
+            "department": {
+              "id": "dept_univ_of::chicago_faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+              "name": "Faculty Awards for Excellence in PhD Teaching and Mentoring | University of Chicago",
+              "normalized_name": "faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+              "short_name": null,
+              "university_id": "univ_of::chicago",
+              "college_school": null,
+              "website_url": null,
+              "status": "active",
+              "created_at": "2025-07-03T21:04:38.759631",
+              "updated_at": "2025-07-03T21:04:38.759632"
+            }
+          }
+        ],
+        "lab_associations": [
+          {
+            "association": {
+              "id": "4b440970-3fe5-48e0-a21c-42983d8c4b8d",
+              "faculty_id": "fac_5f5a40e8",
+              "lab_id": "lab_0a9b88b4",
+              "role": "member",
+              "relationship_type": "member",
+              "confidence_score": 0.7,
+              "confidence_level": "medium",
+              "evidence_sources": [
+                "https://www.uchicago.edu/who-we-are/boards-committees-and-councils",
+                "http://trustees.uchicago.edu/page/med-center"
+              ],
+              "status": "pending_verification",
+              "start_date": null,
+              "end_date": null,
+              "is_current": true,
+              "conflicts_with": [],
+              "supersedes": null,
+              "created_at": "2025-07-03T21:04:38.760966",
+              "updated_at": "2025-07-03T21:04:38.760967",
+              "created_by_scrape_id": "pipeline_20250703_140347",
+              "verified_by": null
+            },
+            "lab": {
+              "id": "lab_0a9b88b4",
+              "name": "Unknown Lab",
+              "normalized_name": "unknown::lab",
+              "lab_type": null,
+              "university_id": "univ_of::chicago",
+              "primary_department_id": "dept_univ_of::chicago_faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+              "website_url": "http://trustees.uchicago.edu/page/med-center",
+              "description": null,
+              "location": null,
+              "status": "active",
+              "confidence_score": 0.7,
+              "duplicate_of": null,
+              "merged_from": [],
+              "created_at": "2025-07-03T21:04:38.760866",
+              "updated_at": "2025-07-03T21:04:38.760868",
+              "source_scrape_id": "pipeline_20250703_140347"
+            }
+          }
+        ],
+        "enrichments": {
+          "google_scholar": [],
+          "profile": [
+            {
+              "id": "profile_89389745",
+              "profile_url": "https://www.uchicago.edu/who-we-are/boards-committees-and-councils",
+              "full_biography": null,
+              "education": [],
+              "career_history": [],
+              "research_statement": null,
+              "current_projects": [],
+              "research_keywords": [
+                "Associate Professors",
+                "the President",
+                "and Assistant Professors who have completed one year's full-time service on academic appointment at whatever rank",
+                "Board of TrusteesThe University of Chicago is governed by the Board of Trustees. The Trustees are responsible for ensuring the capacity of the University to fulfill its mission for current and future generations.The University of Chicago Board of TrusteesAdvisory CouncilsThe University of Chicago Medical Centeris governed by a separate Board of Trustees.The University Senate and the Ruling BodiesThe University Senate consists of Professors",
+                "the Provost"
+              ],
+              "office_hours": null,
+              "availability": null,
+              "additional_contact": {},
+              "teaching_interests": [],
+              "service_activities": [],
+              "editorial_boards": [],
+              "awards": [],
+              "grants": [],
+              "completeness_score": 0.7,
+              "freshness_score": 0.0,
+              "status": "fresh",
+              "extraction_method": "legacy_conversion",
+              "extraction_errors": [],
+              "extracted_at": "2025-07-03T21:04:38.761289",
+              "expires_at": null,
+              "association": {
+                "id": "7165d4dd-870c-4a25-ae43-1b106ada86a0",
+                "faculty_id": "fac_5f5a40e8",
+                "enrichment_id": "profile_89389745",
+                "enrichment_type": "profile",
+                "data_source": "https://www.uchicago.edu/who-we-are/boards-committees-and-councils",
+                "extraction_method": "legacy_conversion",
+                "confidence_score": 0.8,
+                "quality_score": 0.7,
+                "completeness_score": 0.6,
+                "status": "active",
+                "extracted_at": "2025-07-03T21:04:38.761321",
+                "expires_at": null,
+                "supersedes": null,
+                "conflicts_with": [],
+                "created_at": "2025-07-03T21:04:38.761322",
+                "updated_at": "2025-07-03T21:04:38.761323",
+                "created_by_enrichment_id": "pipeline_20250703_140347"
+              }
+            }
+          ],
+          "links": [
+            {
+              "id": "links_f8594f70",
+              "source_url": "https://www.uchicago.edu/who-we-are/boards-committees-and-councils",
+              "source_type": "faculty_profile",
+              "title": "Links for Boards, Committees, and Councils",
+              "description": null,
+              "last_modified": null,
+              "research_interests": [
+                "Associate Professors",
+                "the President",
+                "and Assistant Professors who have completed one year's full-time service on academic appointment at whatever rank",
+                "Board of TrusteesThe University of Chicago is governed by the Board of Trustees. The Trustees are responsible for ensuring the capacity of the University to fulfill its mission for current and future generations.The University of Chicago Board of TrusteesAdvisory CouncilsThe University of Chicago Medical Centeris governed by a separate Board of Trustees.The University Senate and the Ruling BodiesThe University Senate consists of Professors",
+                "the Provost"
+              ],
+              "affiliations": [],
+              "contact_info": {},
+              "related_links": [
+                {
+                  "url": "http://trustees.uchicago.edu/page/med-center",
+                  "text": "The University of Chicago Medical Center",
+                  "type": "lab_website"
+                },
+                {
+                  "url": "https://www.facebook.com/uchicago",
+                  "text": "",
+                  "type": "social_media"
+                },
+                {
+                  "url": "https://www.linkedin.com/school/uchicago/",
+                  "text": "",
+                  "type": "social_media"
+                },
+                {
+                  "url": "https://twitter.com/UChicago",
+                  "text": "",
+                  "type": "social_media"
+                }
+              ],
+              "content_quality_score": 0.6,
+              "academic_relevance_score": 0.0,
+              "completeness_score": 0.0,
+              "status": "fresh",
+              "extraction_method": "legacy_conversion",
+              "extraction_errors": [],
+              "extracted_at": "2025-07-03T21:04:38.761365",
+              "expires_at": null,
+              "raw_html": null,
+              "raw_metadata": {},
+              "association": {
+                "id": "3fc5f3d6-9123-42d0-b0c4-41f7c7d94b41",
+                "faculty_id": "fac_5f5a40e8",
+                "enrichment_id": "links_f8594f70",
+                "enrichment_type": "links",
+                "data_source": "https://www.uchicago.edu/who-we-are/boards-committees-and-councils",
+                "extraction_method": "legacy_conversion",
+                "confidence_score": 0.8,
+                "quality_score": 0.7,
+                "completeness_score": 0.6,
+                "status": "active",
+                "extracted_at": "2025-07-03T21:04:38.761387",
+                "expires_at": null,
+                "supersedes": null,
+                "conflicts_with": [],
+                "created_at": "2025-07-03T21:04:38.761388",
+                "updated_at": "2025-07-03T21:04:38.761389",
+                "created_by_enrichment_id": "pipeline_20250703_140347"
+              }
+            }
+          ],
+          "research": []
+        },
+        "computed_metrics": {
+          "total_enrichments": 2,
+          "lab_count": 1,
+          "department_count": 1
+        },
+        "data_sources": [
+          "https://www.uchicago.edu/who-we-are/boards-committees-and-councils"
+        ],
+        "view_generated_at": "2025-07-03T21:04:38.777511",
+        "data_freshness_score": 1.0,
+        "completeness_score": 0.4,
+        "confidence_score": 0.8
+      },
+      {
+        "faculty": {
+          "id": "fac_ec605805",
+          "name": "Non-discrimination Statement",
+          "normalized_name": "nondiscrimination::statement",
+          "title": null,
+          "primary_university_id": "univ_of::chicago",
+          "primary_department_id": "dept_of::chicago_faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+          "email": null,
+          "phone": "(773) 702-5671",
+          "office_location": "365A",
+          "profile_url": "https://www.uchicago.edu/non-discrimination",
+          "personal_website": "https://cares.uchicago.edu/make-a-report/",
+          "status": "active",
+          "confidence_score": 0.8,
+          "duplicate_of": null,
+          "merged_from": [],
+          "created_at": "2025-07-03T21:04:38.761444",
+          "updated_at": "2025-07-03T21:04:38.761445",
+          "source_scrape_id": "pipeline_20250703_140347"
+        },
+        "university": {
+          "id": "univ_of::chicago",
+          "name": "University of Chicago",
+          "normalized_name": "of::chicago",
+          "short_name": null,
+          "domain": "www.uchicago.edu",
+          "website_url": "https://www.uchicago.edu",
+          "city": null,
+          "state_province": null,
+          "country": "US",
+          "status": "active",
+          "created_at": "2025-07-03T21:04:38.759575",
+          "updated_at": "2025-07-03T21:04:38.759578"
+        },
+        "primary_department": null,
+        "department_associations": [
+          {
+            "association": {
+              "id": "60531057-61bd-4cfe-aacb-d7b3314fc70f",
+              "faculty_id": "fac_ec605805",
+              "department_id": "dept_univ_of::chicago_faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+              "appointment_type": "primary",
+              "title": null,
+              "percentage": null,
+              "confidence_score": 0.9,
+              "evidence_sources": [
+                "https://www.uchicago.edu/non-discrimination"
+              ],
+              "status": "active",
+              "start_date": null,
+              "end_date": null,
+              "is_current": true,
+              "created_at": "2025-07-03T21:04:38.761471",
+              "updated_at": "2025-07-03T21:04:38.761472",
+              "created_by_scrape_id": "pipeline_20250703_140347"
+            },
+            "department": {
+              "id": "dept_univ_of::chicago_faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+              "name": "Faculty Awards for Excellence in PhD Teaching and Mentoring | University of Chicago",
+              "normalized_name": "faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+              "short_name": null,
+              "university_id": "univ_of::chicago",
+              "college_school": null,
+              "website_url": null,
+              "status": "active",
+              "created_at": "2025-07-03T21:04:38.759631",
+              "updated_at": "2025-07-03T21:04:38.759632"
+            }
+          }
+        ],
+        "lab_associations": [],
+        "enrichments": {
+          "google_scholar": [],
+          "profile": [],
+          "links": [
+            {
+              "id": "links_d097e1e1",
+              "source_url": "https://www.uchicago.edu/non-discrimination",
+              "source_type": "faculty_profile",
+              "title": "Links for Non-discrimination Statement",
+              "description": null,
+              "last_modified": null,
+              "research_interests": [],
+              "affiliations": [],
+              "contact_info": {},
+              "related_links": [
+                {
+                  "url": "https://cares.uchicago.edu/make-a-report/",
+                  "text": "CARES website",
+                  "type": "personal_website"
+                },
+                {
+                  "url": "https://www.facebook.com/uchicago",
+                  "text": "",
+                  "type": "social_media"
+                },
+                {
+                  "url": "https://www.linkedin.com/school/uchicago/",
+                  "text": "",
+                  "type": "social_media"
+                },
+                {
+                  "url": "https://twitter.com/UChicago",
+                  "text": "",
+                  "type": "social_media"
+                }
+              ],
+              "content_quality_score": 0.6,
+              "academic_relevance_score": 0.0,
+              "completeness_score": 0.0,
+              "status": "fresh",
+              "extraction_method": "legacy_conversion",
+              "extraction_errors": [],
+              "extracted_at": "2025-07-03T21:04:38.761488",
+              "expires_at": null,
+              "raw_html": null,
+              "raw_metadata": {},
+              "association": {
+                "id": "6a6e5316-57c4-4df9-853a-dce3759ea286",
+                "faculty_id": "fac_ec605805",
+                "enrichment_id": "links_d097e1e1",
+                "enrichment_type": "links",
+                "data_source": "https://www.uchicago.edu/non-discrimination",
+                "extraction_method": "legacy_conversion",
+                "confidence_score": 0.8,
+                "quality_score": 0.7,
+                "completeness_score": 0.6,
+                "status": "active",
+                "extracted_at": "2025-07-03T21:04:38.761499",
+                "expires_at": null,
+                "supersedes": null,
+                "conflicts_with": [],
+                "created_at": "2025-07-03T21:04:38.761500",
+                "updated_at": "2025-07-03T21:04:38.761500",
+                "created_by_enrichment_id": "pipeline_20250703_140347"
+              }
+            }
+          ],
+          "research": []
+        },
+        "computed_metrics": {
+          "total_enrichments": 1,
+          "lab_count": 0,
+          "department_count": 1
+        },
+        "data_sources": [
+          "https://www.uchicago.edu/non-discrimination"
+        ],
+        "view_generated_at": "2025-07-03T21:04:38.777583",
+        "data_freshness_score": 1.0,
+        "completeness_score": 0.2,
+        "confidence_score": 0.8
+      }
+    ],
+    "lab_entities": [
+      {
+        "lab": {
+          "id": "lab_0a9b88b4",
+          "name": "Unknown Lab",
+          "normalized_name": "unknown::lab",
+          "lab_type": null,
+          "university_id": "univ_of::chicago",
+          "primary_department_id": "dept_univ_of::chicago_faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+          "website_url": "http://trustees.uchicago.edu/page/med-center",
+          "description": null,
+          "location": null,
+          "status": "active",
+          "confidence_score": 0.7,
+          "duplicate_of": null,
+          "merged_from": [],
+          "created_at": "2025-07-03T21:04:38.760866",
+          "updated_at": "2025-07-03T21:04:38.760868",
+          "source_scrape_id": "pipeline_20250703_140347"
+        },
+        "university": {
+          "id": "univ_of::chicago",
+          "name": "University of Chicago",
+          "normalized_name": "of::chicago",
+          "short_name": null,
+          "domain": "www.uchicago.edu",
+          "website_url": "https://www.uchicago.edu",
+          "city": null,
+          "state_province": null,
+          "country": "US",
+          "status": "active",
+          "created_at": "2025-07-03T21:04:38.759575",
+          "updated_at": "2025-07-03T21:04:38.759578"
+        },
+        "primary_department": {
+          "id": "dept_univ_of::chicago_faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+          "name": "Faculty Awards for Excellence in PhD Teaching and Mentoring | University of Chicago",
+          "normalized_name": "faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+          "short_name": null,
+          "university_id": "univ_of::chicago",
+          "college_school": null,
+          "website_url": null,
+          "status": "active",
+          "created_at": "2025-07-03T21:04:38.759631",
+          "updated_at": "2025-07-03T21:04:38.759632"
+        },
+        "department_associations": [],
+        "faculty_associations": [
+          {
+            "association": {
+              "id": "4b440970-3fe5-48e0-a21c-42983d8c4b8d",
+              "faculty_id": "fac_5f5a40e8",
+              "lab_id": "lab_0a9b88b4",
+              "role": "member",
+              "relationship_type": "member",
+              "confidence_score": 0.7,
+              "confidence_level": "medium",
+              "evidence_sources": [
+                "https://www.uchicago.edu/who-we-are/boards-committees-and-councils",
+                "http://trustees.uchicago.edu/page/med-center"
+              ],
+              "status": "pending_verification",
+              "start_date": null,
+              "end_date": null,
+              "is_current": true,
+              "conflicts_with": [],
+              "supersedes": null,
+              "created_at": "2025-07-03T21:04:38.760966",
+              "updated_at": "2025-07-03T21:04:38.760967",
+              "created_by_scrape_id": "pipeline_20250703_140347",
+              "verified_by": null
+            },
+            "faculty": {
+              "id": "fac_5f5a40e8",
+              "name": "Boards, Committees, and Councils",
+              "normalized_name": "boards::committees::and::councils",
+              "title": null,
+              "primary_university_id": "univ_of::chicago",
+              "primary_department_id": "dept_of::chicago_faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+              "email": null,
+              "phone": null,
+              "office_location": "365A",
+              "profile_url": "https://www.uchicago.edu/who-we-are/boards-committees-and-councils",
+              "personal_website": null,
+              "status": "active",
+              "confidence_score": 0.8,
+              "duplicate_of": null,
+              "merged_from": [],
+              "created_at": "2025-07-03T21:04:38.760738",
+              "updated_at": "2025-07-03T21:04:38.760739",
+              "source_scrape_id": "pipeline_20250703_140347",
+              "enrichments": {
+                "profile": [],
+                "links": []
+              }
+            }
+          }
+        ],
+        "enrichments": {},
+        "computed_metrics": {
+          "member_count": 1,
+          "pi_count": 0,
+          "is_multi_pi": false
+        },
+        "data_sources": [
+          "http://trustees.uchicago.edu/page/med-center"
+        ],
+        "view_generated_at": "2025-07-03T21:04:38.785314",
+        "data_freshness_score": 0.0,
+        "completeness_score": 0.8,
+        "confidence_score": 0.7
+      },
+      {
+        "lab": {
+          "id": "lab_f343c50c",
+          "name": "Unknown Lab",
+          "normalized_name": "unknown::lab",
+          "lab_type": null,
+          "university_id": "univ_of::chicago",
+          "primary_department_id": "dept_univ_of::chicago_faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+          "website_url": "https://president.uchicago.edu/leadership/laboratory-directors",
+          "description": null,
+          "location": null,
+          "status": "active",
+          "confidence_score": 0.7,
+          "duplicate_of": null,
+          "merged_from": [],
+          "created_at": "2025-07-03T21:04:38.762138",
+          "updated_at": "2025-07-03T21:04:38.762139",
+          "source_scrape_id": "pipeline_20250703_140347"
+        },
+        "university": {
+          "id": "univ_of::chicago",
+          "name": "University of Chicago",
+          "normalized_name": "of::chicago",
+          "short_name": null,
+          "domain": "www.uchicago.edu",
+          "website_url": "https://www.uchicago.edu",
+          "city": null,
+          "state_province": null,
+          "country": "US",
+          "status": "active",
+          "created_at": "2025-07-03T21:04:38.759575",
+          "updated_at": "2025-07-03T21:04:38.759578"
+        },
+        "primary_department": {
+          "id": "dept_univ_of::chicago_faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+          "name": "Faculty Awards for Excellence in PhD Teaching and Mentoring | University of Chicago",
+          "normalized_name": "faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+          "short_name": null,
+          "university_id": "univ_of::chicago",
+          "college_school": null,
+          "website_url": null,
+          "status": "active",
+          "created_at": "2025-07-03T21:04:38.759631",
+          "updated_at": "2025-07-03T21:04:38.759632"
+        },
+        "department_associations": [],
+        "faculty_associations": [
+          {
+            "association": {
+              "id": "c576a22d-9184-40cc-8998-bbfc3f977960",
+              "faculty_id": "fac_a889a09c",
+              "lab_id": "lab_f343c50c",
+              "role": "member",
+              "relationship_type": "member",
+              "confidence_score": 0.7,
+              "confidence_level": "medium",
+              "evidence_sources": [
+                "https://president.uchicago.edu/leadership/officers",
+                "https://president.uchicago.edu/leadership/laboratory-directors"
+              ],
+              "status": "pending_verification",
+              "start_date": null,
+              "end_date": null,
+              "is_current": true,
+              "conflicts_with": [],
+              "supersedes": null,
+              "created_at": "2025-07-03T21:04:38.762176",
+              "updated_at": "2025-07-03T21:04:38.762186",
+              "created_by_scrape_id": "pipeline_20250703_140347",
+              "verified_by": null
+            },
+            "faculty": {
+              "id": "fac_a889a09c",
+              "name": "Officers of the University",
+              "normalized_name": "officers::of::the::university",
+              "title": null,
+              "primary_university_id": "univ_of::chicago",
+              "primary_department_id": "dept_of::chicago_faculty::awards::for::excellence::in::phd::teaching::and::mentoring::|::of::chicago",
+              "email": null,
+              "phone": null,
+              "office_location": null,
+              "profile_url": "https://president.uchicago.edu/leadership/officers",
+              "personal_website": null,
+              "status": "active",
+              "confidence_score": 0.8,
+              "duplicate_of": null,
+              "merged_from": [],
+              "created_at": "2025-07-03T21:04:38.762038",
+              "updated_at": "2025-07-03T21:04:38.762039",
+              "source_scrape_id": "pipeline_20250703_140347",
+              "enrichments": {
+                "links": []
+              }
+            }
+          }
+        ],
+        "enrichments": {},
+        "computed_metrics": {
+          "member_count": 1,
+          "pi_count": 0,
+          "is_multi_pi": false
+        },
+        "data_sources": [
+          "https://president.uchicago.edu/leadership/laboratory-directors"
+        ],
+        "view_generated_at": "2025-07-03T21:04:38.785338",
+        "data_freshness_score": 0.0,
+        "completeness_score": 0.8,
+        "confidence_score": 0.7
+      }
+    ]
+  },
+  "stage_summary": {
+    "scraping": {
+      "status": "completed",
+      "faculty_count": 97,
+      "metadata": {
+        "total_faculty": 97,
+        "total_faculty_before_dedup": 97,
+        "departments_processed": 1,
+        "department_results": {
+          "Faculty Awards for Excellence in PhD Teaching and Mentoring | University of Chicago": {
+            "faculty_count": 97,
+            "structure_type": "list",
+            "confidence": 0.4
+          }
+        },
+        "discovery_confidence": 0.85,
+        "scraping_strategy": "adaptive_comprehensive",
+        "lab_discovery_enabled": true,
+        "comprehensive_extraction": true,
+        "timestamp": 1751576642.041623
+      },
+      "completed_at": "2025-07-03T14:04:02.041662"
+    },
+    "enhancement": {
+      "status": "completed",
+      "validation_stats": {
+        "valid_links": 97,
+        "accessible_links": 91,
+        "broken_links": 6,
+        "redirected_links": 35
+      },
+      "enhancement_stats": {
+        "total_processed": 97,
+        "successfully_enriched": 90,
+        "research_interests_found": 77,
+        "additional_links_found": 210,
+        "biographies_extracted": 88,
+        "contact_info_found": 49,
+        "errors": 0
+      },
+      "enhanced_faculty_count": 97,
+      "completed_at": "2025-07-03T14:04:30.109197"
+    },
+    "link_enrichment": {
+      "status": "completed",
+      "faculty_processed": 97,
+      "links_processed": 97,
+      "successful_enrichments": 65,
+      "scholar_profiles_enriched": 0,
+      "lab_sites_enriched": 0,
+      "university_profiles_enriched": 65,
+      "total_data_points_extracted": 0,
+      "smart_links_added": 0,
+      "social_media_profiles_found": 0,
+      "completed_at": "2025-07-03T14:04:38.752677"
+    },
+    "conversion": {
+      "status": "completed",
+      "entities_created": {
+        "faculty": 97,
+        "labs": 5,
+        "departments": 1,
+        "universities": 1
+      },
+      "associations_created": {
+        "faculty_lab": 13,
+        "faculty_department": 97,
+        "faculty_enrichment": 174
+      },
+      "deduplication_stats": {
+        "faculty_processed": 97,
+        "faculty_created": 97,
+        "faculty_merged": 0,
+        "labs_created": 5,
+        "universities_created": 1,
+        "departments_created": 1,
+        "associations_created": 110,
+        "enrichments_created": 174,
+        "conflicts_detected": 0,
+        "issues": []
+      },
+      "completed_at": "2025-07-03T14:04:38.785514"
+    }
+  }
+}

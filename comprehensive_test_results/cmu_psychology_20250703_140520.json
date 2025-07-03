@@ -1,0 +1,1066 @@
+{
+  "success": true,
+  "message": "Full pipeline completed successfully for Carnegie Mellon University Psychology",
+  "pipeline_results": {
+    "university_name": "Carnegie Mellon University",
+    "department_name": "Psychology",
+    "total_faculty": 92,
+    "total_entities": 92,
+    "stages_completed": 4,
+    "stages_failed": 0,
+    "processing_time_minutes": 0.3767411666666666,
+    "output_file": "scrape_results/pipeline/Carnegie_Mellon_University_Psychology_20250703_140458.json"
+  },
+  "preview_data": {
+    "legacy_faculty": [
+      {
+        "name": "Carnegie Mellon University",
+        "email": null,
+        "title": null,
+        "department": "Psychology",
+        "university": "Carnegie Mellon University",
+        "profile_url": "https://www.cmu.edu/",
+        "source_url": "https://www.cmu.edu/dietrich/psychology/directory/",
+        "extraction_method": "adaptive_heuristic",
+        "links": [],
+        "research_interests": [
+          "+FacultyOur professors bring their expertise to classrooms and labs",
+          "mentoring students and advancing research across disciplines."
+        ],
+        "research_areas": [],
+        "lab_associations": [],
+        "research_initiatives": [],
+        "external_profiles": {
+          "research_platforms": [],
+          "social_media": [],
+          "lab_websites": [],
+          "personal_websites": [],
+          "google_scholar": []
+        },
+        "comprehensive_extraction": true,
+        "departments": [
+          "Psychology"
+        ],
+        "profile_url_validation": {
+          "type": "university_profile",
+          "is_valid": true,
+          "is_accessible": true,
+          "confidence": 0.6,
+          "title": "Carnegie Mellon University | CMU",
+          "error": null
+        },
+        "link_quality_score": 0.6,
+        "enrichment_successful": true,
+        "enrichment_details": {
+          "profile_scraped": true
+        },
+        "biography": "Our Strategic FrameworkThe Persistent Pursuit of ExcellenceAs we celebrate our 125th year, we do so with a renewed sense of purpose. Guided by our strategic vision and driven by our shared values, we are confident that we will rise to meet this moment and continue to lead with distinction in the decades to come.",
+        "phone": "(412) 268-2000",
+        "office_hours": "’ for Savi",
+        "additional_links": [
+          {
+            "url": "https://www.cmu.edu/research-and-creativity/centers-and-institutes",
+            "text": "Centers & Institutes",
+            "type": "lab_website"
+          },
+          {
+            "url": "https://www.cmu.edu/career/outcomes/post-grad-dashboard.html",
+            "text": "Career Center",
+            "type": "lab_website"
+          },
+          {
+            "url": "https://www.nrec.ri.cmu.edu/",
+            "text": "Explore the National Robotics Engineering Center",
+            "type": "lab_website"
+          },
+          {
+            "url": "https://www.facebook.com/carnegiemellonu",
+            "text": "",
+            "type": "social_media"
+          },
+          {
+            "url": "https://www.linkedin.com/company/carnegie-mellon-university",
+            "text": "",
+            "type": "social_media"
+          },
+          {
+            "url": "https://www.cmu.edu/research-and-creativity/centers-and-institutes",
+            "text": "Centers & Institutes",
+            "type": "lab_website"
+          }
+        ],
+        "lab_website": "https://www.cmu.edu/research-and-creativity/centers-and-institutes",
+        "profile_url_enrichment": {
+          "metadata": {
+            "title": "Carnegie Mellon University | CMU",
+            "description": "A private, global research university, Carnegie Mellon stands among the world's top educational institutions with its cutting-edge programs and innovations.",
+            "research_interests": [
+              "Our professors bring their expertise to classrooms and labs",
+              "mentoring students and advancing research across disciplines."
+            ],
+            "affiliations": [
+              "In this moment, the research happening in the Machine Learning Department is influencing and will continue to influence the direction of artificial intelligence.",
+              "Professor and Director of the Machine Learning Department",
+              "First Machine Learning Department",
+              "Pittsburgh Symphony Orchestra musicians serve as distinguished faculty in our School of Music to inspire the next generation of talent.",
+              "Pre-College Programs",
+              "Dean, Heinz College of Information Systems and Public Policy",
+              "Centers & Institutes",
+              "Renewed Mission: CMU Software Engineering Institute Leads National Security Sof…",
+              "Centers & Institutes",
+              "Centers & Institutes",
+              "Career Center",
+              "Explore the National Robotics Engineering Center"
+            ],
+            "citation_count": null,
+            "h_index": null,
+            "i10_index": null,
+            "publications_count": 0,
+            "co_authors_count": 0,
+            "lab_members_count": 0,
+            "research_projects_count": 0,
+            "equipment_count": 0,
+            "funding_sources_count": 0
+          },
+          "quality_scores": {
+            "content_quality": 0.5,
+            "academic_relevance": 0.6,
+            "overall_confidence": 0.55
+          },
+          "extraction_info": {
+            "method": "link_enrichment",
+            "extracted_at": "2025-07-03T21:05:19.107976",
+            "errors": []
+          }
+        },
+        "links_enriched_count": 1,
+        "enrichment_processed": true
+      },
+      {
+        "name": "Undergraduate Program",
+        "email": null,
+        "title": null,
+        "department": "Psychology",
+        "university": "Carnegie Mellon University",
+        "profile_url": "../undergraduate/index.html",
+        "source_url": "https://www.cmu.edu/dietrich/psychology/directory/",
+        "extraction_method": "adaptive_heuristic",
+        "links": [],
+        "research_interests": [],
+        "research_areas": [],
+        "lab_associations": [],
+        "research_initiatives": [
+          "Undergraduate Program"
+        ],
+        "external_profiles": {
+          "google_scholar": [],
+          "research_platforms": [],
+          "personal_websites": [],
+          "lab_websites": [],
+          "social_media": []
+        },
+        "comprehensive_extraction": true,
+        "profile_url_validation": {
+          "type": "unknown",
+          "is_valid": true,
+          "is_accessible": false,
+          "confidence": 0.3,
+          "title": null,
+          "error": "../undergraduate/index.html"
+        },
+        "link_quality_score": 0.3,
+        "enrichment_successful": false,
+        "enrichment_details": {},
+        "links_enriched_count": 0,
+        "enrichment_processed": true
+      },
+      {
+        "name": "Graduate Program",
+        "email": null,
+        "title": null,
+        "department": "Psychology",
+        "university": "Carnegie Mellon University",
+        "profile_url": "../graduate/index.html",
+        "source_url": "https://www.cmu.edu/dietrich/psychology/directory/",
+        "extraction_method": "adaptive_heuristic",
+        "links": [],
+        "research_interests": [],
+        "research_areas": [],
+        "lab_associations": [],
+        "research_initiatives": [
+          "Graduate Program"
+        ],
+        "external_profiles": {
+          "google_scholar": [],
+          "research_platforms": [],
+          "personal_websites": [],
+          "lab_websites": [],
+          "social_media": []
+        },
+        "comprehensive_extraction": true,
+        "profile_url_validation": {
+          "type": "unknown",
+          "is_valid": true,
+          "is_accessible": false,
+          "confidence": 0.3,
+          "title": null,
+          "error": "../graduate/index.html"
+        },
+        "link_quality_score": 0.3,
+        "enrichment_successful": false,
+        "enrichment_details": {},
+        "links_enriched_count": 0,
+        "enrichment_processed": true
+      }
+    ],
+    "faculty_entities": [
+      {
+        "faculty": {
+          "id": "fac_e2ab043c",
+          "name": "Carnegie Mellon University",
+          "normalized_name": "carnegie::mellon::university",
+          "title": null,
+          "primary_university_id": "univ_carnegie::mellon",
+          "primary_department_id": "dept_carnegie::mellon_psychology",
+          "email": null,
+          "phone": "(412) 268-2000",
+          "office_location": null,
+          "profile_url": "https://www.cmu.edu/",
+          "personal_website": null,
+          "status": "active",
+          "confidence_score": 0.8,
+          "duplicate_of": null,
+          "merged_from": [],
+          "created_at": "2025-07-03T21:05:20.876398",
+          "updated_at": "2025-07-03T21:05:20.876399",
+          "source_scrape_id": "pipeline_20250703_140458"
+        },
+        "university": {
+          "id": "univ_carnegie::mellon",
+          "name": "Carnegie Mellon University",
+          "normalized_name": "carnegie::mellon",
+          "short_name": null,
+          "domain": "www.cmu.edu",
+          "website_url": "https://www.cmu.edu",
+          "city": null,
+          "state_province": null,
+          "country": "US",
+          "status": "active",
+          "created_at": "2025-07-03T21:05:20.876425",
+          "updated_at": "2025-07-03T21:05:20.876425"
+        },
+        "primary_department": null,
+        "department_associations": [
+          {
+            "association": {
+              "id": "a77df43a-5a60-4d96-aec3-a3aeb9badeeb",
+              "faculty_id": "fac_e2ab043c",
+              "department_id": "dept_univ_carnegie::mellon_psychology",
+              "appointment_type": "primary",
+              "title": null,
+              "percentage": null,
+              "confidence_score": 0.9,
+              "evidence_sources": [
+                "https://www.cmu.edu/"
+              ],
+              "status": "active",
+              "start_date": null,
+              "end_date": null,
+              "is_current": true,
+              "created_at": "2025-07-03T21:05:20.876476",
+              "updated_at": "2025-07-03T21:05:20.876477",
+              "created_by_scrape_id": "pipeline_20250703_140458"
+            },
+            "department": {
+              "id": "dept_univ_carnegie::mellon_psychology",
+              "name": "Psychology",
+              "normalized_name": "psychology",
+              "short_name": null,
+              "university_id": "univ_carnegie::mellon",
+              "college_school": null,
+              "website_url": null,
+              "status": "active",
+              "created_at": "2025-07-03T21:05:20.876454",
+              "updated_at": "2025-07-03T21:05:20.876455"
+            }
+          }
+        ],
+        "lab_associations": [
+          {
+            "association": {
+              "id": "1ca497a6-484c-4e3f-9137-c4275e4948f8",
+              "faculty_id": "fac_e2ab043c",
+              "lab_id": "lab_ac60ff96",
+              "role": "member",
+              "relationship_type": "member",
+              "confidence_score": 0.7,
+              "confidence_level": "medium",
+              "evidence_sources": [
+                "https://www.cmu.edu/",
+                "https://www.cmu.edu/research-and-creativity/centers-and-institutes"
+              ],
+              "status": "pending_verification",
+              "start_date": null,
+              "end_date": null,
+              "is_current": true,
+              "conflicts_with": [],
+              "supersedes": null,
+              "created_at": "2025-07-03T21:05:20.876511",
+              "updated_at": "2025-07-03T21:05:20.876511",
+              "created_by_scrape_id": "pipeline_20250703_140458",
+              "verified_by": null
+            },
+            "lab": {
+              "id": "lab_ac60ff96",
+              "name": "Unknown Lab",
+              "normalized_name": "unknown::lab",
+              "lab_type": null,
+              "university_id": "univ_carnegie::mellon",
+              "primary_department_id": "dept_univ_carnegie::mellon_psychology",
+              "website_url": "https://www.cmu.edu/research-and-creativity/centers-and-institutes",
+              "description": null,
+              "location": null,
+              "status": "active",
+              "confidence_score": 0.7,
+              "duplicate_of": null,
+              "merged_from": [],
+              "created_at": "2025-07-03T21:05:20.876487",
+              "updated_at": "2025-07-03T21:05:20.876488",
+              "source_scrape_id": "pipeline_20250703_140458"
+            }
+          }
+        ],
+        "enrichments": {
+          "google_scholar": [],
+          "profile": [
+            {
+              "id": "profile_860e0258",
+              "profile_url": "https://www.cmu.edu/",
+              "full_biography": null,
+              "education": [],
+              "career_history": [],
+              "research_statement": null,
+              "current_projects": [],
+              "research_keywords": [
+                "+FacultyOur professors bring their expertise to classrooms and labs",
+                "mentoring students and advancing research across disciplines."
+              ],
+              "office_hours": "’ for Savi",
+              "availability": null,
+              "additional_contact": {},
+              "teaching_interests": [],
+              "service_activities": [],
+              "editorial_boards": [],
+              "awards": [],
+              "grants": [],
+              "completeness_score": 0.7,
+              "freshness_score": 0.0,
+              "status": "fresh",
+              "extraction_method": "legacy_conversion",
+              "extraction_errors": [],
+              "extracted_at": "2025-07-03T21:05:20.876525",
+              "expires_at": null,
+              "association": {
+                "id": "344e2444-13f6-4992-993a-517feed61817",
+                "faculty_id": "fac_e2ab043c",
+                "enrichment_id": "profile_860e0258",
+                "enrichment_type": "profile",
+                "data_source": "https://www.cmu.edu/",
+                "extraction_method": "legacy_conversion",
+                "confidence_score": 0.8,
+                "quality_score": 0.7,
+                "completeness_score": 0.6,
+                "status": "active",
+                "extracted_at": "2025-07-03T21:05:20.876532",
+                "expires_at": null,
+                "supersedes": null,
+                "conflicts_with": [],
+                "created_at": "2025-07-03T21:05:20.876533",
+                "updated_at": "2025-07-03T21:05:20.876533",
+                "created_by_enrichment_id": "pipeline_20250703_140458"
+              }
+            }
+          ],
+          "links": [
+            {
+              "id": "links_d508083d",
+              "source_url": "https://www.cmu.edu/",
+              "source_type": "faculty_profile",
+              "title": "Links for Carnegie Mellon University",
+              "description": null,
+              "last_modified": null,
+              "research_interests": [
+                "+FacultyOur professors bring their expertise to classrooms and labs",
+                "mentoring students and advancing research across disciplines."
+              ],
+              "affiliations": [],
+              "contact_info": {},
+              "related_links": [
+                {
+                  "url": "https://www.cmu.edu/research-and-creativity/centers-and-institutes",
+                  "text": "Centers & Institutes",
+                  "type": "lab_website"
+                },
+                {
+                  "url": "https://www.cmu.edu/career/outcomes/post-grad-dashboard.html",
+                  "text": "Career Center",
+                  "type": "lab_website"
+                },
+                {
+                  "url": "https://www.nrec.ri.cmu.edu/",
+                  "text": "Explore the National Robotics Engineering Center",
+                  "type": "lab_website"
+                },
+                {
+                  "url": "https://www.facebook.com/carnegiemellonu",
+                  "text": "",
+                  "type": "social_media"
+                },
+                {
+                  "url": "https://www.linkedin.com/company/carnegie-mellon-university",
+                  "text": "",
+                  "type": "social_media"
+                },
+                {
+                  "url": "https://www.cmu.edu/research-and-creativity/centers-and-institutes",
+                  "text": "Centers & Institutes",
+                  "type": "lab_website"
+                }
+              ],
+              "content_quality_score": 0.6,
+              "academic_relevance_score": 0.0,
+              "completeness_score": 0.0,
+              "status": "fresh",
+              "extraction_method": "legacy_conversion",
+              "extraction_errors": [],
+              "extracted_at": "2025-07-03T21:05:20.876545",
+              "expires_at": null,
+              "raw_html": null,
+              "raw_metadata": {},
+              "association": {
+                "id": "43ec697a-276a-493b-bd19-ece17a0856dc",
+                "faculty_id": "fac_e2ab043c",
+                "enrichment_id": "links_d508083d",
+                "enrichment_type": "links",
+                "data_source": "https://www.cmu.edu/",
+                "extraction_method": "legacy_conversion",
+                "confidence_score": 0.8,
+                "quality_score": 0.7,
+                "completeness_score": 0.6,
+                "status": "active",
+                "extracted_at": "2025-07-03T21:05:20.876549",
+                "expires_at": null,
+                "supersedes": null,
+                "conflicts_with": [],
+                "created_at": "2025-07-03T21:05:20.876550",
+                "updated_at": "2025-07-03T21:05:20.876550",
+                "created_by_enrichment_id": "pipeline_20250703_140458"
+              }
+            }
+          ],
+          "research": []
+        },
+        "computed_metrics": {
+          "total_enrichments": 2,
+          "lab_count": 1,
+          "department_count": 1
+        },
+        "data_sources": [
+          "https://www.cmu.edu/"
+        ],
+        "view_generated_at": "2025-07-03T21:05:20.878241",
+        "data_freshness_score": 1.0,
+        "completeness_score": 0.4,
+        "confidence_score": 0.8
+      },
+      {
+        "faculty": {
+          "id": "fac_5d4d34e6",
+          "name": "Undergraduate Program",
+          "normalized_name": "undergraduate::program",
+          "title": null,
+          "primary_university_id": "univ_carnegie::mellon",
+          "primary_department_id": "dept_carnegie::mellon_psychology",
+          "email": null,
+          "phone": null,
+          "office_location": null,
+          "profile_url": "../undergraduate/index.html",
+          "personal_website": null,
+          "status": "active",
+          "confidence_score": 0.8,
+          "duplicate_of": null,
+          "merged_from": [],
+          "created_at": "2025-07-03T21:05:20.876565",
+          "updated_at": "2025-07-03T21:05:20.876566",
+          "source_scrape_id": "pipeline_20250703_140458"
+        },
+        "university": {
+          "id": "univ_carnegie::mellon",
+          "name": "Carnegie Mellon University",
+          "normalized_name": "carnegie::mellon",
+          "short_name": null,
+          "domain": "www.cmu.edu",
+          "website_url": "https://www.cmu.edu",
+          "city": null,
+          "state_province": null,
+          "country": "US",
+          "status": "active",
+          "created_at": "2025-07-03T21:05:20.876425",
+          "updated_at": "2025-07-03T21:05:20.876425"
+        },
+        "primary_department": null,
+        "department_associations": [
+          {
+            "association": {
+              "id": "b4ae760f-586f-4142-8c13-83b0db02cda2",
+              "faculty_id": "fac_5d4d34e6",
+              "department_id": "dept_univ_carnegie::mellon_psychology",
+              "appointment_type": "primary",
+              "title": null,
+              "percentage": null,
+              "confidence_score": 0.9,
+              "evidence_sources": [
+                "../undergraduate/index.html"
+              ],
+              "status": "active",
+              "start_date": null,
+              "end_date": null,
+              "is_current": true,
+              "created_at": "2025-07-03T21:05:20.876573",
+              "updated_at": "2025-07-03T21:05:20.876573",
+              "created_by_scrape_id": "pipeline_20250703_140458"
+            },
+            "department": {
+              "id": "dept_univ_carnegie::mellon_psychology",
+              "name": "Psychology",
+              "normalized_name": "psychology",
+              "short_name": null,
+              "university_id": "univ_carnegie::mellon",
+              "college_school": null,
+              "website_url": null,
+              "status": "active",
+              "created_at": "2025-07-03T21:05:20.876454",
+              "updated_at": "2025-07-03T21:05:20.876455"
+            }
+          }
+        ],
+        "lab_associations": [],
+        "enrichments": {
+          "google_scholar": [],
+          "profile": [],
+          "links": [],
+          "research": []
+        },
+        "computed_metrics": {
+          "total_enrichments": 0,
+          "lab_count": 0,
+          "department_count": 1
+        },
+        "data_sources": [
+          "../undergraduate/index.html"
+        ],
+        "view_generated_at": "2025-07-03T21:05:20.878257",
+        "data_freshness_score": 0.0,
+        "completeness_score": 0.0,
+        "confidence_score": 0.8
+      },
+      {
+        "faculty": {
+          "id": "fac_5425031d",
+          "name": "Graduate Program",
+          "normalized_name": "graduate::program",
+          "title": null,
+          "primary_university_id": "univ_carnegie::mellon",
+          "primary_department_id": "dept_carnegie::mellon_psychology",
+          "email": null,
+          "phone": null,
+          "office_location": null,
+          "profile_url": "../graduate/index.html",
+          "personal_website": null,
+          "status": "active",
+          "confidence_score": 0.8,
+          "duplicate_of": null,
+          "merged_from": [],
+          "created_at": "2025-07-03T21:05:20.876583",
+          "updated_at": "2025-07-03T21:05:20.876583",
+          "source_scrape_id": "pipeline_20250703_140458"
+        },
+        "university": {
+          "id": "univ_carnegie::mellon",
+          "name": "Carnegie Mellon University",
+          "normalized_name": "carnegie::mellon",
+          "short_name": null,
+          "domain": "www.cmu.edu",
+          "website_url": "https://www.cmu.edu",
+          "city": null,
+          "state_province": null,
+          "country": "US",
+          "status": "active",
+          "created_at": "2025-07-03T21:05:20.876425",
+          "updated_at": "2025-07-03T21:05:20.876425"
+        },
+        "primary_department": null,
+        "department_associations": [
+          {
+            "association": {
+              "id": "2ea55004-126b-40b4-91d5-9d54795623c9",
+              "faculty_id": "fac_5425031d",
+              "department_id": "dept_univ_carnegie::mellon_psychology",
+              "appointment_type": "primary",
+              "title": null,
+              "percentage": null,
+              "confidence_score": 0.9,
+              "evidence_sources": [
+                "../graduate/index.html"
+              ],
+              "status": "active",
+              "start_date": null,
+              "end_date": null,
+              "is_current": true,
+              "created_at": "2025-07-03T21:05:20.876588",
+              "updated_at": "2025-07-03T21:05:20.876588",
+              "created_by_scrape_id": "pipeline_20250703_140458"
+            },
+            "department": {
+              "id": "dept_univ_carnegie::mellon_psychology",
+              "name": "Psychology",
+              "normalized_name": "psychology",
+              "short_name": null,
+              "university_id": "univ_carnegie::mellon",
+              "college_school": null,
+              "website_url": null,
+              "status": "active",
+              "created_at": "2025-07-03T21:05:20.876454",
+              "updated_at": "2025-07-03T21:05:20.876455"
+            }
+          }
+        ],
+        "lab_associations": [],
+        "enrichments": {
+          "google_scholar": [],
+          "profile": [],
+          "links": [],
+          "research": []
+        },
+        "computed_metrics": {
+          "total_enrichments": 0,
+          "lab_count": 0,
+          "department_count": 1
+        },
+        "data_sources": [
+          "../graduate/index.html"
+        ],
+        "view_generated_at": "2025-07-03T21:05:20.878270",
+        "data_freshness_score": 0.0,
+        "completeness_score": 0.0,
+        "confidence_score": 0.8
+      }
+    ],
+    "lab_entities": [
+      {
+        "lab": {
+          "id": "lab_ac60ff96",
+          "name": "Unknown Lab",
+          "normalized_name": "unknown::lab",
+          "lab_type": null,
+          "university_id": "univ_carnegie::mellon",
+          "primary_department_id": "dept_univ_carnegie::mellon_psychology",
+          "website_url": "https://www.cmu.edu/research-and-creativity/centers-and-institutes",
+          "description": null,
+          "location": null,
+          "status": "active",
+          "confidence_score": 0.7,
+          "duplicate_of": null,
+          "merged_from": [],
+          "created_at": "2025-07-03T21:05:20.876487",
+          "updated_at": "2025-07-03T21:05:20.876488",
+          "source_scrape_id": "pipeline_20250703_140458"
+        },
+        "university": {
+          "id": "univ_carnegie::mellon",
+          "name": "Carnegie Mellon University",
+          "normalized_name": "carnegie::mellon",
+          "short_name": null,
+          "domain": "www.cmu.edu",
+          "website_url": "https://www.cmu.edu",
+          "city": null,
+          "state_province": null,
+          "country": "US",
+          "status": "active",
+          "created_at": "2025-07-03T21:05:20.876425",
+          "updated_at": "2025-07-03T21:05:20.876425"
+        },
+        "primary_department": {
+          "id": "dept_univ_carnegie::mellon_psychology",
+          "name": "Psychology",
+          "normalized_name": "psychology",
+          "short_name": null,
+          "university_id": "univ_carnegie::mellon",
+          "college_school": null,
+          "website_url": null,
+          "status": "active",
+          "created_at": "2025-07-03T21:05:20.876454",
+          "updated_at": "2025-07-03T21:05:20.876455"
+        },
+        "department_associations": [],
+        "faculty_associations": [
+          {
+            "association": {
+              "id": "1ca497a6-484c-4e3f-9137-c4275e4948f8",
+              "faculty_id": "fac_e2ab043c",
+              "lab_id": "lab_ac60ff96",
+              "role": "member",
+              "relationship_type": "member",
+              "confidence_score": 0.7,
+              "confidence_level": "medium",
+              "evidence_sources": [
+                "https://www.cmu.edu/",
+                "https://www.cmu.edu/research-and-creativity/centers-and-institutes"
+              ],
+              "status": "pending_verification",
+              "start_date": null,
+              "end_date": null,
+              "is_current": true,
+              "conflicts_with": [],
+              "supersedes": null,
+              "created_at": "2025-07-03T21:05:20.876511",
+              "updated_at": "2025-07-03T21:05:20.876511",
+              "created_by_scrape_id": "pipeline_20250703_140458",
+              "verified_by": null
+            },
+            "faculty": {
+              "id": "fac_e2ab043c",
+              "name": "Carnegie Mellon University",
+              "normalized_name": "carnegie::mellon::university",
+              "title": null,
+              "primary_university_id": "univ_carnegie::mellon",
+              "primary_department_id": "dept_carnegie::mellon_psychology",
+              "email": null,
+              "phone": "(412) 268-2000",
+              "office_location": null,
+              "profile_url": "https://www.cmu.edu/",
+              "personal_website": null,
+              "status": "active",
+              "confidence_score": 0.8,
+              "duplicate_of": null,
+              "merged_from": [],
+              "created_at": "2025-07-03T21:05:20.876398",
+              "updated_at": "2025-07-03T21:05:20.876399",
+              "source_scrape_id": "pipeline_20250703_140458",
+              "enrichments": {
+                "profile": [],
+                "links": []
+              }
+            }
+          },
+          {
+            "association": {
+              "id": "1996c11e-5b43-41cc-b89e-56b31941661c",
+              "faculty_id": "fac_bef61005",
+              "lab_id": "lab_ac60ff96",
+              "role": "member",
+              "relationship_type": "member",
+              "confidence_score": 0.7,
+              "confidence_level": "medium",
+              "evidence_sources": [
+                "https://www.cmu.edu/legal",
+                "https://www.cmu.edu/research-and-creativity/centers-and-institutes"
+              ],
+              "status": "pending_verification",
+              "start_date": null,
+              "end_date": null,
+              "is_current": true,
+              "conflicts_with": [],
+              "supersedes": null,
+              "created_at": "2025-07-03T21:05:20.877251",
+              "updated_at": "2025-07-03T21:05:20.877251",
+              "created_by_scrape_id": "pipeline_20250703_140458",
+              "verified_by": null
+            },
+            "faculty": {
+              "id": "fac_bef61005",
+              "name": "Legal Info",
+              "normalized_name": "legal::info",
+              "title": null,
+              "primary_university_id": "univ_carnegie::mellon",
+              "primary_department_id": "dept_carnegie::mellon_psychology",
+              "email": null,
+              "phone": "(412) 268-2000",
+              "office_location": null,
+              "profile_url": "https://www.cmu.edu/legal",
+              "personal_website": "https://www.cmu.edu/",
+              "status": "active",
+              "confidence_score": 0.8,
+              "duplicate_of": null,
+              "merged_from": [],
+              "created_at": "2025-07-03T21:05:20.877239",
+              "updated_at": "2025-07-03T21:05:20.877239",
+              "source_scrape_id": "pipeline_20250703_140458",
+              "enrichments": {
+                "profile": [],
+                "links": []
+              }
+            }
+          }
+        ],
+        "enrichments": {},
+        "computed_metrics": {
+          "member_count": 2,
+          "pi_count": 0,
+          "is_multi_pi": false
+        },
+        "data_sources": [
+          "https://www.cmu.edu/research-and-creativity/centers-and-institutes"
+        ],
+        "view_generated_at": "2025-07-03T21:05:20.879555",
+        "data_freshness_score": 0.0,
+        "completeness_score": 0.8,
+        "confidence_score": 0.7
+      },
+      {
+        "lab": {
+          "id": "lab_0a731bbb",
+          "name": "Unknown Lab",
+          "normalized_name": "unknown::lab",
+          "lab_type": null,
+          "university_id": "univ_carnegie::mellon",
+          "primary_department_id": "dept_univ_carnegie::mellon_psychology",
+          "website_url": "https://www.bridge-center.org/",
+          "description": null,
+          "location": null,
+          "status": "active",
+          "confidence_score": 0.7,
+          "duplicate_of": null,
+          "merged_from": [],
+          "created_at": "2025-07-03T21:05:20.877437",
+          "updated_at": "2025-07-03T21:05:20.877437",
+          "source_scrape_id": "pipeline_20250703_140458"
+        },
+        "university": {
+          "id": "univ_carnegie::mellon",
+          "name": "Carnegie Mellon University",
+          "normalized_name": "carnegie::mellon",
+          "short_name": null,
+          "domain": "www.cmu.edu",
+          "website_url": "https://www.cmu.edu",
+          "city": null,
+          "state_province": null,
+          "country": "US",
+          "status": "active",
+          "created_at": "2025-07-03T21:05:20.876425",
+          "updated_at": "2025-07-03T21:05:20.876425"
+        },
+        "primary_department": {
+          "id": "dept_univ_carnegie::mellon_psychology",
+          "name": "Psychology",
+          "normalized_name": "psychology",
+          "short_name": null,
+          "university_id": "univ_carnegie::mellon",
+          "college_school": null,
+          "website_url": null,
+          "status": "active",
+          "created_at": "2025-07-03T21:05:20.876454",
+          "updated_at": "2025-07-03T21:05:20.876455"
+        },
+        "department_associations": [],
+        "faculty_associations": [
+          {
+            "association": {
+              "id": "1b69588f-e75a-46aa-9dd0-067cffe1b41e",
+              "faculty_id": "fac_47e224a8",
+              "lab_id": "lab_0a731bbb",
+              "role": "member",
+              "relationship_type": "member",
+              "confidence_score": 0.7,
+              "confidence_level": "medium",
+              "evidence_sources": [
+                "https://www.cmu.edu/dietrich/psychology/spur/",
+                "https://www.bridge-center.org/"
+              ],
+              "status": "pending_verification",
+              "start_date": null,
+              "end_date": null,
+              "is_current": true,
+              "conflicts_with": [],
+              "supersedes": null,
+              "created_at": "2025-07-03T21:05:20.877445",
+              "updated_at": "2025-07-03T21:05:20.877445",
+              "created_by_scrape_id": "pipeline_20250703_140458",
+              "verified_by": null
+            },
+            "faculty": {
+              "id": "fac_47e224a8",
+              "name": "Summer Program for Undergraduate Researchers",
+              "normalized_name": "summer::program::for::undergraduate::researchers",
+              "title": null,
+              "primary_university_id": "univ_carnegie::mellon",
+              "primary_department_id": "dept_carnegie::mellon_psychology",
+              "email": null,
+              "phone": "(412) 268-2000",
+              "office_location": null,
+              "profile_url": "https://www.cmu.edu/dietrich/psychology/spur/",
+              "personal_website": null,
+              "status": "active",
+              "confidence_score": 0.8,
+              "duplicate_of": null,
+              "merged_from": [],
+              "created_at": "2025-07-03T21:05:20.877428",
+              "updated_at": "2025-07-03T21:05:20.877428",
+              "source_scrape_id": "pipeline_20250703_140458",
+              "enrichments": {
+                "profile": [],
+                "links": []
+              }
+            }
+          },
+          {
+            "association": {
+              "id": "d250ab62-f13f-4c7d-a37d-1125c53d351d",
+              "faculty_id": "fac_b60515b5",
+              "lab_id": "lab_0a731bbb",
+              "role": "member",
+              "relationship_type": "member",
+              "confidence_score": 0.7,
+              "confidence_level": "medium",
+              "evidence_sources": [
+                "https://www.cmu.edu/dietrich/psychology/spur/index.html",
+                "https://www.bridge-center.org/"
+              ],
+              "status": "pending_verification",
+              "start_date": null,
+              "end_date": null,
+              "is_current": true,
+              "conflicts_with": [],
+              "supersedes": null,
+              "created_at": "2025-07-03T21:05:20.877818",
+              "updated_at": "2025-07-03T21:05:20.877818",
+              "created_by_scrape_id": "pipeline_20250703_140458",
+              "verified_by": null
+            },
+            "faculty": {
+              "id": "fac_b60515b5",
+              "name": "Summer Program for Undergraduate Researchers (SPUR)",
+              "normalized_name": "summer::program::for::undergraduate::researchers::spur",
+              "title": null,
+              "primary_university_id": "univ_carnegie::mellon",
+              "primary_department_id": "dept_carnegie::mellon_psychology",
+              "email": null,
+              "phone": "(412) 268-2000",
+              "office_location": null,
+              "profile_url": "https://www.cmu.edu/dietrich/psychology/spur/index.html",
+              "personal_website": null,
+              "status": "active",
+              "confidence_score": 0.8,
+              "duplicate_of": null,
+              "merged_from": [],
+              "created_at": "2025-07-03T21:05:20.877806",
+              "updated_at": "2025-07-03T21:05:20.877807",
+              "source_scrape_id": "pipeline_20250703_140458",
+              "enrichments": {
+                "profile": [],
+                "links": []
+              }
+            }
+          }
+        ],
+        "enrichments": {},
+        "computed_metrics": {
+          "member_count": 2,
+          "pi_count": 0,
+          "is_multi_pi": false
+        },
+        "data_sources": [
+          "https://www.bridge-center.org/"
+        ],
+        "view_generated_at": "2025-07-03T21:05:20.879572",
+        "data_freshness_score": 0.0,
+        "completeness_score": 0.8,
+        "confidence_score": 0.7
+      }
+    ]
+  },
+  "stage_summary": {
+    "scraping": {
+      "status": "completed",
+      "faculty_count": 92,
+      "metadata": {
+        "total_faculty": 92,
+        "total_faculty_before_dedup": 105,
+        "departments_processed": 1,
+        "department_results": {
+          "Psychology": {
+            "faculty_count": 105,
+            "structure_type": "grid",
+            "confidence": 0.85
+          }
+        },
+        "discovery_confidence": 0.85,
+        "scraping_strategy": "adaptive_comprehensive",
+        "lab_discovery_enabled": true,
+        "comprehensive_extraction": true,
+        "timestamp": 1751576703.307981
+      },
+      "completed_at": "2025-07-03T14:05:03.308005"
+    },
+    "enhancement": {
+      "status": "completed",
+      "validation_stats": {
+        "valid_links": 92,
+        "accessible_links": 11,
+        "broken_links": 81,
+        "redirected_links": 2
+      },
+      "enhancement_stats": {
+        "total_processed": 92,
+        "successfully_enriched": 10,
+        "research_interests_found": 10,
+        "additional_links_found": 48,
+        "biographies_extracted": 10,
+        "contact_info_found": 10,
+        "errors": 0
+      },
+      "enhanced_faculty_count": 92,
+      "completed_at": "2025-07-03T14:05:19.107034"
+    },
+    "link_enrichment": {
+      "status": "completed",
+      "faculty_processed": 92,
+      "links_processed": 92,
+      "successful_enrichments": 8,
+      "scholar_profiles_enriched": 0,
+      "lab_sites_enriched": 0,
+      "university_profiles_enriched": 8,
+      "total_data_points_extracted": 0,
+      "smart_links_added": 0,
+      "social_media_profiles_found": 0,
+      "completed_at": "2025-07-03T14:05:20.876215"
+    },
+    "conversion": {
+      "status": "completed",
+      "entities_created": {
+        "faculty": 92,
+        "labs": 6,
+        "departments": 1,
+        "universities": 1
+      },
+      "associations_created": {
+        "faculty_lab": 8,
+        "faculty_department": 92,
+        "faculty_enrichment": 20
+      },
+      "deduplication_stats": {
+        "faculty_processed": 92,
+        "faculty_created": 92,
+        "faculty_merged": 0,
+        "labs_created": 6,
+        "universities_created": 1,
+        "departments_created": 1,
+        "associations_created": 100,
+        "enrichments_created": 20,
+        "conflicts_detected": 0,
+        "issues": []
+      },
+      "completed_at": "2025-07-03T14:05:20.879609"
+    }
+  }
+}

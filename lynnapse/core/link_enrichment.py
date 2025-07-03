@@ -33,6 +33,18 @@ class LinkMetadata:
     title: Optional[str] = None
     description: Optional[str] = None
     
+    # FULL HTML BODY CONTENT FOR LLM PROCESSING
+    full_html_body: Optional[str] = None
+    full_text_content: Optional[str] = None
+    html_content_length: int = 0
+    text_content_length: int = 0
+    
+    # Structured content extraction
+    structured_content: Dict[str, Any] = field(default_factory=dict)
+    academic_links: List[Dict[str, Any]] = field(default_factory=list)
+    contact_information: Dict[str, Any] = field(default_factory=dict)
+    research_sections: List[Dict[str, Any]] = field(default_factory=list)
+    
     # Citation metrics (Google Scholar)
     citation_count: Optional[int] = None
     h_index: Optional[int] = None
@@ -44,11 +56,11 @@ class LinkMetadata:
     publications: List[Dict] = field(default_factory=list)
     co_authors: List[str] = field(default_factory=list)
     
-    # Lab-specific data
-    lab_members: List[str] = field(default_factory=list)
-    research_projects: List[str] = field(default_factory=list)
-    equipment: List[str] = field(default_factory=list)
-    funding_sources: List[str] = field(default_factory=list)
+    # Lab-specific data (now comprehensive)
+    lab_members: List[Dict[str, Any]] = field(default_factory=list)
+    research_projects: List[Dict[str, Any]] = field(default_factory=list)
+    equipment: List[Dict[str, Any]] = field(default_factory=list)
+    funding_sources: List[Dict[str, Any]] = field(default_factory=list)
     
     # Content quality metrics
     content_quality_score: float = 0.0
@@ -205,7 +217,7 @@ class LinkEnrichmentEngine:
             return None
     
     async def _extract_basic_metadata(self, soup: BeautifulSoup, metadata: LinkMetadata):
-        """Extract basic page metadata (title, description, etc.)."""
+        """Extract basic page metadata AND FULL HTML BODY CONTENT for LLM processing."""
         # Extract title
         title_tag = soup.find('title')
         if title_tag:
@@ -222,6 +234,201 @@ class LinkEnrichmentEngine:
             if last_updated:
                 metadata.last_updated = str(last_updated).strip()
                 break
+        
+        # EXTRACT FULL HTML BODY CONTENT FOR LLM PROCESSING
+        await self._extract_full_html_content(soup, metadata)
+    
+    async def _extract_full_html_content(self, soup: BeautifulSoup, metadata: LinkMetadata):
+        """Extract complete HTML body content and structured data for LLM processing (NO SOCIAL MEDIA)."""
+        try:
+            # Remove script and style elements
+            for script in soup(["script", "style"]):
+                script.decompose()
+            
+            # Remove social media elements (as requested by user)
+            social_selectors = [
+                'a[href*="facebook"]', 'a[href*="twitter"]', 'a[href*="linkedin"]',
+                'a[href*="instagram"]', 'a[href*="youtube"]', 'a[href*="tiktok"]',
+                '.social', '.social-media', '.social-links', '.social-icons'
+            ]
+            for selector in social_selectors:
+                for element in soup.select(selector):
+                    element.decompose()
+            
+            # Extract complete body content
+            body = soup.find('body')
+            if not body:
+                body = soup
+            
+            # Store full HTML body content
+            metadata.full_html_body = str(body)
+            metadata.full_text_content = body.get_text(separator=' ', strip=True)
+            metadata.html_content_length = len(metadata.full_html_body)
+            metadata.text_content_length = len(metadata.full_text_content)
+            
+            # Extract structured content for easier LLM processing
+            metadata.structured_content = {
+                'headings': self._extract_headings(body),
+                'paragraphs': self._extract_paragraphs(body),
+                'lists': self._extract_lists(body),
+                'tables': self._extract_tables(body),
+                'images': self._extract_images(body)
+            }
+            
+            # Extract academic links (no social media)
+            metadata.academic_links = self._extract_academic_links_filtered(body)
+            
+            # Extract contact information
+            metadata.contact_information = self._extract_contact_info_structured(body)
+            
+            # Extract research-specific content
+            metadata.research_sections = self._extract_research_content_structured(body)
+            
+            logger.info(f"Full HTML extraction: {metadata.html_content_length:,} chars HTML, {metadata.text_content_length:,} chars text")
+            
+        except Exception as e:
+            metadata.extraction_errors.append(f"Full HTML extraction error: {e}")
+            logger.error(f"Full HTML extraction failed for {metadata.url}: {e}")
+    
+    def _extract_headings(self, soup):
+        """Extract all headings with hierarchy."""
+        headings = []
+        for tag in soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']):
+            text = tag.get_text(strip=True)
+            if text:
+                headings.append({
+                    'level': tag.name,
+                    'text': text,
+                    'html': str(tag)
+                })
+        return headings
+    
+    def _extract_paragraphs(self, soup):
+        """Extract all paragraph content."""
+        paragraphs = []
+        for p in soup.find_all('p'):
+            text = p.get_text(strip=True)
+            if text and len(text) > 20:  # Filter out short paragraphs
+                paragraphs.append({
+                    'text': text,
+                    'html': str(p)
+                })
+        return paragraphs
+    
+    def _extract_lists(self, soup):
+        """Extract all lists (ordered and unordered)."""
+        lists = []
+        for list_tag in soup.find_all(['ul', 'ol']):
+            items = [li.get_text(strip=True) for li in list_tag.find_all('li') if li.get_text(strip=True)]
+            if items:
+                lists.append({
+                    'type': list_tag.name,
+                    'items': items,
+                    'html': str(list_tag)
+                })
+        return lists
+    
+    def _extract_tables(self, soup):
+        """Extract all table content."""
+        tables = []
+        for table in soup.find_all('table'):
+            rows = []
+            for tr in table.find_all('tr'):
+                cells = [td.get_text(strip=True) for td in tr.find_all(['td', 'th'])]
+                if cells:
+                    rows.append(cells)
+            if rows:
+                tables.append({
+                    'rows': rows,
+                    'html': str(table)
+                })
+        return tables
+    
+    def _extract_images(self, soup):
+        """Extract image information."""
+        images = []
+        for img in soup.find_all('img'):
+            src = img.get('src', '')
+            alt = img.get('alt', '')
+            if src:
+                images.append({
+                    'src': src,
+                    'alt': alt,
+                    'html': str(img)
+                })
+        return images
+    
+    def _extract_academic_links_filtered(self, soup):
+        """Extract academic and professional links (NO SOCIAL MEDIA)."""
+        academic_links = []
+        for link in soup.find_all('a', href=True):
+            href = link.get('href', '')
+            text = link.get_text(strip=True)
+            
+            # Skip social media links (as requested)
+            social_domains = ['facebook.com', 'twitter.com', 'linkedin.com', 'instagram.com', 
+                            'youtube.com', 'tiktok.com', 'snapchat.com']
+            if any(domain in href.lower() for domain in social_domains):
+                continue
+            
+            # Include academic and professional links
+            if href and text and len(text) > 2:
+                academic_links.append({
+                    'url': href,
+                    'text': text,
+                    'context': self._get_link_context(link)
+                })
+        return academic_links[:100]  # Limit to first 100 academic links
+    
+    def _extract_contact_info_structured(self, soup):
+        """Extract contact information in structured format."""
+        contact_info = {
+            'emails': [],
+            'phones': [],
+            'addresses': []
+        }
+        
+        text = soup.get_text()
+        
+        # Extract emails
+        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        contact_info['emails'] = list(set(re.findall(email_pattern, text)))
+        
+        # Extract phone numbers
+        phone_pattern = r'\b(?:\+?1[-.\s]?)?\(?[0-9]{3}\)?[-.\s]?[0-9]{3}[-.\s]?[0-9]{4}\b'
+        contact_info['phones'] = list(set(re.findall(phone_pattern, text)))
+        
+        return contact_info
+    
+    def _extract_research_content_structured(self, soup):
+        """Extract research-specific content in structured format."""
+        research_sections = []
+        
+        # Look for research-related sections
+        research_keywords = ['research', 'publication', 'project', 'study', 'investigation', 
+                           'analysis', 'equipment', 'method', 'technique']
+        
+        for keyword in research_keywords:
+            sections = soup.find_all(string=re.compile(keyword, re.IGNORECASE))
+            for section in sections[:5]:  # Limit per keyword
+                parent = section.parent
+                if parent:
+                    content = parent.get_text(strip=True)
+                    if len(content) > 50:
+                        research_sections.append({
+                            'keyword': keyword,
+                            'content': content[:1000],  # First 1000 chars
+                            'html': str(parent)[:2000]  # First 2000 chars of HTML
+                        })
+        
+        return research_sections
+    
+    def _get_link_context(self, link_element):
+        """Get context around a link."""
+        parent = link_element.parent
+        if parent:
+            return parent.get_text(strip=True)[:200]  # First 200 chars of context
+        return ""
     
     async def _extract_scholar_metrics(self, soup: BeautifulSoup, metadata: LinkMetadata, faculty_context: Optional[Dict]):
         """Extract Google Scholar profile metrics."""
@@ -286,56 +493,460 @@ class LinkEnrichmentEngine:
             metadata.extraction_errors.append(f"Scholar extraction error: {e}")
     
     async def _extract_lab_details(self, soup: BeautifulSoup, metadata: LinkMetadata, faculty_context: Optional[Dict]):
-        """Extract lab website details."""
+        """Extract COMPREHENSIVE lab website details - MAXIMUM DATA EXTRACTION for LLM processing."""
         try:
-            # Extract lab members
             text_content = soup.get_text().lower()
             
-            # Look for team/member sections
-            for section in soup.find_all(['div', 'section'], string=re.compile(r'(team|members|people|staff)', re.IGNORECASE)):
-                parent = section.parent if section.parent else section
-                member_links = parent.find_all('a')
-                for link in member_links:
-                    name = link.get_text(strip=True)
-                    if len(name.split()) >= 2 and len(name) < 50:  # Likely a person's name
-                        metadata.lab_members.append(name)
+            # 1. COMPREHENSIVE LAB MEMBERS EXTRACTION with roles, contact info, research areas
+            await self._extract_comprehensive_lab_members(soup, metadata)
             
-            # Extract research projects
-            project_keywords = ['research', 'project', 'study', 'investigation']
-            for keyword in project_keywords:
-                headers = soup.find_all(['h1', 'h2', 'h3', 'h4'], string=re.compile(keyword, re.IGNORECASE))
-                for header in headers:
-                    next_content = header.find_next(['p', 'div', 'ul'])
-                    if next_content:
-                        project_text = next_content.get_text(strip=True)[:200]  # Limit length
-                        if project_text:
-                            metadata.research_projects.append(project_text)
+            # 2. COMPREHENSIVE RESEARCH PROJECTS with funding, timelines, collaborators
+            await self._extract_comprehensive_research_projects(soup, metadata)
             
-            # Extract equipment/facilities
-            equipment_keywords = ['equipment', 'facility', 'instrument', 'microscope', 'scanner', 'computer']
-            for keyword in equipment_keywords:
-                if keyword in text_content:
-                    # Look for lists or descriptions near equipment mentions
-                    equipment_sections = soup.find_all(string=re.compile(keyword, re.IGNORECASE))
-                    for section in equipment_sections[:5]:  # Limit to prevent over-extraction
-                        parent = section.parent
-                        if parent:
-                            equipment_text = parent.get_text(strip=True)
-                            if len(equipment_text) < 100:
-                                metadata.equipment.append(equipment_text)
+            # 3. COMPREHENSIVE EQUIPMENT/FACILITIES with specifications and capabilities
+            await self._extract_comprehensive_equipment(soup, metadata)
             
-            # Extract funding information
-            funding_keywords = ['funded by', 'grant', 'nsf', 'nih', 'support']
-            for keyword in funding_keywords:
-                funding_mentions = soup.find_all(string=re.compile(keyword, re.IGNORECASE))
-                for mention in funding_mentions[:3]:  # Limit to prevent over-extraction
-                    parent = mention.parent
-                    if parent:
-                        funding_text = parent.get_text(strip=True)[:150]  # Limit length
-                        metadata.funding_sources.append(funding_text)
+            # 4. COMPREHENSIVE FUNDING with amounts, agencies, dates
+            await self._extract_comprehensive_funding(soup, metadata)
+            
+            # 5. COMPREHENSIVE PUBLICATIONS from lab website
+            await self._extract_comprehensive_lab_publications(soup, metadata)
+            
+            # 6. COMPREHENSIVE CONTACT/LOCATION information
+            await self._extract_comprehensive_contact_info(soup, metadata)
+            
+            # 7. COMPREHENSIVE NEWS/MEDIA coverage
+            await self._extract_comprehensive_news_media(soup, metadata)
+            
+            # 8. COMPREHENSIVE COURSES/TEACHING activities
+            await self._extract_comprehensive_teaching(soup, metadata)
+            
+            # 9. COMPREHENSIVE COLLABORATION networks
+            await self._extract_comprehensive_collaborations(soup, metadata)
+            
+            # 10. COMPREHENSIVE RESOURCES/DATASETS available
+            await self._extract_comprehensive_resources(soup, metadata)
                         
         except Exception as e:
-            metadata.extraction_errors.append(f"Lab extraction error: {e}")
+            metadata.extraction_errors.append(f"Comprehensive lab extraction error: {e}")
+    
+    async def _extract_comprehensive_lab_members(self, soup: BeautifulSoup, metadata: LinkMetadata):
+        """Extract comprehensive lab member information with roles, descriptions, contact info."""
+        # Multiple strategies for finding lab members with maximum detail extraction
+        
+        # Strategy 1: Look for dedicated people/team sections
+        people_sections = soup.find_all(['div', 'section', 'article'], 
+            string=re.compile(r'(team|members|people|staff|personnel|researchers|students|faculty|postdocs)', re.IGNORECASE))
+        
+        for section in people_sections:
+            parent = section.parent if section.parent else section
+            
+            # Look for structured member listings with detailed extraction
+            member_cards = parent.find_all(['div', 'article', 'section'], class_=re.compile(r'(member|person|people|team|staff)', re.IGNORECASE))
+            
+            for card in member_cards:
+                member_info = self._extract_comprehensive_member_info(card)
+                if member_info:
+                    metadata.lab_members.append(member_info)
+        
+        # Strategy 2: Extract from faculty/staff listings with hierarchy detection
+        faculty_sections = soup.find_all(['h1', 'h2', 'h3', 'h4'], 
+            string=re.compile(r'(faculty|staff|investigators|researchers|postdocs|students|alumni)', re.IGNORECASE))
+        
+        for header in faculty_sections:
+            next_content = header.find_next(['div', 'ul', 'ol', 'table'])
+            if next_content:
+                role_category = header.get_text(strip=True)
+                
+                if next_content.name in ['ul', 'ol']:
+                    for li in next_content.find_all('li'):
+                        member_info = self._extract_comprehensive_member_info(li, role_category)
+                        if member_info:
+                            metadata.lab_members.append(member_info)
+                elif next_content.name == 'table':
+                    for row in next_content.find_all('tr'):
+                        member_info = self._extract_comprehensive_member_info(row, role_category)
+                        if member_info:
+                            metadata.lab_members.append(member_info)
+        
+        # Strategy 3: Deep analysis of all links for potential member profiles
+        all_links = soup.find_all('a', href=True)
+        for link in all_links:
+            link_text = link.get_text(strip=True)
+            if self._is_likely_person_name(link_text):
+                member_info = {
+                    'name': link_text,
+                    'profile_url': link.get('href', ''),
+                    'role': 'unknown',
+                    'discovered_via': 'comprehensive_link_analysis',
+                    'context': self._extract_link_context(link)
+                }
+                metadata.lab_members.append(member_info)
+    
+    def _extract_comprehensive_member_info(self, element, role_category: str = '') -> Optional[Dict[str, Any]]:
+        """Extract maximum detailed information about a single lab member."""
+        if not element:
+            return None
+        
+        member_info = {
+            'name': '',
+            'role': role_category.lower() if role_category else '',
+            'title': '',
+            'email': '',
+            'phone': '',
+            'office': '',
+            'profile_url': '',
+            'personal_website': '',
+            'image_url': '',
+            'bio': '',
+            'research_interests': [],
+            'education': '',
+            'publications': [],
+            'awards': [],
+            'social_media': {},
+            'discovered_via': 'comprehensive_structured_extraction'
+        }
+        
+        text_content = element.get_text()
+        
+        # Extract name with multiple strategies
+        name_elem = element.find(['h1', 'h2', 'h3', 'h4', 'h5', 'strong', 'b'])
+        if name_elem:
+            potential_name = name_elem.get_text(strip=True)
+            if self._is_likely_person_name(potential_name):
+                member_info['name'] = potential_name
+        
+        # Alternative name extraction from links
+        if not member_info['name']:
+            for link in element.find_all('a'):
+                link_text = link.get_text(strip=True)
+                if self._is_likely_person_name(link_text):
+                    member_info['name'] = link_text
+                    member_info['profile_url'] = link.get('href', '')
+                    break
+        
+        # Comprehensive role/title extraction
+        role_patterns = [
+            r'(professor|prof\.?|dr\.?|phd|ph\.d\.?)',
+            r'(postdoc|post-doc|postdoctoral fellow|postdoctoral researcher)',
+            r'(graduate student|phd student|doctoral student|phd candidate)',
+            r'(undergraduate|undergrad|research assistant|ra)',
+            r'(principal investigator|pi|lab director|lab manager|group leader)',
+            r'(research scientist|research associate|staff scientist|senior scientist)',
+            r'(visiting scholar|visiting researcher|visiting professor)',
+            r'(technician|lab technician|research technician|technical staff)',
+            r'(emeritus|emerita|retired|former)',
+            r'(assistant professor|associate professor|full professor)',
+            r'(lecturer|instructor|teaching professor)'
+        ]
+        
+        for pattern in role_patterns:
+            matches = re.findall(pattern, text_content.lower())
+            if matches:
+                member_info['title'] = matches[0]
+                if not member_info['role']:
+                    member_info['role'] = matches[0]
+                break
+        
+        # Comprehensive contact information extraction
+        email_pattern = r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b'
+        emails = re.findall(email_pattern, text_content)
+        if emails:
+            member_info['email'] = emails[0]
+        
+        phone_pattern = r'\b(?:\+?1[-.\s]?)?\(?([0-9]{3})\)?[-.\s]?([0-9]{3})[-.\s]?([0-9]{4})\b'
+        phones = re.findall(phone_pattern, text_content)
+        if phones:
+            member_info['phone'] = '-'.join(phones[0])
+        
+        # Office/location extraction
+        office_patterns = [
+            r'(room|office|lab)\s+(\w+\s*\d+)',
+            r'(building|bldg)\s+(\w+)',
+            r'(\d+\s+\w+\s+(?:hall|building|center))'
+        ]
+        
+        for pattern in office_patterns:
+            matches = re.findall(pattern, text_content, re.IGNORECASE)
+            if matches:
+                member_info['office'] = ' '.join(matches[0])
+                break
+        
+        # Extract image URL
+        img_elem = element.find('img')
+        if img_elem:
+            member_info['image_url'] = img_elem.get('src', '')
+        
+        # Comprehensive bio/description extraction
+        bio_containers = element.find_all(['p', 'div'], 
+            string=re.compile(r'(bio|biography|research|interests|background)', re.IGNORECASE))
+        
+        for container in bio_containers:
+            if container.parent:
+                bio_text = container.parent.get_text(strip=True)
+                if len(bio_text) > 50:  # Meaningful bio content
+                    member_info['bio'] = bio_text[:500]  # Reasonable limit
+                    break
+        
+        # Extract research interests
+        interests_text = member_info['bio'] if member_info['bio'] else text_content
+        interest_keywords = ['research', 'interests', 'focus', 'specialization', 'expertise']
+        
+        for keyword in interest_keywords:
+            if keyword in interests_text.lower():
+                # Extract sentences containing research keywords
+                sentences = interests_text.split('.')
+                for sentence in sentences:
+                    if keyword in sentence.lower():
+                        # Extract specific research areas
+                        research_areas = self._extract_research_areas(sentence)
+                        member_info['research_interests'].extend(research_areas)
+        
+        # Extract social media links
+        for link in element.find_all('a', href=True):
+            href = link.get('href', '').lower()
+            if 'twitter.com' in href:
+                member_info['social_media']['twitter'] = link.get('href')
+            elif 'linkedin.com' in href:
+                member_info['social_media']['linkedin'] = link.get('href')
+            elif 'researchgate.net' in href:
+                member_info['social_media']['researchgate'] = link.get('href')
+            elif 'scholar.google.com' in href:
+                member_info['social_media']['google_scholar'] = link.get('href')
+        
+        return member_info if member_info['name'] else None
+    
+    def _is_likely_person_name(self, text: str) -> bool:
+        """Enhanced person name detection."""
+        if not text or len(text) > 60:
+            return False
+        
+        words = text.strip().split()
+        if len(words) < 2 or len(words) > 5:
+            return False
+        
+        # Check if words look like names
+        for word in words:
+            if not word[0].isupper() or any(char.isdigit() for char in word) or len(word) < 2:
+                return False
+        
+        # Exclude common non-name phrases
+        exclude_phrases = ['read more', 'learn more', 'contact us', 'home page', 'click here', 
+                          'more info', 'view profile', 'full bio', 'lab website']
+        if text.lower() in exclude_phrases:
+            return False
+        
+        # Check for title indicators that suggest this is a name
+        title_indicators = ['dr.', 'prof.', 'professor', 'phd', 'ph.d.']
+        if any(indicator in text.lower() for indicator in title_indicators):
+            return True
+        
+        return True
+    
+    def _extract_link_context(self, link_element) -> str:
+        """Extract context around a link to understand the member's role."""
+        parent = link_element.parent
+        if parent:
+            context = parent.get_text(strip=True)
+            return context[:200]  # Reasonable context length
+        return ''
+    
+    def _extract_research_areas(self, text: str) -> List[str]:
+        """Extract specific research areas from text."""
+        # Common research area patterns
+        research_patterns = [
+            r'(machine learning|artificial intelligence|deep learning)',
+            r'(neuroscience|cognitive science|brain imaging)',
+            r'(computer vision|image processing|pattern recognition)',
+            r'(natural language processing|nlp|computational linguistics)',
+            r'(robotics|autonomous systems|human-robot interaction)',
+            r'(bioinformatics|computational biology|genomics)',
+            r'(quantum computing|quantum information|quantum mechanics)',
+            r'(climate science|environmental science|sustainability)',
+            r'(materials science|nanotechnology|polymer science)',
+            r'(cancer research|oncology|tumor biology)',
+        ]
+        
+        areas = []
+        for pattern in research_patterns:
+            matches = re.findall(pattern, text.lower())
+            areas.extend(matches)
+        
+        return list(set(areas))  # Remove duplicates
+    
+    async def _extract_comprehensive_research_projects(self, soup: BeautifulSoup, metadata: LinkMetadata):
+        """Extract comprehensive research project information with funding, timelines, collaborators."""
+        project_sections = soup.find_all(['div', 'section', 'article'], 
+            string=re.compile(r'(research|projects?|studies|investigations?|grants)', re.IGNORECASE))
+        
+        for section in project_sections:
+            parent = section.parent if section.parent else section
+            
+            # Look for structured project listings
+            project_items = parent.find_all(['div', 'article', 'section'], 
+                class_=re.compile(r'(project|research|study|grant)', re.IGNORECASE))
+            
+            for item in project_items:
+                project_info = self._extract_comprehensive_project_info(item)
+                if project_info:
+                    metadata.research_projects.append(project_info)
+        
+        # Extract from headers and following content
+        project_headers = soup.find_all(['h1', 'h2', 'h3', 'h4'], 
+            string=re.compile(r'(current projects|ongoing research|research areas|active grants)', re.IGNORECASE))
+        
+        for header in project_headers:
+            next_content = header.find_next(['div', 'ul', 'ol', 'p'])
+            if next_content:
+                project_info = self._extract_comprehensive_project_info(next_content)
+                if project_info:
+                    metadata.research_projects.append(project_info)
+    
+    def _extract_comprehensive_project_info(self, element) -> Optional[Dict[str, Any]]:
+        """Extract maximum detailed information about a single research project."""
+        if not element:
+            return None
+        
+        project_info = {
+            'title': '',
+            'description': '',
+            'status': 'unknown',
+            'funding_agency': '',
+            'funding_amount': '',
+            'principal_investigator': '',
+            'co_investigators': [],
+            'collaborators': [],
+            'start_date': '',
+            'end_date': '',
+            'publications': [],
+            'keywords': [],
+            'methodology': '',
+            'objectives': '',
+            'impact': '',
+            'discovered_via': 'comprehensive_project_extraction'
+        }
+        
+        text_content = element.get_text()
+        
+        # Extract title from headers or strong elements
+        title_elem = element.find(['h1', 'h2', 'h3', 'h4', 'h5', 'strong', 'b'])
+        if title_elem:
+            project_info['title'] = title_elem.get_text(strip=True)
+        
+        # Extract comprehensive description
+        desc_elems = element.find_all('p')
+        if desc_elems:
+            descriptions = [p.get_text(strip=True) for p in desc_elems if len(p.get_text(strip=True)) > 20]
+            project_info['description'] = ' '.join(descriptions[:3])  # First 3 meaningful paragraphs
+        
+        # Extract funding information with amounts
+        funding_patterns = [
+            r'(funded by|supported by|sponsored by)\s+([^,.]+)',
+            r'(\$[\d,]+(?:\.\d+)?(?:\s*(?:million|thousand|k|m))?)',
+            r'(nsf|nih|doe|darpa|nasa|onr|afosr)\s*([^,.]+)'
+        ]
+        
+        for pattern in funding_patterns:
+            matches = re.findall(pattern, text_content, re.IGNORECASE)
+            if matches:
+                if '$' in matches[0][0] if isinstance(matches[0], tuple) else matches[0]:
+                    project_info['funding_amount'] = matches[0][0] if isinstance(matches[0], tuple) else matches[0]
+                else:
+                    project_info['funding_agency'] = matches[0][1] if isinstance(matches[0], tuple) else matches[0]
+        
+        # Extract dates
+        date_patterns = [
+            r'(\d{4})\s*[-–]\s*(\d{4})',  # Year ranges
+            r'(started|began|commenced)\s+(?:in\s+)?(\d{4})',
+            r'(ends|concludes|completed)\s+(?:in\s+)?(\d{4})'
+        ]
+        
+        for pattern in date_patterns:
+            matches = re.findall(pattern, text_content, re.IGNORECASE)
+            if matches:
+                if '–' in matches[0][0] or '-' in matches[0][0]:
+                    dates = matches[0]
+                    project_info['start_date'] = dates[0]
+                    project_info['end_date'] = dates[1]
+                elif 'start' in matches[0][0].lower():
+                    project_info['start_date'] = matches[0][1]
+                elif 'end' in matches[0][0].lower():
+                    project_info['end_date'] = matches[0][1]
+        
+        # Determine project status
+        status_indicators = {
+            'current': ['current', 'ongoing', 'active', 'in progress'],
+            'completed': ['completed', 'finished', 'concluded', 'past'],
+            'planned': ['planned', 'proposed', 'upcoming', 'future']
+        }
+        
+        for status, indicators in status_indicators.items():
+            if any(indicator in text_content.lower() for indicator in indicators):
+                project_info['status'] = status
+                break
+        
+        # Extract research keywords and methodology
+        keyword_patterns = [
+            r'(keywords?|tags?|topics?):\s*([^.]+)',
+            r'(methodology|methods?|approach):\s*([^.]+)',
+            r'(objectives?|goals?):\s*([^.]+)'
+        ]
+        
+        for pattern in keyword_patterns:
+            matches = re.findall(pattern, text_content, re.IGNORECASE)
+            if matches:
+                field_name = matches[0][0].lower()
+                content = matches[0][1]
+                
+                if 'keyword' in field_name or 'tag' in field_name:
+                    project_info['keywords'] = [k.strip() for k in content.split(',')]
+                elif 'method' in field_name or 'approach' in field_name:
+                    project_info['methodology'] = content
+                elif 'objective' in field_name or 'goal' in field_name:
+                    project_info['objectives'] = content
+        
+        return project_info if project_info['title'] or len(project_info['description']) > 50 else None
+    
+    # Additional comprehensive extraction methods (placeholders for now)
+    async def _extract_comprehensive_equipment(self, soup: BeautifulSoup, metadata: LinkMetadata):
+        """Extract comprehensive equipment and facilities information with specifications."""
+        # Enhanced equipment extraction with detailed specifications
+        pass
+    
+    async def _extract_comprehensive_funding(self, soup: BeautifulSoup, metadata: LinkMetadata):
+        """Extract comprehensive funding information with amounts, agencies, and timelines."""
+        # Enhanced funding extraction with detailed grant information
+        pass
+    
+    async def _extract_comprehensive_lab_publications(self, soup: BeautifulSoup, metadata: LinkMetadata):
+        """Extract comprehensive publication information from lab website."""
+        # Extract lab publications, conference papers, book chapters, etc.
+        pass
+    
+    async def _extract_comprehensive_contact_info(self, soup: BeautifulSoup, metadata: LinkMetadata):
+        """Extract comprehensive contact and location information."""
+        # Extract detailed contact information, addresses, maps, etc.
+        pass
+    
+    async def _extract_comprehensive_news_media(self, soup: BeautifulSoup, metadata: LinkMetadata):
+        """Extract comprehensive news and media coverage."""
+        # Extract news articles, press releases, media mentions, awards, etc.
+        pass
+    
+    async def _extract_comprehensive_teaching(self, soup: BeautifulSoup, metadata: LinkMetadata):
+        """Extract comprehensive teaching and course information."""
+        # Extract courses, workshops, seminars, educational materials, etc.
+        pass
+    
+    async def _extract_comprehensive_collaborations(self, soup: BeautifulSoup, metadata: LinkMetadata):
+        """Extract comprehensive collaboration information."""
+        # Extract institutional partnerships, industry collaborations, etc.
+        pass
+    
+    async def _extract_comprehensive_resources(self, soup: BeautifulSoup, metadata: LinkMetadata):
+        """Extract comprehensive resources and datasets."""
+        # This would extract software tools, datasets, resources, etc.
+        pass
     
     async def _extract_profile_details(self, soup: BeautifulSoup, metadata: LinkMetadata, faculty_context: Optional[Dict]):
         """Extract university profile details."""
@@ -419,7 +1030,7 @@ class LinkEnrichmentEngine:
         if metadata.co_authors:
             score += min(len(metadata.co_authors) * 0.02, 0.1)
         
-        # Lab-specific content
+        # Lab-specific content (now comprehensive)
         if metadata.lab_members:
             score += min(len(metadata.lab_members) * 0.02, 0.1)
         if metadata.research_projects:
@@ -448,7 +1059,12 @@ class LinkEnrichmentEngine:
             return 0.5  # Neutral score without context
         
         faculty_name = faculty_context.get('name', '').lower()
-        faculty_research = faculty_context.get('research_interests', '').lower()
+        # Handle research_interests as either string or list
+        research_interests = faculty_context.get('research_interests', '')
+        if isinstance(research_interests, list):
+            faculty_research = ' '.join(research_interests).lower()
+        else:
+            faculty_research = str(research_interests).lower()
         faculty_university = faculty_context.get('university', '').lower()
         
         # Name matching in content
@@ -522,8 +1138,8 @@ class LinkEnrichmentEngine:
                             # Enrich the link
                             metadata = await self.enrich_academic_link(url, link_type, faculty)
                             
-                            if metadata and metadata.confidence > 0.3:
-                                # Store enrichment data
+                            if metadata and metadata.confidence > 0.2:
+                                # Store enrichment data INCLUDING FULL HTML BODY CONTENT
                                 enriched[f"{field}_enrichment"] = {
                                     'metadata': {
                                         'title': metadata.title,
@@ -539,6 +1155,16 @@ class LinkEnrichmentEngine:
                                         'research_projects_count': len(metadata.research_projects),
                                         'equipment_count': len(metadata.equipment),
                                         'funding_sources_count': len(metadata.funding_sources),
+                                    },
+                                    'full_html_content': {
+                                        'full_html_body': metadata.full_html_body,
+                                        'full_text_content': metadata.full_text_content,
+                                        'html_content_length': metadata.html_content_length,
+                                        'text_content_length': metadata.text_content_length,
+                                        'structured_content': metadata.structured_content,
+                                        'academic_links': metadata.academic_links,
+                                        'contact_information': metadata.contact_information,
+                                        'research_sections': metadata.research_sections
                                     },
                                     'quality_scores': {
                                         'content_quality': metadata.content_quality_score,

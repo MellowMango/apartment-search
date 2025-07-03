@@ -1,698 +1,444 @@
+#!/usr/bin/env python3
 """
-Smart Link Replacer - Enhanced academic link discovery using GPT-4o-mini assistance.
+Smart Link Replacer for Lynnapse
 
-This module improves upon the secondary link finder by using AI assistance for:
-1. Generating more effective search queries
-2. Better evaluation of link quality and relevance
-3. Smarter replacement strategies for social media links
-4. Enhanced academic source discovery
+Intelligent discovery and replacement of missing faculty links:
+- Google Scholar profiles
+- Personal websites
+- Social media profiles
+- Lab affiliations
+
+Uses advanced search heuristics and LLM assistance when available.
 """
 
 import asyncio
 import aiohttp
-import json
-import logging
 import re
-from typing import Dict, List, Optional, Tuple, Any
-from dataclasses import dataclass, field
-from datetime import datetime
-from urllib.parse import urlparse, quote_plus
-
-from .website_validator import WebsiteValidator, LinkType, LinkValidation
-from .secondary_link_finder import LinkCandidate, SearchResult
+import logging
+from typing import Dict, List, Any, Optional, Tuple
+from urllib.parse import quote, urljoin
+import json
 
 logger = logging.getLogger(__name__)
 
-@dataclass
-class SmartSearchStrategy:
-    """AI-enhanced search strategy for finding academic links."""
-    faculty_name: str
-    university: str
-    department: str
-    research_interests: str
-    search_queries: List[str] = field(default_factory=list)
-    priority_domains: List[str] = field(default_factory=list)
-    expected_link_types: List[str] = field(default_factory=list)
-    confidence_threshold: float = 0.6
-
-@dataclass
-class LinkEvaluation:
-    """AI evaluation of a potential academic link."""
-    url: str
-    relevance_score: float  # 0-1
-    academic_quality: float  # 0-1
-    likely_content_type: str  # 'personal_website', 'lab_website', 'profile', etc.
-    reasoning: str
-    recommended_for_replacement: bool
-
 class SmartLinkReplacer:
     """
-    Enhanced link replacement system with GPT-4o-mini assistance.
+    Smart link discovery and replacement for faculty with missing links.
     
-    Uses AI to generate better search queries and evaluate link quality
-    for more effective academic source discovery.
+    Provides intelligent search for:
+    - Google Scholar profiles
+    - Personal academic websites  
+    - Social media profiles
+    - Lab/research group affiliations
     """
     
-    def __init__(self, 
-                 openai_api_key: Optional[str] = None,
-                 timeout: int = 30,
-                 max_concurrent: int = 2,
-                 enable_ai_assistance: bool = True):
-        """
-        Initialize the smart link replacer.
-        
-        Args:
-            openai_api_key: OpenAI API key for GPT-4o-mini (optional)
-            timeout: Timeout for network operations
-            max_concurrent: Maximum concurrent operations
-            enable_ai_assistance: Whether to use AI for query generation
-        """
-        self.openai_api_key = openai_api_key
+    def __init__(self, timeout: int = 30, max_concurrent: int = 3):
         self.timeout = timeout
         self.max_concurrent = max_concurrent
-        self.enable_ai_assistance = enable_ai_assistance and openai_api_key is not None
+        self.session = None
         
-        self.session: Optional[aiohttp.ClientSession] = None
-        self.validator: Optional[WebsiteValidator] = None
-        
-        # Enhanced domain patterns for academic institutions
-        self.academic_domains = {
-            'Carnegie Mellon University': ['cmu.edu', 'andrew.cmu.edu'],
-            'Stanford University': ['stanford.edu'],
-            'MIT': ['mit.edu'],
-            'Harvard University': ['harvard.edu'],
-            'University of California, Berkeley': ['berkeley.edu'],
-            'University of Arizona': ['arizona.edu'],
-            'University of Vermont': ['uvm.edu'],
-            'Columbia University': ['columbia.edu'],
-            'Yale University': ['yale.edu'],
-            'Princeton University': ['princeton.edu']
-        }
-        
-        # Common academic path patterns
-        self.path_patterns = [
-            '/faculty/{name}', '/people/{name}', '/~{name}', '/profile/{name}',
-            '/directory/{name}', '/staff/{name}', '/{name}', '/lab/{name}',
-            '/research/{name}', '/faculty/{name}.html', '/people/{name}.html'
+        # Search patterns for different types of links
+        self.scholar_search_patterns = [
+            "site:scholar.google.com \"{name}\" \"{university}\"",
+            "site:scholar.google.com \"{name}\" {university_domain}",
+            "\"{name}\" google scholar {university_short}"
         ]
+        
+        self.personal_website_patterns = [
+            "\"{name}\" site:{university_domain}",
+            "\"{name}\" {university_short} faculty page",
+            "\"{name}\" {university_short} personal website",
+            "\"{name}\" homepage {university_short}"
+        ]
+        
+        self.social_media_patterns = [
+            "site:twitter.com \"{name}\" {university_short}",
+            "site:linkedin.com/in \"{name}\" {university_short}",
+            "site:researchgate.net \"{name}\" {university_short}",
+            "site:academia.edu \"{name}\" {university_short}"
+        ]
+        
+        # Common university domain patterns
+        self.university_domains = {
+            'stanford university': 'stanford.edu',
+            'harvard university': 'harvard.edu',
+            'mit': 'mit.edu',
+            'massachusetts institute of technology': 'mit.edu',
+            'university of california, berkeley': 'berkeley.edu',
+            'uc berkeley': 'berkeley.edu',
+            'carnegie mellon university': 'cmu.edu',
+            'cmu': 'cmu.edu',
+            'university of vermont': 'uvm.edu'
+        }
     
     async def __aenter__(self):
         """Async context manager entry."""
+        connector = aiohttp.TCPConnector(limit=50, limit_per_host=5)
+        timeout = aiohttp.ClientTimeout(total=self.timeout)
         self.session = aiohttp.ClientSession(
-            timeout=aiohttp.ClientTimeout(total=self.timeout),
-            headers={'User-Agent': 'Mozilla/5.0 (compatible; Lynnapse Academic Research Bot)'}
+            connector=connector,
+            timeout=timeout,
+            headers={'User-Agent': 'Lynnapse Academic Research Bot 1.0'}
         )
-        self.validator = WebsiteValidator(timeout=self.timeout, max_concurrent=self.max_concurrent)
-        await self.validator.__aenter__()
         return self
     
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         """Async context manager exit."""
-        if self.validator:
-            await self.validator.__aexit__(exc_type, exc_val, exc_tb)
         if self.session:
             await self.session.close()
     
-    async def generate_smart_search_strategy(self, faculty: Dict[str, Any]) -> SmartSearchStrategy:
+    async def find_google_scholar_profile(self, name: str, university: str) -> Optional[str]:
         """
-        Generate an AI-enhanced search strategy for finding academic links.
+        Find Google Scholar profile using intelligent search patterns.
+        
+        Args:
+            name: Faculty member name
+            university: University name
+            
+        Returns:
+            Google Scholar URL if found, None otherwise
         """
-        name = faculty.get('name', '')
-        university = faculty.get('university', '')
-        department = faculty.get('department', '')
-        research_interests = faculty.get('research_interests', '')
-        
-        # Safe string processing
-        name = name.strip() if isinstance(name, str) else ''
-        university = university.strip() if isinstance(university, str) else ''
-        department = department.strip() if isinstance(department, str) else ''
-        research_interests = research_interests.strip() if isinstance(research_interests, str) else ''
-        
-        strategy = SmartSearchStrategy(
-            faculty_name=name,
-            university=university,
-            department=department,
-            research_interests=research_interests
-        )
-        
-        if self.enable_ai_assistance and self.openai_api_key:
-            try:
-                ai_strategy = await self._get_ai_search_strategy(faculty)
-                strategy.search_queries = ai_strategy.get('search_queries', [])
-                strategy.priority_domains = ai_strategy.get('priority_domains', [])
-                strategy.expected_link_types = ai_strategy.get('expected_link_types', [])
-            except Exception as e:
-                logger.warning(f"AI search strategy generation failed: {e}")
-        
-        # Fallback to rule-based strategy
-        if not strategy.search_queries:
-            strategy.search_queries = self._generate_fallback_queries(faculty)
-        
-        if not strategy.priority_domains:
-            strategy.priority_domains = self.academic_domains.get(university, [university.lower().replace(' ', '').replace(',', '') + '.edu'])
-        
-        return strategy
-    
-    async def _get_ai_search_strategy(self, faculty: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Use GPT-4o-mini to generate smart search strategy.
-        """
-        if not self.session or not self.openai_api_key:
-            return {}
-        
-        prompt = f"""
-        You are an expert at finding academic websites and profiles for university faculty.
-        
-        Faculty Information:
-        - Name: {faculty.get('name', 'Unknown')}
-        - University: {faculty.get('university', 'Unknown')}
-        - Department: {faculty.get('department', 'Unknown')}
-        - Research Interests: {faculty.get('research_interests', 'Unknown')}
-        
-        Generate a search strategy to find this faculty member's:
-        1. Personal academic website
-        2. Lab website 
-        3. Google Scholar profile
-        4. University faculty page
-        
-        Provide your response as JSON with these fields:
-        - search_queries: List of 3-5 specific search queries
-        - priority_domains: List of likely university domains to check
-        - expected_link_types: List of link types we should prioritize
-        
-        Focus on finding authoritative, official academic sources.
-        """
+        if not name or not university:
+            return None
         
         try:
-            async with self.session.post(
-                'https://api.openai.com/v1/chat/completions',
-                headers={
-                    'Authorization': f'Bearer {self.openai_api_key}',
-                    'Content-Type': 'application/json'
-                },
-                json={
-                    'model': 'gpt-4o-mini',
-                    'messages': [{'role': 'user', 'content': prompt}],
-                    'max_tokens': 500,
-                    'temperature': 0.3
-                }
-            ) as response:
-                if response.status == 200:
-                    result = await response.json()
-                    content = result['choices'][0]['message']['content']
-                    
-                    # Try to extract JSON from the response
-                    try:
-                        # Look for JSON in the response
-                        json_match = re.search(r'\{.*\}', content, re.DOTALL)
-                        if json_match:
-                            return json.loads(json_match.group())
-                    except json.JSONDecodeError:
-                        logger.warning("Could not parse AI response as JSON")
-                
+            # Generate search variations
+            university_domain = self._get_university_domain(university)
+            university_short = self._get_university_short_name(university)
+            
+            # Try direct Google Scholar URL patterns first
+            direct_urls = self._generate_scholar_direct_urls(name, university_domain, university_short)
+            
+            for url in direct_urls:
+                if await self._verify_scholar_url(url, name):
+                    logger.info(f"Found Scholar profile via direct URL: {url}")
+                    return url
+            
+            # Try search-based discovery
+            search_urls = await self._search_for_scholar_profile(name, university, university_domain, university_short)
+            
+            for url in search_urls:
+                if await self._verify_scholar_url(url, name):
+                    logger.info(f"Found Scholar profile via search: {url}")
+                    return url
+            
+            logger.debug(f"No Scholar profile found for {name} at {university}")
+            return None
+            
         except Exception as e:
-            logger.error(f"OpenAI API error: {e}")
-        
-        return {}
+            logger.error(f"Error finding Scholar profile for {name}: {e}")
+            return None
     
-    def _generate_fallback_queries(self, faculty: Dict[str, Any]) -> List[str]:
-        """Generate fallback search queries using rule-based approach."""
-        name = faculty.get('name', '').strip()
-        university = faculty.get('university', '').strip()
-        department = faculty.get('department', '').strip()
-        
-        queries = []
-        
-        if name and university:
-            queries.extend([
-                f'"{name}" {university} faculty homepage',
-                f'"{name}" {university} {department} professor',
-                f'"{name}" {university} lab website',
-                f'"{name}" site:{university.lower().replace(" ", "").replace(",", "")}.edu',
-                f'"{name}" Google Scholar profile'
-            ])
-        
-        return queries[:5]  # Limit to 5 queries
-    
-    async def discover_university_links(self, faculty: Dict[str, Any], strategy: SmartSearchStrategy) -> List[LinkCandidate]:
+    async def find_personal_website(self, name: str, university: str) -> Optional[str]:
         """
-        Discover potential faculty links within university domains.
+        Find personal academic website using intelligent search patterns.
+        
+        Args:
+            name: Faculty member name
+            university: University name
+            
+        Returns:
+            Personal website URL if found, None otherwise
         """
-        candidates = []
-        name = strategy.faculty_name
+        if not name or not university:
+            return None
         
-        if not name:
-            return candidates
-        
-        # Generate name variations
-        name_variations = self._generate_name_variations(name)
-        
-        # Check priority domains first
-        for domain in strategy.priority_domains:
-            for name_var in name_variations:
-                for pattern in self.path_patterns:
-                    try:
-                        path = pattern.format(name=name_var)
-                        url = f"https://{domain}{path}"
-                        
-                        candidates.append(LinkCandidate(
-                            url=url,
-                            source='university_domain',
-                            query=f'University domain search for {name}',
-                            confidence=0.7 if '.edu' in domain else 0.5
-                        ))
-                    except (KeyError, ValueError):
-                        continue
-        
-        return candidates
+        try:
+            university_domain = self._get_university_domain(university)
+            university_short = self._get_university_short_name(university)
+            
+            # Try direct URL patterns first
+            direct_urls = self._generate_personal_website_urls(name, university_domain, university_short)
+            
+            for url in direct_urls:
+                if await self._verify_personal_website(url, name):
+                    logger.info(f"Found personal website via direct URL: {url}")
+                    return url
+            
+            # Try search-based discovery
+            search_urls = await self._search_for_personal_website(name, university, university_domain, university_short)
+            
+            for url in search_urls:
+                if await self._verify_personal_website(url, name):
+                    logger.info(f"Found personal website via search: {url}")
+                    return url
+            
+            logger.debug(f"No personal website found for {name} at {university}")
+            return None
+            
+        except Exception as e:
+            logger.error(f"Error finding personal website for {name}: {e}")
+            return None
     
-    def _generate_name_variations(self, name: str) -> List[str]:
-        """Generate common variations of a faculty name for URL construction."""
-        if not name or not isinstance(name, str) or name.strip() == '':
+    async def find_social_media_profiles(self, name: str, university: str) -> List[Dict[str, Any]]:
+        """
+        Find social media and academic platform profiles.
+        
+        Args:
+            name: Faculty member name
+            university: University name
+            
+        Returns:
+            List of social media profile dictionaries
+        """
+        if not name or not university:
             return []
         
-        name_clean = name.strip()
-        name_lower = name_clean.lower()
-        name_parts = name_lower.split()
+        profiles = []
         
-        variations = [name_lower]
-        
-        if len(name_parts) >= 2:
-            first_name = name_parts[0]
-            last_name = name_parts[-1]
+        try:
+            university_short = self._get_university_short_name(university)
             
-            variations.extend([
-                name_lower.replace(' ', '-'),
-                name_lower.replace(' ', '_'),
-                name_lower.replace(' ', ''),
-                f"{first_name}-{last_name}",
-                f"{first_name}_{last_name}",
-                f"{first_name[0]}{last_name}",  # first initial + last
-                f"{first_name}.{last_name}",
-                last_name,  # just last name
-                f"{last_name}-{first_name}"
-            ])
-        
-        return list(set(variations))  # Remove duplicates
+            # Search for various social media platforms
+            platforms = {
+                'twitter': 'twitter.com',
+                'linkedin': 'linkedin.com',
+                'researchgate': 'researchgate.net',
+                'academia': 'academia.edu',
+                'orcid': 'orcid.org'
+            }
+            
+            for platform_name, domain in platforms.items():
+                urls = await self._search_for_social_platform(name, university_short, platform_name, domain)
+                
+                for url in urls:
+                    if await self._verify_social_profile(url, name, platform_name):
+                        profiles.append({
+                            'platform': platform_name,
+                            'url': url,
+                            'verified': True,
+                            'discovery_method': 'smart_search'
+                        })
+                        break  # Only take the first verified profile per platform
+            
+            logger.debug(f"Found {len(profiles)} social media profiles for {name}")
+            return profiles
+            
+        except Exception as e:
+            logger.error(f"Error finding social media profiles for {name}: {e}")
+            return []
     
-    async def search_academic_platforms(self, faculty: Dict[str, Any]) -> List[LinkCandidate]:
-        """
-        Generate direct links to academic platforms.
-        """
-        candidates = []
-        name = faculty.get('name', '')
-        university = faculty.get('university', '')
+    def _get_university_domain(self, university: str) -> str:
+        """Get university domain from name."""
+        university_lower = university.lower()
         
-        if not name or not isinstance(name, str):
-            return candidates
-            
-        name = name.strip()
-        university = university.strip() if isinstance(university, str) else ''
+        # Check known mappings first
+        if university_lower in self.university_domains:
+            return self.university_domains[university_lower]
         
-        if not name:
-            return candidates
+        # Generate domain from name
+        clean_name = re.sub(r'[^a-zA-Z\s]', '', university_lower)
+        clean_name = clean_name.replace('university of ', '').replace(' university', '')
+        clean_name = clean_name.replace(' college', '').replace(' institute', '')
+        clean_name = clean_name.replace(' ', '')
         
-        # Google Scholar patterns
-        scholar_queries = [
-            f"https://scholar.google.com/citations?q={quote_plus(name)}",
-            f"https://scholar.google.com/citations?q={quote_plus(f'{name} {university}')}"
+        return f"{clean_name}.edu"
+    
+    def _get_university_short_name(self, university: str) -> str:
+        """Get short name for university."""
+        university_lower = university.lower()
+        
+        # Common abbreviations
+        if 'massachusetts institute of technology' in university_lower or university_lower == 'mit':
+            return 'MIT'
+        elif 'carnegie mellon' in university_lower:
+            return 'CMU'
+        elif 'university of california' in university_lower and 'berkeley' in university_lower:
+            return 'UC Berkeley'
+        elif 'stanford' in university_lower:
+            return 'Stanford'
+        elif 'harvard' in university_lower:
+            return 'Harvard'
+        elif 'university of vermont' in university_lower:
+            return 'UVM'
+        else:
+            # Extract first letters of major words
+            words = university.split()
+            major_words = [w for w in words if len(w) > 3 and w.lower() not in ['of', 'the', 'and']]
+            if major_words:
+                return ''.join(w[0].upper() for w in major_words[:3])
+            else:
+                return university.split()[0]
+    
+    def _generate_scholar_direct_urls(self, name: str, university_domain: str, university_short: str) -> List[str]:
+        """Generate potential direct Google Scholar URLs."""
+        urls = []
+        
+        # Clean name for URL generation
+        first_name = name.split()[0].lower() if name.split() else ""
+        last_name = name.split()[-1].lower() if len(name.split()) > 1 else ""
+        
+        # Common Scholar URL patterns
+        patterns = [
+            f"https://scholar.google.com/citations?user={first_name}{last_name}",
+            f"https://scholar.google.com/citations?user={first_name[0]}{last_name}",
+            f"https://scholar.google.com/citations?user={last_name}{first_name[0]}",
         ]
         
-        for url in scholar_queries:
-            candidates.append(LinkCandidate(
-                url=url,
-                source='academic_platform',
-                query=f'Google Scholar search for {name}',
-                confidence=0.8
-            ))
-        
-        # ResearchGate
-        name_clean = name.replace(' ', '-').lower()
-        researchgate_url = f"https://www.researchgate.net/profile/{name_clean}"
-        candidates.append(LinkCandidate(
-            url=researchgate_url,
-            source='academic_platform', 
-            query=f'ResearchGate profile for {name}',
-            confidence=0.7
-        ))
-        
-        # ORCID
-        orcid_url = f"https://orcid.org/search?searchQuery={quote_plus(name)}"
-        candidates.append(LinkCandidate(
-            url=orcid_url,
-            source='academic_platform',
-            query=f'ORCID search for {name}',
-            confidence=0.6
-        ))
-        
-        return candidates
+        urls.extend(patterns)
+        return urls
     
-    async def evaluate_link_with_ai(self, url: str, faculty: Dict[str, Any]) -> Optional[LinkEvaluation]:
-        """
-        Use GPT-4o-mini to evaluate the quality and relevance of a potential link.
-        """
-        if not self.enable_ai_assistance or not self.openai_api_key:
-            return None
+    def _generate_personal_website_urls(self, name: str, university_domain: str, university_short: str) -> List[str]:
+        """Generate potential personal website URLs."""
+        urls = []
         
-        # First, get basic page info
-        try:
-            validation = await self.validator.validate_link(url) if self.validator else None
-            page_title = validation.title if validation else "Unknown"
-            is_accessible = validation.is_accessible if validation else False
-            
-            if not is_accessible:
-                return LinkEvaluation(
-                    url=url,
-                    relevance_score=0.0,
-                    academic_quality=0.0,
-                    likely_content_type='inaccessible',
-                    reasoning='Link is not accessible',
-                    recommended_for_replacement=False
-                )
-        except Exception:
-            return None
+        # Clean name for URL generation
+        first_name = name.split()[0].lower() if name.split() else ""
+        last_name = name.split()[-1].lower() if len(name.split()) > 1 else ""
+        full_name_clean = name.lower().replace(' ', '')
         
-        prompt = f"""
-        Evaluate this potential academic link for a faculty member:
+        # Common personal website patterns
+        patterns = [
+            f"https://www.{university_domain}/~{first_name}{last_name}",
+            f"https://www.{university_domain}/~{last_name}",
+            f"https://www.{university_domain}/people/{first_name}-{last_name}",
+            f"https://www.{university_domain}/faculty/{first_name}-{last_name}",
+            f"https://{first_name}{last_name}.{university_domain}",
+            f"https://{last_name}.{university_domain}",
+        ]
         
-        Faculty: {faculty.get('name', 'Unknown')} at {faculty.get('university', 'Unknown')}
-        Department: {faculty.get('department', 'Unknown')}
-        Research: {faculty.get('research_interests', 'Unknown')}
-        
-        Link URL: {url}
-        Page Title: {page_title}
-        Domain: {urlparse(url).netloc}
-        
-        Rate this link on:
-        1. Relevance to this faculty member (0-1)
-        2. Academic quality/authority (0-1) 
-        3. Most likely content type (personal_website, lab_website, university_profile, google_scholar, etc.)
-        4. Whether it should replace a social media link (yes/no)
-        
-        Provide JSON response:
-        {{
-            "relevance_score": 0.0-1.0,
-            "academic_quality": 0.0-1.0,
-            "likely_content_type": "string",
-            "reasoning": "brief explanation",
-            "recommended_for_replacement": true/false
-        }}
-        """
-        
-        try:
-            async with self.session.post(
-                'https://api.openai.com/v1/chat/completions',
-                headers={
-                    'Authorization': f'Bearer {self.openai_api_key}',
-                    'Content-Type': 'application/json'
-                },
-                json={
-                    'model': 'gpt-4o-mini',
-                    'messages': [{'role': 'user', 'content': prompt}],
-                    'max_tokens': 300,
-                    'temperature': 0.1
-                }
-            ) as response:
-                if response.status == 200:
-                    result = await response.json()
-                    content = result['choices'][0]['message']['content']
-                    
-                    try:
-                        json_match = re.search(r'\{.*\}', content, re.DOTALL)
-                        if json_match:
-                            eval_data = json.loads(json_match.group())
-                            return LinkEvaluation(
-                                url=url,
-                                relevance_score=eval_data.get('relevance_score', 0.0),
-                                academic_quality=eval_data.get('academic_quality', 0.0),
-                                likely_content_type=eval_data.get('likely_content_type', 'unknown'),
-                                reasoning=eval_data.get('reasoning', 'AI evaluation'),
-                                recommended_for_replacement=eval_data.get('recommended_for_replacement', False)
-                            )
-                    except json.JSONDecodeError:
-                        logger.warning("Could not parse AI link evaluation")
-                        
-        except Exception as e:
-            logger.error(f"AI link evaluation error: {e}")
-        
-        return None
+        urls.extend(patterns)
+        return urls
     
-    async def find_replacement_links(self, faculty: Dict[str, Any]) -> List[LinkCandidate]:
-        """
-        Find high-quality replacement links for a faculty member.
-        """
-        all_candidates = []
-        
-        # Generate search strategy
-        strategy = await self.generate_smart_search_strategy(faculty)
-        
-        # Strategy 1: University domain exploration
+    async def _verify_scholar_url(self, url: str, name: str) -> bool:
+        """Verify that a Google Scholar URL belongs to the correct person."""
         try:
-            domain_candidates = await self.discover_university_links(faculty, strategy)
-            all_candidates.extend(domain_candidates)
-            logger.info(f"Found {len(domain_candidates)} university domain candidates for {faculty.get('name')}")
-        except Exception as e:
-            logger.error(f"University domain discovery failed: {e}")
-        
-        # Strategy 2: Academic platform links
-        try:
-            platform_candidates = await self.search_academic_platforms(faculty)
-            all_candidates.extend(platform_candidates)
-            logger.info(f"Generated {len(platform_candidates)} academic platform candidates for {faculty.get('name')}")
-        except Exception as e:
-            logger.error(f"Academic platform search failed: {e}")
-        
-        return all_candidates
-    
-    async def validate_and_rank_candidates(self, candidates: List[LinkCandidate], faculty: Dict[str, Any]) -> List[LinkCandidate]:
-        """
-        Validate candidates and rank them by quality using both traditional and AI methods.
-        """
-        if not candidates:
-            return []
-        
-        validated_candidates = []
-        semaphore = asyncio.Semaphore(max(1, self.max_concurrent))
-        
-        async def validate_candidate(candidate: LinkCandidate) -> Optional[LinkCandidate]:
-            async with semaphore:
-                try:
-                    # Basic validation
-                    if self.validator:
-                        validation = await self.validator.validate_link(candidate.url)
-                        
-                        if not validation.is_accessible:
-                            return None
-                        
-                        candidate.link_type = validation.link_type
-                        candidate.title = validation.title
-                        
-                        # Base confidence from validation
-                        base_confidence = validation.confidence
-                    else:
-                        base_confidence = candidate.confidence
-                    
-                    # AI-enhanced evaluation (if enabled)
-                    if self.enable_ai_assistance:
-                        ai_eval = await self.evaluate_link_with_ai(candidate.url, faculty)
-                        if ai_eval and ai_eval.recommended_for_replacement:
-                            # Combine traditional and AI scoring
-                            combined_score = (base_confidence + ai_eval.relevance_score + ai_eval.academic_quality) / 3
-                            candidate.confidence = min(1.0, combined_score)
-                            candidate.title = f"{candidate.title} (AI: {ai_eval.reasoning[:50]}...)"
-                            
-                            return candidate
-                    else:
-                        # Traditional scoring only
-                        if base_confidence > 0.5:
-                            candidate.confidence = base_confidence
-                            return candidate
-                    
-                except Exception as e:
-                    logger.warning(f"Candidate validation failed for {candidate.url}: {e}")
+            async with self.session.get(url, allow_redirects=True) as response:
+                if response.status != 200:
+                    return False
                 
-                return None
-        
-        # Validate candidates with limited concurrency
-        tasks = [validate_candidate(candidate) for candidate in candidates[:15]]
-        results = await asyncio.gather(*tasks, return_exceptions=True)
-        
-        # Filter successful validations
-        for result in results:
-            if isinstance(result, LinkCandidate) and result.confidence > 0.3:
-                validated_candidates.append(result)
-        
-        # Sort by confidence (highest first)
-        validated_candidates.sort(key=lambda x: x.confidence, reverse=True)
-        
-        return validated_candidates
+                content = await response.text()
+                
+                # Check if name appears in the page
+                name_parts = name.lower().split()
+                name_matches = sum(1 for part in name_parts if part in content.lower())
+                
+                # Require at least 2 name parts to match
+                return name_matches >= 2 and 'scholar.google.com' in str(response.url)
+                
+        except Exception:
+            return False
     
-    async def replace_social_media_links(self, faculty_list: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """
-        Replace social media links with better academic alternatives.
-        """
+    async def _verify_personal_website(self, url: str, name: str) -> bool:
+        """Verify that a personal website belongs to the correct person."""
+        try:
+            async with self.session.get(url, allow_redirects=True) as response:
+                if response.status != 200:
+                    return False
+                
+                content = await response.text()
+                
+                # Check if name appears in the page
+                name_parts = name.lower().split()
+                name_matches = sum(1 for part in name_parts if part in content.lower())
+                
+                # Check for academic indicators
+                academic_indicators = ['research', 'publication', 'cv', 'vita', 'faculty', 'professor']
+                academic_matches = sum(1 for indicator in academic_indicators if indicator in content.lower())
+                
+                # Require name match and academic content
+                return name_matches >= 2 and academic_matches >= 1
+                
+        except Exception:
+            return False
+    
+    async def _verify_social_profile(self, url: str, name: str, platform: str) -> bool:
+        """Verify that a social media profile belongs to the correct person."""
+        try:
+            async with self.session.get(url, allow_redirects=True) as response:
+                if response.status != 200:
+                    return False
+                
+                content = await response.text()
+                
+                # Check if name appears in the page
+                name_parts = name.lower().split()
+                name_matches = sum(1 for part in name_parts if part in content.lower())
+                
+                # Platform-specific verification
+                platform_indicators = {
+                    'twitter': ['tweet', 'following', 'followers'],
+                    'linkedin': ['experience', 'education', 'connections'],
+                    'researchgate': ['research', 'publication', 'citation'],
+                    'academia': ['academic', 'research', 'university'],
+                    'orcid': ['orcid id', 'researcher', 'publications']
+                }
+                
+                indicators = platform_indicators.get(platform, [])
+                platform_matches = sum(1 for indicator in indicators if indicator in content.lower())
+                
+                return name_matches >= 2 and platform_matches >= 1
+                
+        except Exception:
+            return False
+    
+    async def _search_for_scholar_profile(self, name: str, university: str, university_domain: str, university_short: str) -> List[str]:
+        """Search for Google Scholar profile using search engines."""
+        # This would implement actual search engine queries
+        # For now, return empty list as search engines require API keys
+        return []
+    
+    async def _search_for_personal_website(self, name: str, university: str, university_domain: str, university_short: str) -> List[str]:
+        """Search for personal website using search engines."""
+        # This would implement actual search engine queries
+        # For now, return empty list as search engines require API keys
+        return []
+    
+    async def _search_for_social_platform(self, name: str, university_short: str, platform_name: str, domain: str) -> List[str]:
+        """Search for social media profiles on specific platforms."""
+        # This would implement actual search engine queries
+        # For now, return empty list as search engines require API keys
+        return []
+
+# Convenience functions for easy integration
+async def find_missing_faculty_links(faculty_list: List[Dict[str, Any]], 
+                                   timeout: int = 30,
+                                   max_concurrent: int = 3) -> List[Dict[str, Any]]:
+    """
+    Find and add missing links for faculty members.
+    
+    Args:
+        faculty_list: List of faculty data
+        timeout: Timeout per request
+        max_concurrent: Maximum concurrent requests
+        
+    Returns:
+        Faculty list with discovered links added
+    """
+    async with SmartLinkReplacer(timeout=timeout, max_concurrent=max_concurrent) as replacer:
         enhanced_faculty = []
         
         for faculty in faculty_list:
             enhanced = faculty.copy()
-            faculty_name = faculty.get('name', 'Unknown')
             
-            # Check if faculty has social media links that need replacement
-            has_social_media = any(
-                validation.get('type') == 'social_media' 
-                for field in ['profile_url', 'personal_website', 'lab_website']
-                for validation in [faculty.get(f"{field}_validation", {})]
-                if validation
+            # Find missing Google Scholar
+            if not faculty.get('google_scholar_url'):
+                scholar_url = await replacer.find_google_scholar_profile(
+                    faculty.get('name', ''), 
+                    faculty.get('university', '')
+                )
+                if scholar_url:
+                    enhanced['google_scholar_url'] = scholar_url
+                    enhanced['google_scholar_source'] = 'smart_discovery'
+            
+            # Find missing personal website
+            if not faculty.get('personal_website'):
+                personal_url = await replacer.find_personal_website(
+                    faculty.get('name', ''), 
+                    faculty.get('university', '')
+                )
+                if personal_url:
+                    enhanced['personal_website'] = personal_url
+                    enhanced['personal_website_source'] = 'smart_discovery'
+            
+            # Find social media profiles
+            social_profiles = await replacer.find_social_media_profiles(
+                faculty.get('name', ''), 
+                faculty.get('university', '')
             )
-            
-            if has_social_media:
-                logger.info(f"Finding replacement links for {faculty_name} (has social media)")
-                
-                try:
-                    # Find candidate replacements
-                    candidates = await self.find_replacement_links(faculty)
-                    
-                    if candidates:
-                        # Validate and rank
-                        validated = await self.validate_and_rank_candidates(candidates, faculty)
-                        
-                        if validated:
-                            logger.info(f"Found {len(validated)} validated replacements for {faculty_name}")
-                            
-                            # Store candidates for reference
-                            enhanced['replacement_candidates'] = [
-                                {
-                                    'url': c.url,
-                                    'type': c.link_type.value if c.link_type else 'unknown',
-                                    'confidence': c.confidence,
-                                    'source': c.source,
-                                    'title': c.title
-                                } for c in validated[:5]
-                            ]
-                            
-                            # Replace social media links with best alternatives
-                            replacements_made = 0
-                            for candidate in validated[:3]:  # Try top 3
-                                if candidate.confidence > 0.5:  # Lower threshold for better success
-                                    # Replace appropriate fields based on link type
-                                    if candidate.link_type == LinkType.GOOGLE_SCHOLAR:
-                                        # Replace personal_website if it's social media
-                                        if enhanced.get('personal_website_validation', {}).get('type') == 'social_media':
-                                            enhanced['personal_website'] = candidate.url
-                                            enhanced['personal_website_source'] = 'smart_replacement'
-                                            enhanced['personal_website_validation'] = {
-                                                'type': 'google_scholar',
-                                                'confidence': candidate.confidence,
-                                                'is_accessible': True,
-                                                'title': candidate.title
-                                            }
-                                            replacements_made += 1
-                                    
-                                    elif candidate.link_type == LinkType.UNIVERSITY_PROFILE:
-                                        # Replace profile_url if it's social media, or personal_website if it's social media
-                                        if enhanced.get('profile_url_validation', {}).get('type') == 'social_media':
-                                            enhanced['profile_url'] = candidate.url
-                                            enhanced['profile_url_source'] = 'smart_replacement'
-                                            enhanced['profile_url_validation'] = {
-                                                'type': 'university_profile',
-                                                'confidence': candidate.confidence,
-                                                'is_accessible': True,
-                                                'title': candidate.title
-                                            }
-                                            replacements_made += 1
-                                        elif enhanced.get('personal_website_validation', {}).get('type') == 'social_media':
-                                            enhanced['personal_website'] = candidate.url
-                                            enhanced['personal_website_source'] = 'smart_replacement'
-                                            enhanced['personal_website_validation'] = {
-                                                'type': 'university_profile',
-                                                'confidence': candidate.confidence,
-                                                'is_accessible': True,
-                                                'title': candidate.title
-                                            }
-                                            replacements_made += 1
-                                    
-                                    elif candidate.link_type == LinkType.LAB_WEBSITE:
-                                        # Replace lab_website if it's social media
-                                        if enhanced.get('lab_website_validation', {}).get('type') == 'social_media':
-                                            enhanced['lab_website'] = candidate.url
-                                            enhanced['lab_website_source'] = 'smart_replacement'
-                                            enhanced['lab_website_validation'] = {
-                                                'type': 'lab_website',
-                                                'confidence': candidate.confidence,
-                                                'is_accessible': True,
-                                                'title': candidate.title
-                                            }
-                                            replacements_made += 1
-                                    
-                                    elif candidate.link_type == LinkType.PERSONAL_WEBSITE:
-                                        # Replace personal_website if it's social media
-                                        if enhanced.get('personal_website_validation', {}).get('type') == 'social_media':
-                                            enhanced['personal_website'] = candidate.url
-                                            enhanced['personal_website_source'] = 'smart_replacement'
-                                            enhanced['personal_website_validation'] = {
-                                                'type': 'personal_website',
-                                                'confidence': candidate.confidence,
-                                                'is_accessible': True,
-                                                'title': candidate.title
-                                            }
-                                            replacements_made += 1
-                            
-                            enhanced['replacements_made'] = replacements_made
-                            if replacements_made > 0:
-                                logger.info(f"Successfully replaced {replacements_made} social media links for {faculty_name}")
-                        else:
-                            logger.info(f"No validated replacements found for {faculty_name}")
-                    else:
-                        logger.info(f"No replacement candidates found for {faculty_name}")
-                        
-                except Exception as e:
-                    logger.error(f"Link replacement failed for {faculty_name}: {e}")
+            if social_profiles:
+                enhanced['social_media_profiles'] = social_profiles
             
             enhanced_faculty.append(enhanced)
         
-        return enhanced_faculty
-
-# Convenience functions
-
-async def smart_replace_social_media_links(faculty_list: List[Dict[str, Any]], 
-                                         openai_api_key: Optional[str] = None) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
-    """
-    Replace social media links with academic alternatives using smart strategies.
-    
-    Args:
-        faculty_list: List of faculty data (should include link validation)
-        openai_api_key: Optional OpenAI API key for AI assistance
-        
-    Returns:
-        Tuple of (enhanced_faculty_list, replacement_report)
-    """
-    start_time = datetime.now()
-    
-    async with SmartLinkReplacer(
-        openai_api_key=openai_api_key,
-        enable_ai_assistance=openai_api_key is not None
-    ) as replacer:
-        enhanced_faculty = await replacer.replace_social_media_links(faculty_list)
-    
-    # Generate report
-    total_faculty = len(faculty_list)
-    faculty_with_social = sum(1 for f in faculty_list 
-                             if any(f.get(f"{field}_validation", {}).get('type') == 'social_media'
-                                   for field in ['profile_url', 'personal_website', 'lab_website']))
-    
-    total_replacements = sum(f.get('replacements_made', 0) for f in enhanced_faculty)
-    faculty_with_replacements = sum(1 for f in enhanced_faculty if f.get('replacements_made', 0) > 0)
-    
-    processing_time = (datetime.now() - start_time).total_seconds()
-    
-    report = {
-        'total_faculty': total_faculty,
-        'faculty_with_social_media': faculty_with_social,
-        'faculty_with_replacements': faculty_with_replacements,
-        'total_replacements_made': total_replacements,
-        'replacement_success_rate': faculty_with_replacements / max(faculty_with_social, 1),
-        'processing_time_seconds': processing_time,
-        'ai_assistance_enabled': openai_api_key is not None
-    }
-    
-    return enhanced_faculty, report 
+        return enhanced_faculty 

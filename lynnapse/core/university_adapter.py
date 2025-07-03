@@ -301,6 +301,14 @@ class UniversityAdapter:
             )
             departments.extend(subdomain_departments)
         
+        # If no departments found and we have a target department, try LLM discovery
+        if not departments and target_department and self.llm_assistant:
+            logger.info(f"Traditional methods found no departments, trying LLM discovery for {target_department}")
+            llm_departments = await self._discover_departments_via_llm(
+                university_pattern, target_department
+            )
+            departments.extend(llm_departments)
+        
         # Remove duplicates based on URL
         seen_urls = set()
         unique_departments = []
@@ -698,6 +706,68 @@ class UniversityAdapter:
         
         return departments
 
+    async def _discover_departments_via_llm(self, 
+                                           university_pattern: UniversityPattern,
+                                           target_department: str) -> List[DepartmentInfo]:
+        """Use LLM to discover specific department when traditional methods fail."""
+        if not self.llm_assistant:
+            return []
+        
+        try:
+            logger.info(f"Using LLM to discover {target_department} department at {university_pattern.university_name}")
+            
+            # Use LLM to find the specific department
+            llm_result = await self.llm_assistant.discover_faculty_directories(
+                university_pattern.university_name, 
+                university_pattern.base_url,
+                department_name=target_department
+            )
+            
+            if not llm_result or not llm_result.department_paths:
+                logger.warning(f"LLM could not find {target_department} department")
+                return []
+            
+            departments = []
+            
+            # Process LLM-discovered department paths
+            for dept_name, dept_paths in llm_result.department_paths.items():
+                # Check if this department matches our target
+                if target_department.lower() in dept_name.lower() or dept_name.lower() in target_department.lower():
+                    
+                    # Try each path the LLM suggested
+                    for dept_path in dept_paths:
+                        try:
+                            if dept_path.startswith('http'):
+                                url = dept_path
+                            else:
+                                url = urljoin(university_pattern.base_url, dept_path)
+                            
+                            response = await self.session.get(url, timeout=10.0)
+                            if response.status_code == 200:
+                                soup = BeautifulSoup(response.text, 'html.parser')
+                                
+                                # Verify this page has faculty indicators
+                                if self._contains_faculty_indicators(soup):
+                                    departments.append(DepartmentInfo(
+                                        name=dept_name,
+                                        url=url,
+                                        faculty_count_estimate=self._estimate_faculty_count(soup),
+                                        structure_type=self._detect_structure_type(soup),
+                                        confidence=llm_result.confidence_score * 0.9  # Slightly lower confidence for LLM
+                                    ))
+                                    logger.info(f"LLM successfully found {dept_name} at {url}")
+                                    break  # Found a working path for this department
+                                    
+                        except Exception as e:
+                            logger.debug(f"LLM-suggested path {dept_path} failed: {e}")
+                            continue
+            
+            return departments
+            
+        except Exception as e:
+            logger.warning(f"LLM department discovery failed: {e}")
+            return []
+
     async def adapt_to_faculty_listing(self, 
                                      department_info: DepartmentInfo) -> Dict[str, Any]:
         """
@@ -853,8 +923,10 @@ class UniversityAdapter:
             'harvard university': 'https://www.harvard.edu',
             'harvard': 'https://www.harvard.edu',
             'university of california berkeley': 'https://www.berkeley.edu',
+            'university of california, berkeley': 'https://www.berkeley.edu',
             'uc berkeley': 'https://www.berkeley.edu',
             'university of arizona': 'https://www.arizona.edu',
+            'university of vermont': 'https://www.uvm.edu',
             'princeton university': 'https://www.princeton.edu',
             'princeton': 'https://www.princeton.edu',
             'yale university': 'https://www.yale.edu',
@@ -877,7 +949,9 @@ class UniversityAdapter:
         
         # Handle "University of X" pattern
         if base_name.startswith('university of '):
-            state_name = base_name.replace('university of ', '').replace(' ', '')
+            state_name = base_name.replace('university of ', '')
+            # Remove punctuation first, then spaces
+            state_name = re.sub(r'[^\w\s]', '', state_name).replace(' ', '')
             search_patterns.extend([
                 f"www.{state_name}.edu",
                 f"{state_name}.edu",
@@ -886,7 +960,9 @@ class UniversityAdapter:
         
         # Handle "X University" pattern  
         if base_name.endswith(' university'):
-            base_part = base_name.replace(' university', '').replace(' ', '')
+            base_part = base_name.replace(' university', '')
+            # Remove punctuation first, then spaces
+            base_part = re.sub(r'[^\w\s]', '', base_part).replace(' ', '')
             search_patterns.extend([
                 f"www.{base_part}.edu",
                 f"{base_part}.edu",
@@ -895,20 +971,29 @@ class UniversityAdapter:
         
         # Handle "X College" pattern
         if base_name.endswith(' college'):
-            base_part = base_name.replace(' college', '').replace(' ', '')
+            base_part = base_name.replace(' college', '')
+            # Remove punctuation first, then spaces
+            base_part = re.sub(r'[^\w\s]', '', base_part).replace(' ', '')
             search_patterns.extend([
                 f"www.{base_part}.edu",
                 f"{base_part}.edu",
                 f"{base_part}college.edu"
             ])
         
-        # Generic patterns
-        clean_name = base_name.replace(' university', '').replace(' college', '').replace(' ', '')
+        # Generic patterns - properly handle punctuation
+        clean_name = base_name.replace(' university', '').replace(' college', '')
+        # Remove all punctuation and spaces, not just spaces
+        clean_name = re.sub(r'[^\w\s]', '', clean_name).replace(' ', '')
+        
+        # Also create a version with hyphens instead of spaces (after removing punctuation)
+        clean_name_hyphen = base_name.replace(' university', '').replace(' college', '')
+        clean_name_hyphen = re.sub(r'[^\w\s-]', '', clean_name_hyphen).replace(' ', '-')
+        
         search_patterns.extend([
             f"www.{clean_name}.edu",
             f"{clean_name}.edu",
-            f"www.{university_name.lower().replace(' ', '')}.edu",
-            f"{university_name.lower().replace(' ', '-')}.edu"
+            f"www.{clean_name_hyphen}.edu",
+            f"{clean_name_hyphen}.edu"
         ])
         
         # Remove duplicates while preserving order
@@ -1352,10 +1437,37 @@ class UniversityAdapter:
             return None
         
         try:
-            # Use LLM assistant to discover structure
-            # This would be implemented when LLM assistant is properly integrated
-            logger.info(f"LLM assistant discovery not yet implemented for {university_name}")
-            return None
+            logger.info(f"Using LLM assistant to discover structure for {university_name}")
+            
+            # Use LLM to discover faculty directories and department paths
+            llm_result = await self.llm_assistant.discover_faculty_directories(
+                university_name, base_url
+            )
+            
+            if not llm_result:
+                logger.warning(f"LLM discovery returned no results for {university_name}")
+                return None
+            
+            logger.info(f"LLM discovery found {len(llm_result.faculty_directory_paths)} faculty paths, "
+                       f"{len(llm_result.department_paths)} department mappings")
+            
+            return UniversityPattern(
+                university_name=university_name,
+                base_url=base_url,
+                departments=llm_result.department_paths,
+                faculty_directory_paths=llm_result.faculty_directory_paths,
+                department_paths=list(llm_result.department_paths.keys()),
+                faculty_profile_patterns=[],
+                pagination_patterns=[],
+                confidence_score=llm_result.confidence_score,
+                last_updated=str(int(time.time())),
+                discovery_method="llm_assistant",
+                success_rate=llm_result.confidence_score,
+                selectors={},
+                subdomain_patterns=[],
+                department_subdomains={}
+            )
+            
         except Exception as e:
             logger.warning(f"LLM assistant discovery failed for {university_name}: {e}")
             return None

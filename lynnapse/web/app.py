@@ -941,59 +941,104 @@ def create_app() -> FastAPI:
                 # Continue with original data
                 enhanced_faculty = faculty_data
             
-            # Stage 3: Link Enrichment
-            logger.info("Stage 3: Link Enrichment")
+            # Stage 3: Comprehensive Link Enrichment (following the correct flow)
+            logger.info("Stage 3: Comprehensive Link Enrichment")
             pipeline_results["stages"]["3_link_enrichment"] = {"status": "running", "started_at": datetime.now().isoformat()}
             
-            from lynnapse.core.link_enrichment import enrich_faculty_links_simple
-            
-            # Only enrich faculty with validated links
-            faculty_with_links = [f for f in enhanced_faculty if any(
-                f.get(field) and f.get(f"{field}_validation", {}).get('is_accessible')
-                for field in ['profile_url', 'personal_website', 'lab_website']
-            )]
-            
-            if faculty_with_links:
-                try:
-                    enriched_links_faculty, enrichment_report = await enrich_faculty_links_simple(
-                        faculty_with_links, 
-                        max_concurrent=3,
-                        timeout=30
+            try:
+                # Complete flow: directory finding/scraping → link checking → smart link replacement → deep enrichment
+                
+                # Step 1: Link checking/validation (already done in enhancement stage)
+                # Step 2: Smart link replacement (for social media and faculty with no links)
+                # Step 3: Deep comprehensive enrichment (huge amounts of data from each link)
+                
+                from lynnapse.core.link_enrichment import LinkEnrichmentEngine
+                from lynnapse.core.smart_link_replacer import SmartLinkReplacer
+                
+                # First, apply smart link replacement for faculty with missing links
+                logger.info("Applying smart link replacement for missing faculty links...")
+                replacer = SmartLinkReplacer(timeout=30, max_concurrent=3)
+                
+                faculty_with_smart_links = []
+                for faculty in enhanced_faculty:
+                    enhanced_faculty_member = faculty.copy()
+                    
+                    # Smart replacement for missing Google Scholar links
+                    if not faculty.get('google_scholar_url'):
+                        scholar_url = await replacer.find_google_scholar_profile(
+                            faculty.get('name', ''), 
+                            faculty.get('university', '')
+                        )
+                        if scholar_url:
+                            enhanced_faculty_member['google_scholar_url'] = scholar_url
+                            enhanced_faculty_member['google_scholar_source'] = 'smart_replacement'
+                    
+                    # Smart replacement for missing personal websites
+                    if not faculty.get('personal_website'):
+                        personal_url = await replacer.find_personal_website(
+                            faculty.get('name', ''), 
+                            faculty.get('university', '')
+                        )
+                        if personal_url:
+                            enhanced_faculty_member['personal_website'] = personal_url
+                            enhanced_faculty_member['personal_website_source'] = 'smart_replacement'
+                    
+                    # Find social media profiles (for context, not primary links)
+                    social_profiles = await replacer.find_social_media_profiles(
+                        faculty.get('name', ''), 
+                        faculty.get('university', '')
                     )
+                    if social_profiles:
+                        enhanced_faculty_member['social_media_profiles'] = social_profiles
                     
-                    # Merge enriched links back with all faculty
-                    enriched_dict = {f.get('name', ''): f for f in enriched_links_faculty}
-                    final_faculty = []
-                    
-                    for faculty in enhanced_faculty:
-                        name = faculty.get('name', '')
-                        if name in enriched_dict:
-                            final_faculty.append(enriched_dict[name])
-                        else:
-                            final_faculty.append(faculty)
-                    
-                    pipeline_results["stages"]["3_link_enrichment"] = {
-                        "status": "completed",
-                        "links_processed": enrichment_report.total_links_processed,
-                        "successful_enrichments": enrichment_report.successful_enrichments,
-                        "scholar_profiles": enrichment_report.scholar_profiles_enriched,
-                        "completed_at": datetime.now().isoformat()
-                    }
-                    
-                    logger.info(f"Link enrichment completed: {enrichment_report.successful_enrichments} links enriched")
-                    
-                except Exception as e:
-                    logger.error(f"Link enrichment failed: {e}")
-                    pipeline_results["stages"]["3_link_enrichment"] = {
-                        "status": "failed", 
-                        "error": str(e),
-                        "completed_at": datetime.now().isoformat()
-                    }
-                    final_faculty = enhanced_faculty
-            else:
+                    faculty_with_smart_links.append(enhanced_faculty_member)
+                
+                # Now apply deep comprehensive enrichment to all accessible links
+                logger.info("Starting deep comprehensive data extraction...")
+                
+                async with LinkEnrichmentEngine(timeout=60, max_concurrent=3) as enrichment_engine:
+                    # Deep comprehensive enrichment - extract huge amounts of data
+                    enriched_links_faculty, enrichment_report = await enrichment_engine.enrich_faculty_links(
+                        faculty_with_smart_links
+                    )
+                
+                # Merge enriched links back with all faculty
+                enriched_dict = {f.get('name', ''): f for f in enriched_links_faculty}
+                final_faculty = []
+                
+                for faculty in faculty_with_smart_links:
+                    name = faculty.get('name', '')
+                    if name in enriched_dict:
+                        final_faculty.append(enriched_dict[name])
+                    else:
+                        final_faculty.append(faculty)
+                
+                # Calculate comprehensive metrics
+                total_data_points = sum(
+                    f.get('total_extracted_data_points', 0) for f in final_faculty
+                )
+                
                 pipeline_results["stages"]["3_link_enrichment"] = {
-                    "status": "skipped",
-                    "reason": "No faculty with validated links",
+                    "status": "completed",
+                    "faculty_processed": len(final_faculty),
+                    "links_processed": enrichment_report.total_links_processed,
+                    "successful_enrichments": enrichment_report.successful_enrichments,
+                    "scholar_profiles_enriched": enrichment_report.scholar_profiles_enriched,
+                    "lab_sites_enriched": enrichment_report.lab_sites_enriched,
+                    "university_profiles_enriched": enrichment_report.university_profiles_enriched,
+                    "total_data_points_extracted": total_data_points,
+                    "smart_links_added": sum(1 for f in final_faculty if f.get('google_scholar_source') == 'smart_replacement' or f.get('personal_website_source') == 'smart_replacement'),
+                    "social_media_profiles_found": sum(len(f.get('social_media_profiles', [])) for f in final_faculty),
+                    "completed_at": datetime.now().isoformat()
+                }
+                
+                logger.info(f"Comprehensive link enrichment completed: {enrichment_report.successful_enrichments} links enriched, {total_data_points} data points extracted")
+                
+            except Exception as e:
+                logger.error(f"Link enrichment failed: {e}")
+                pipeline_results["stages"]["3_link_enrichment"] = {
+                    "status": "failed", 
+                    "error": str(e),
                     "completed_at": datetime.now().isoformat()
                 }
                 final_faculty = enhanced_faculty
