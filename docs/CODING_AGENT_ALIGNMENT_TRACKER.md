@@ -25,7 +25,7 @@
      - Saves to `cache/llm_discoveries/` as JSON files
      - 24-hour TTL (configurable)
      - Automatic cleanup of expired entries
-     - Cache manager utility (`cache_manager.py`)
+     - Cache manager utility (`lynnapse/cli/cache_manager.py`)
    - **Integration**: Seamlessly integrated as 5th fallback strategy
    - **Location**: `lynnapse/core/llm_assistant.py`
    - **Documentation**: `LLM_CACHING_GUIDE.md`

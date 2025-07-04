@@ -26,7 +26,7 @@ def quick_test():
     
     try:
         response = requests.post(
-            "http://localhost:8000/api/full-pipeline",
+            "http://localhost:8001/api/full-pipeline",
             json=test_config,
             timeout=120
         )

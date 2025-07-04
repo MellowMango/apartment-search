@@ -95,7 +95,7 @@ cs_result = await assistant.discover_faculty_directories(
 
 ### **View Cache Summary**
 ```bash
-python3 cache_manager.py summary
+python3 lynnapse/cli/cache_manager.py summary
 ```
 Output:
 ```
@@ -108,17 +108,17 @@ Old (>= 24h): 0
 
 ### **List All Cached Discoveries**
 ```bash
-python3 cache_manager.py list
+python3 lynnapse/cli/cache_manager.py list
 ```
 
 ### **Clean Expired Cache (>24h)**
 ```bash
-python3 cache_manager.py clean
+python3 lynnapse/cli/cache_manager.py clean
 ```
 
 ### **Clean All Cache**
 ```bash
-python3 cache_manager.py clean-all
+python3 lynnapse/cli/cache_manager.py clean-all
 ```
 
 ## 💡 **Best Practices**

@@ -261,6 +261,8 @@ class AdaptiveFacultyCrawler:
              faculty_list = self._extract_columbia_cs_faculty(container, department, university_pattern)
          elif 'stanford' in university_pattern.university_name.lower() and department.name.lower() == 'computer science':
              faculty_list = self._extract_stanford_cs_faculty(container, department, university_pattern)
+         elif ('cmu' in university_pattern.university_name.lower() or 'carnegie mellon' in university_pattern.university_name.lower()) and department.name.lower() == 'psychology':
+             faculty_list = self._extract_cmu_psychology_faculty(container, department, university_pattern)
          else:
              faculty_list = await self._extract_generic_faculty(container, selectors, department, university_pattern)
          
@@ -306,25 +308,22 @@ class AdaptiveFacultyCrawler:
     def _extract_stanford_cs_faculty(self, container, department: DepartmentInfo, university_pattern: UniversityPattern) -> List[Dict[str, Any]]:
         """Extract faculty specifically from Stanford's CS page structure."""
         faculty_list = []
-        faculty_items = container.select('.su-card-grid .su-card')
+        faculty_items = container.select('.person-item')
 
         for item in faculty_items:
-            name_element = item.select_one('h3 a')
+            name_element = item.select_one('.person-name a')
             if not name_element:
                 continue
 
             name = self.data_cleaner.normalize_name(name_element.get_text(strip=True))
             profile_url = urljoin(university_pattern.base_url, name_element['href'])
 
-            title_element = item.select_one('.su-card__eyebrow')
+            title_element = item.select_one('.person-title')
             title = self.data_cleaner.normalize_title(title_element.get_text(strip=True)) if title_element else None
-
-            # Stanford CS page does not have direct email links, so we will skip this.
-            email = None
 
             faculty_data = {
                 "name": name,
-                "email": email,
+                "email": None,
                 "title": title,
                 "department": department.name,
                 "university": university_pattern.university_name,
@@ -334,6 +333,89 @@ class AdaptiveFacultyCrawler:
             }
             faculty_list.append(faculty_data)
 
+        return faculty_list
+
+    def _extract_cmu_psychology_faculty(self, container, department: DepartmentInfo, university_pattern: UniversityPattern) -> List[Dict[str, Any]]:
+        """Extract faculty specifically from CMU Psychology's directory structure."""
+        faculty_list = []
+        
+        # CMU Psychology faculty have data-lastname attributes and h2.name links
+        faculty_items = container.select('a[data-lastname]')
+        
+        logger.info(f"Found {len(faculty_items)} faculty items with data-lastname attribute")
+        
+        for item in faculty_items:
+            try:
+                # The a[data-lastname] element is just the image link
+                # The name is in a SIBLING h2 element that follows it
+                
+                # Get profile URL from the item itself
+                profile_href = item.get('href', '')
+                if profile_href.startswith('core-training-faculty/'):
+                    profile_url = urljoin(department.url, profile_href)
+                else:
+                    profile_url = urljoin(university_pattern.base_url, profile_href)
+                
+                # Find the next h2 sibling element that contains the name
+                name_element = None
+                current = item.next_sibling
+                while current and not name_element:
+                    if hasattr(current, 'name') and current.name == 'h2':
+                        name_link = current.select_one('a.name')
+                        if name_link:
+                            name_element = name_link
+                            break
+                    current = current.next_sibling
+                
+                if not name_element:
+                    logger.debug("No h2 a.name sibling element found, skipping")
+                    continue
+                
+                name = self.data_cleaner.normalize_name(name_element.get_text(strip=True))
+                if not name or len(name.split()) < 2:
+                    logger.debug(f"Invalid name extracted: '{name}', skipping")
+                    continue
+                
+                # Extract title from h3 element (next sibling after h2)
+                title_element = None
+                if name_element.parent:  # h2 element
+                    h2_element = name_element.parent
+                    current = h2_element.next_sibling
+                    while current:
+                        if hasattr(current, 'name') and current.name == 'h3':
+                            title_element = current
+                            break
+                        current = current.next_sibling
+                
+                title = self.data_cleaner.normalize_title(title_element.get_text(strip=True)) if title_element else None
+                
+                # Look for email in the item
+                email = None
+                email_links = item.select('a[href^="mailto:"]')
+                if email_links:
+                    email = email_links[0].get('href', '').replace('mailto:', '').strip()
+                
+                faculty_data = {
+                    "name": name,
+                    "email": email,
+                    "title": title,
+                    "department": department.name,
+                    "university": university_pattern.university_name,
+                    "profile_url": profile_url,
+                    "source_url": department.url,
+                    "extraction_method": "cmu_psychology_specific",
+                    "data_lastname": item.get('data-lastname', ''),
+                    "categories": item.get('data-categories', '')
+                }
+                
+                faculty_list.append(faculty_data)
+                logger.debug(f"Successfully extracted CMU Psychology faculty: {name}")
+                
+            except Exception as e:
+                logger.debug(f"Failed to extract faculty from CMU Psychology item: {e}")
+                continue
+        
+        logger.info(f"Successfully extracted {len(faculty_list)} CMU Psychology faculty members")
         return faculty_list
 
     async def _extract_generic_faculty(self, container, selectors: Dict[str, str], department: DepartmentInfo, university_pattern: UniversityPattern) -> List[Dict[str, Any]]:
@@ -374,8 +456,14 @@ class AdaptiveFacultyCrawler:
             potential_items = container.find_all(
                 lambda tag: tag.name in ['div', 'li', 'tr'] and 
                             tag.find('a', href=True) and 
-                            len(tag.get_text(strip=True)) > 5 and
-                            len(tag.find_all('a')) < 5 # Avoid large nav blocks
+                            len(tag.get_text(strip=True)) > 20 and  # More substantial content
+                            len(tag.get_text(strip=True)) < 1000 and  # Not too much content
+                            len(tag.find_all('a')) < 5 and  # Avoid large nav blocks
+                            # Avoid obvious navigation elements
+                            not any(nav_word in tag.get_text().lower() for nav_word in [
+                                'home', 'about', 'contact', 'menu', 'navigation', 'sidebar',
+                                'undergraduate program', 'graduate program', 'admissions'
+                            ])
             )
 
         logger.info(f"Processing {len(potential_items)} potential faculty items using selector: {used_selector}")
@@ -883,8 +971,17 @@ class AdaptiveFacultyCrawler:
             if potential_name and len(potential_name.split()) >= 2 and len(potential_name.split()) <= 6:
                 # Check if it looks like a real name (not just words like "Faculty Directory")
                 words = potential_name.split()
-                if not any(word.lower() in ['faculty', 'directory', 'staff', 'people', 'list', 'page'] for word in words):
-                    name = potential_name
+                # Expanded list of words to filter out
+                invalid_words = [
+                    'faculty', 'directory', 'staff', 'people', 'list', 'page', 'university', 
+                    'college', 'department', 'school', 'program', 'undergraduate', 'graduate',
+                    'admissions', 'academics', 'research', 'about', 'contact', 'home',
+                    'carnegie', 'mellon', 'stanford', 'columbia', 'harvard', 'mit'
+                ]
+                if not any(word.lower() in invalid_words for word in words):
+                    # Additional check: name should contain at least one word that could be a first/last name
+                    if any(len(word) >= 3 and word.isalpha() for word in words):
+                        name = potential_name
                     # Extract profile URL directly from the best_link
                     href = best_link.get('href', '')
                     if href.startswith('/'):

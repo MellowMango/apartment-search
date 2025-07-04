@@ -408,6 +408,123 @@ Get complete comprehensive faculty data with all extracted intelligence.
 - Google Scholar integration data
 - Link enrichment metadata and analysis
 
+## Individual Faculty Data Access
+
+### Get Faculty by ID with Full Enrichments
+
+**Endpoint:** `GET /api/faculty/{faculty_id}`
+
+**Description:** Retrieve a complete faculty profile with all associated enrichment data.
+
+**Parameters:**
+- `faculty_id` (string): Unique faculty identifier
+- `include_html` (boolean, optional): Include full HTML content (default: false)
+- `include_raw` (boolean, optional): Include raw scraped data (default: false)
+
+**Response:**
+```json
+{
+  "success": true,
+  "faculty": {
+    "id": "fac_cmu_psych_john_anderson",
+    "name": "John Anderson",
+    "title": "Richard King Mellon University Professor",
+    "university": {
+      "name": "Carnegie Mellon University",
+      "domain": "cmu.edu"
+    },
+    "primary_department": {
+      "name": "Psychology",
+      "full_name": "Department of Psychology"
+    },
+    "enrichments": {
+      "profile_url_enrichment": {
+        "full_html_content": "<!DOCTYPE html>...",
+        "text_content": "John Anderson is a professor...",
+        "html_content_length": 87580,
+        "academic_links": [
+          "https://johnanderson.cmu.edu/research",
+          "https://cogarch.lab.cmu.edu"
+        ],
+        "contact_information": {
+          "emails": ["ja@cmu.edu"],
+          "phones": ["+1-412-268-2788"]
+        }
+      },
+      "google_scholar": {
+        "total_citations": 15420,
+        "h_index": 65,
+        "scholar_interests": ["Cognitive Architecture", "ACT-R"]
+      }
+    },
+    "lab_associations": [
+      {
+        "role": "Principal Investigator",
+        "lab": {
+          "name": "Cognitive Architecture Lab",
+          "website_url": "https://cogarch.lab.cmu.edu"
+        }
+      }
+    ]
+  }
+}
+```
+
+### Search Faculty
+
+**Endpoint:** `GET /api/faculty/search`
+
+**Parameters:**
+- `q` (string): Search query (name, research interests, etc.)
+- `university` (string, optional): Filter by university
+- `department` (string, optional): Filter by department
+- `limit` (integer, optional): Number of results (default: 10, max: 100)
+
+**Response:**
+```json
+{
+  "success": true,
+  "total": 156,
+  "faculty": [
+    {
+      "id": "fac_cmu_psych_john_anderson",
+      "name": "John Anderson",
+      "title": "Richard King Mellon University Professor",
+      "university": "Carnegie Mellon University",
+      "department": "Psychology",
+      "research_interests": ["Cognitive Architecture", "ACT-R"],
+      "citation_count": 15420
+    }
+  ]
+}
+```
+
+### Get Faculty Lab Websites
+
+**Endpoint:** `GET /api/faculty/{faculty_id}/labs`
+
+**Description:** Get all lab websites and enrichment data for a specific faculty member.
+
+**Response:**
+```json
+{
+  "success": true,
+  "labs": [
+    {
+      "lab_name": "Cognitive Architecture Lab",
+      "lab_url": "https://cogarch.lab.cmu.edu",
+      "role": "Principal Investigator",
+      "enrichments": {
+        "full_html_content": "<!DOCTYPE html>...",
+        "lab_members": ["John Anderson", "Jane Doe", "Mike Smith"],
+        "research_projects": ["ACT-R 8.0", "Cognitive Tutors"],
+        "equipment": ["Eye-tracking system", "EEG equipment"]
+      }
+    }
+  ]
+}
+```
+
 ## 🎯 Data Models
 
 ### Enhanced Faculty Model
@@ -475,6 +592,50 @@ Get complete comprehensive faculty data with all extracted intelligence.
 }
 ```
 
+## 🏗️ Microservice Architecture
+
+Lynnapse is architected as a clean microservice with optional frontend:
+
+### 📦 Backend Microservice
+
+**Core Components:**
+- CLI interface for all scraping operations
+- Core scraping engines and adaptive crawlers  
+- Data processing and enrichment pipelines
+- MongoDB integration and data management
+- Independent deployment via `docker-compose.backend.yml`
+
+**Key Features:**
+- ✅ No web dependencies required
+- ✅ Lightweight Docker image (~500MB)
+- ✅ Scales independently
+- ✅ Production-ready with health checks
+- ✅ Complete CLI functionality
+
+**Dependencies:** Only `backend-requirements.txt` (35 packages)
+
+### 🌐 Frontend Web Interface (Optional)
+
+**Purpose:** 
+- Interactive web UI for non-technical users
+- Real-time progress monitoring
+- Result visualization and export
+- Development and demonstration tool
+
+**Architecture:**
+- FastAPI-based REST API client
+- Communicates with backend via HTTP calls
+- Separate Docker container
+- Can be completely removed without affecting backend
+
+**Dependencies:** Only `frontend-requirements.txt` (15 packages)
+
+### 🚀 Deployment Strategies
+
+1. **Production Microservice**: Backend only with CLI interface
+2. **Development Full Stack**: Backend + Frontend for interactive use
+3. **Hybrid**: Backend microservice + custom frontend via API
+
 ## 🔧 Configuration & Environment
 
 ### Environment Variables
@@ -512,17 +673,46 @@ All dependencies for comprehensive academic intelligence features.
 
 ## 🚀 Production Deployment
 
-### Docker Deployment
+### Backend Microservice Deployment (Recommended)
 
 ```bash
-# Start comprehensive Lynnapse services
+# Deploy backend microservice only (production ready)
+docker-compose -f docker-compose.backend.yml up -d
+
+# Services include:
+# - Lynnapse Backend Microservice (CLI + Core functionality)
+# - MongoDB Database (port 27017)
+# - No web dependencies
+# - Independent and scalable
+
+# Execute scraping operations
+docker exec -it lynnapse-backend python -m lynnapse.cli.adaptive_scrape "University Name" -d department
+```
+
+### Full Stack Deployment (Development)
+
+```bash
+# Start all services including web interface
 docker-compose up -d
 
 # Services include:
-# - Lynnapse Web Interface (port 8000)
+# - Lynnapse Backend Microservice
+# - Lynnapse Frontend Web Interface (port 8000)
 # - MongoDB Database (port 27017)
-# - Adaptive Scraping Workers
-# - Link Processing Pipeline
+# - Full web UI functionality
+```
+
+### Dependency-Only Installation
+
+```bash
+# Backend core functionality only
+pip install -r backend-requirements.txt
+
+# Frontend web interface only
+pip install -r frontend-requirements.txt
+
+# All dependencies (legacy)
+pip install -r requirements.txt
 ```
 
 ### Health Checks

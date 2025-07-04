@@ -148,3 +148,18 @@ dmypy.json
 minimal.env # Ignore the specific minimal env file
 *.log # Ignore all log files
 batch_geocode_api.log # Ignore specific log file
+
+# Data and results (organized structure)
+data/results/
+data/converted/
+data/test_outputs/
+*.json
+!db/*.json
+!seeds/*.json
+!lynnapse/config/*.json
+
+# Cache
+cache/
+
+# Test outputs
+tests/manual/output/

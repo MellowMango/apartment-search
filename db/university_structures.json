@@ -192,6 +192,47 @@
     "last_updated": 1751489696.0972102,
     "discovery_count": 1
   },
+  "university_of_tokyo": {
+    "university_name": "University of Tokyo",
+    "base_url": "https://www.u-tokyo.ac.jp",
+    "faculty_directory_paths": [
+      "/focus/ja/people/",
+      "en/faculty",
+      "people",
+      "directory",
+      "faculty",
+      "en/people"
+    ],
+    "department_paths": [
+      "Psychology",
+      "department",
+      "division",
+      "dept",
+      "institute",
+      "center",
+      "college",
+      "Computer Science",
+      "program",
+      "school"
+    ],
+    "departments": {
+      "computer science": [
+        "en/academics/graduate-school/departments/computer-science/faculty",
+        "academics/graduate-school/departments/computer-science/faculty",
+        "computer-science/faculty",
+        "cs/faculty",
+        "en/cs/faculty"
+      ],
+      "Computer Science": [
+        "/ja/schools-orgs/faculties/faculty.html"
+      ],
+      "Psychology": []
+    },
+    "discovery_method": "llm_assistant",
+    "confidence_score": 0.9,
+    "last_updated": 1751592214.296937,
+    "discovery_count": 2
+  },
   "harvard_university": {
     "university_name": "Harvard University",
     "base_url": "https://www.harvard.edu",

@@ -1,0 +1,28 @@
+# Frontend Web Interface Dependencies
+# FastAPI Framework for API communication
+fastapi==0.103.1
+uvicorn==0.30.1
+python-multipart==0.0.6
+
+# Template Engine
+jinja2==3.1.2  # Web interface templates
+
+# HTTP Client for API calls
+httpx==0.24.1
+requests==2.31.0
+
+# Data Models & Configuration
+pydantic==2.4.2
+python-dotenv==1.0.0
+
+# Utilities
+rich==13.8.0      # CLI styling
+python-slugify==8.0.1
+
+# Testing
+pytest==7.4.2
+
+# Development
+black==23.10.1
+isort==5.12.0
+ruff==0.1.6 

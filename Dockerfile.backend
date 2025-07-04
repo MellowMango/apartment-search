@@ -1,0 +1,62 @@
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    wget \
+    gnupg \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy backend requirements only
+COPY backend-requirements.txt .
+
+# Install Python dependencies (core only, no web interface)
+RUN pip install --no-cache-dir -r backend-requirements.txt
+
+# Install Playwright browsers (needed for dynamic scraping)
+RUN playwright install chromium
+RUN playwright install-deps chromium
+
+# Copy core application code (excluding web interface)
+COPY lynnapse/core/ ./lynnapse/core/
+COPY lynnapse/cli/ ./lynnapse/cli/
+COPY lynnapse/config/ ./lynnapse/config/
+COPY lynnapse/db/ ./lynnapse/db/
+COPY lynnapse/flows/ ./lynnapse/flows/
+COPY lynnapse/models/ ./lynnapse/models/
+COPY lynnapse/scrapers/ ./lynnapse/scrapers/
+COPY lynnapse/__init__.py ./lynnapse/
+COPY lynnapse/__main__.py ./lynnapse/
+COPY lynnapse/cli.py ./lynnapse/
+
+# Copy configuration and data
+COPY seeds/ ./seeds/
+COPY db/ ./db/
+
+# Create necessary directories
+RUN mkdir -p output logs data scrape_results cache
+
+# Set environment variables
+ENV PYTHONPATH=/app
+ENV PLAYWRIGHT_HEADLESS=true
+ENV LYNNAPSE_ENV=production
+ENV LYNNAPSE_BACKEND_ONLY=true
+
+# Create non-root user for security
+RUN groupadd -r lynnapse && useradd -r -g lynnapse lynnapse
+RUN chown -R lynnapse:lynnapse /app
+USER lynnapse
+
+# Health check for backend service
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "from lynnapse.cli import app; print('Backend OK')" || exit 1
+
+# Expose port for future API service
+EXPOSE 8000
+
+# Default command - CLI interface for backend operations
+CMD ["python", "-m", "lynnapse.cli", "--help"] 

@@ -195,13 +195,63 @@ lynnapse flow --university "University of Arizona" --verbose
 
 ### 🐳 Docker Deployment
 
+#### Backend Microservice Only (Recommended for Production)
+
 ```bash
-# Start all services
+# Deploy backend microservice only
+docker-compose -f docker-compose.backend.yml up -d
+
+# Use CLI commands directly
+docker exec -it lynnapse-backend python -m lynnapse.cli.adaptive_scrape "Carnegie Mellon University" -d psychology
+
+# MongoDB available at localhost:27017
+```
+
+#### Full Stack (Backend + Frontend)
+
+```bash
+# Start all services including web interface
 docker-compose up -d
 
 # Access web interface at http://localhost:8000
+# Backend API available at http://localhost:8000/api
 # MongoDB available at localhost:27017
 ```
+
+#### Backend Dependencies Only
+
+The backend can be deployed independently using only core dependencies:
+
+```bash
+# Install backend dependencies only
+pip install -r backend-requirements.txt
+
+# Run CLI commands
+python -m lynnapse.cli.adaptive_scrape "University Name" -d department
+```
+
+## 🏗️ Microservice Architecture
+
+Lynnapse is designed with a clean separation between backend and frontend for easy microservice deployment:
+
+### 📦 Backend Microservice
+- **Core scraping and processing functionality**
+- **CLI interface for all operations**
+- **Independent deployment with `docker-compose.backend.yml`**
+- **No web dependencies required**
+- **MongoDB integration for data storage**
+
+### 🌐 Frontend Web Interface (Optional)
+- **Intuitive web UI for interactive scraping**
+- **Communicates with backend via REST API**
+- **Can be removed entirely without affecting core functionality**
+- **Separate dependencies and deployment**
+
+### 🚀 Deployment Options
+
+1. **Backend Only**: `docker-compose -f docker-compose.backend.yml up -d`
+2. **Full Stack**: `docker-compose up -d`
+3. **Dependencies Only**: `pip install -r backend-requirements.txt`
 
 ## Web Interface
 

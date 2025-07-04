@@ -1,5 +1,8 @@
 version: '3.8'
 
+# Backend-only deployment for microservice use
+# Use this for production deployments where only the scraping service is needed
+
 services:
   mongodb:
     image: mongo:7
@@ -17,7 +20,7 @@ services:
     networks:
       - lynnapse-network
 
-  # Backend Microservice - Core scraping and processing
+  # Backend Microservice - Core scraping and processing only
   lynnapse-backend:
     build:
       context: .
@@ -28,14 +31,13 @@ services:
       - mongodb
     environment:
       - MONGODB_URL=mongodb://admin:password@mongodb:27017/lynnapse?authSource=admin
-      - LYNNAPSE_ENV=docker
+      - LYNNAPSE_ENV=production
       - PLAYWRIGHT_HEADLESS=true
       - LYNNAPSE_BACKEND_ONLY=true
     volumes:
       - ./output:/app/output
       - ./logs:/app/logs
       - ./data:/app/data
-      - ./seeds:/app/seeds
       - ./scrape_results:/app/scrape_results
       - ./cache:/app/cache
     networks:
@@ -44,44 +46,6 @@ services:
     stdin_open: true
     tty: true
     command: tail -f /dev/null
-
-  # Frontend Web Interface (optional)
-  lynnapse-frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: lynnapse-frontend
-    restart: unless-stopped
-    depends_on:
-      - lynnapse-backend
-    environment:
-      - LYNNAPSE_BACKEND_URL=http://lynnapse-backend:8000
-      - LYNNAPSE_ENV=docker
-    ports:
-      - "8000:8000"
-    volumes:
-      - ./lynnapse/web:/app/lynnapse/web
-    networks:
-      - lynnapse-network
-    # Start web interface
-    command: python -m lynnapse.web.run
-
-  mongo-express:
-    image: mongo-express
-    container_name: lynnapse-mongo-express
-    restart: unless-stopped
-    ports:
-      - "8081:8081"
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
-      ME_CONFIG_MONGODB_ADMINPASSWORD: password
-      ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongodb:27017/
-      ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: admin
-    depends_on:
-      - mongodb
-    networks:
-      - lynnapse-network
 
 volumes:
   mongodb_data:
